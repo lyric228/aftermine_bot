@@ -1,0 +1,15 @@
+message_sleep = 4-5 minutes
+nickname = WunderwaffeMaus
+password = 5hshAfter1Pidorasi!l!0j5
+message = ""
+
+1) /login 5hshAfter1Pidorasi!l!0j5
+2) goto 539 60 -1592
+3) send invites
+
+const bot = mineflayer.createBot({
+    host: 'айпи',
+    port: порт,
+    username: 'ник',
+    auth: 'offline',
+})
