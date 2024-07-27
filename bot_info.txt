@@ -1,15 +1,8 @@
-message_sleep = 4-5 minutes
-nickname = WunderwaffeMaus
-password = 5hshAfter1Pidorasi!l!0j5
-message = ""
+Kemper1ng    s2     chbot '!&c&lПривет,друг! Хочешь побывать в клане, где была великая история? Тогда тебе сюда -> /warp CH ! У нас есть: топовый кит для пвп, хороший кх и многое другое! Мы выдаём флай игрокам :3. Чего же ты ждёшь? Присоединяйся к нам!'
 
-1) /login 5hshAfter1Pidorasi!l!0j5
-2) goto 539 60 -1592
-3) send invites
 
-const bot = mineflayer.createBot({
-    host: 'айпи',
-    port: порт,
-    username: 'ник',
-    auth: 'offline',
-})
+"Usage : node index.js <portal> <warp> [<name>] <adMsg>"
+
+!afterHuila00pidor3svocvoRus
+
+s2
