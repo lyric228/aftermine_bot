@@ -27,7 +27,7 @@ function createBot(nickname, password, portal, warp, sendAd, adMsg, defX, defY, 
     setTimeout(() => {
       bot.chat("/" + portal);
     }, 3000);
-    console.log('Bot has spawned');
+    console.log(nickname + ' has spawned');
   });
 
 
@@ -61,7 +61,7 @@ function createBot(nickname, password, portal, warp, sendAd, adMsg, defX, defY, 
         bot.chat(adMsg)
       }
       bot.chat('/clear')
-    }, getRandomNumber(160000, 200000))
+    }, getRandomNumber(160000, 240000))
 
 
 
