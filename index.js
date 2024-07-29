@@ -35,13 +35,13 @@ function createBot(nickname, password, portal, warp, sendAd, adMsg, defX, defY, 
     setInterval(() => {
       let closestPlayer = bot.nearestEntity();
       if (closestPlayer !== null) {
-        if (closestPlayer.type === 'player') {
-          if (!(closestPlayer.username in blacklist)) {
-            bot.chat("/c invite " + closestPlayer.username);
+          if (closestPlayer.type === 'player') {
+            if (!(closestPlayer.username in blacklist)) {
+              bot.chat("/c invite " + closestPlayer.username);
+            }
           }
-        }
       }
-    }, getRandomNumber(1000, 15000))
+    }, 10000)
 
 
     setInterval(() => {
