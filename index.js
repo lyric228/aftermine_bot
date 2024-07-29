@@ -36,7 +36,7 @@ function createBot(nickname, password, portal, warp, sendAd, adMsg, defX, defY, 
       let closestPlayer = bot.nearestEntity();
       if (closestPlayer !== null) {
         if (closestPlayer.type !== 'mob') {
-          if (!closestPlayer.username in blacklist) {
+          if (!(closestPlayer.username in blacklist)) {
             bot.chat("/c invite " + closestPlayer.username);
           }
         }
