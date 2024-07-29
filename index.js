@@ -33,8 +33,12 @@ function createBot(nickname, password, portal, warp, sendAd, adMsg, defX, defY, 
   bot.once('spawn', () => {
     setInterval(() => {
       let closestPlayer = bot.nearestEntity();
-      if (closestPlayer.username in blacklist) {
-        bot.chat("/c invite " + closestPlayer.username);
+      if (closestPlayer !== null) {
+        if (closestPlayer.type !== 'mob') {
+          if (closestPlayer.username in blacklist) {
+            bot.chat("/c invite " + closestPlayer.username);
+          }
+        }
       }
     }, getRandomNumber(1000, 15000))
 
