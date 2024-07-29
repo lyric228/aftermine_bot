@@ -84,5 +84,5 @@ function createBot(nickname, password, portal, warp, sendAd, adMsg, defX, defY, 
 }
 
 
-createBot("Kemper1ng", "!afterHuila00pidor3svocvoRus", "s2", "chbot", true, adDefMsg, -4871.5, 109, -3179.5)
+// createBot("Kemper1ng", "!afterHuila00pidor3svocvoRus", "s2", "chbot", true, adDefMsg, -4871.5, 109, -3179.5)
 createBot("SCPbotSH", "!afterHuila00pidor3svocvoRus", "s4", "chbot", true, adDefMsg2, -4870.5, 109, -3178.5)
