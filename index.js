@@ -6,7 +6,7 @@ function getRandomNumber(min, max) {
 }
 const adDefMsg = '!&c&lПривет, друг! Хочешь побывать в клане, где была великая история? Тогда тебе сюда -> /warp CH ! У нас есть: топовый кит для пвп, хороший кх и многое другое! Мы выдаём флай игрокам :3. Чего же ты ждёшь? Присоединяйся к нам!'
 const adDefMsg2 = "!&c&lПривет, друг! Хочешь побывать в клане, где была великая история? Тогда тебе сюда -> /warp CH ! У нас есть: топовый кит для пвп, хороший кх и многое другое! Чего же ты ждёшь? Присоединяйся к нам!"
-const blacklist = ["TheyTiom", "They_Tiom", "uzerchik"]
+const blacklist = ["TheyTiom", "They_Tiom", "uzerchik", "Milaina"]
 
 
 function createBot(nickname, password, portal, warp, sendAd, adMsg, defX, defY, defZ) {
@@ -35,7 +35,7 @@ function createBot(nickname, password, portal, warp, sendAd, adMsg, defX, defY, 
     setInterval(() => {
       let closestPlayer = bot.nearestEntity();
       if (closestPlayer !== null) {
-        if (closestPlayer.type !== 'mob') {
+        if (closestPlayer.type === 'player') {
           if (!(closestPlayer.username in blacklist)) {
             bot.chat("/c invite " + closestPlayer.username);
           }
