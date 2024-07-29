@@ -4,10 +4,11 @@ const mineflayer = require('mineflayer');
 function getRandomNumber(min, max) {
   return Math.floor(Math.random() * (max - min + 1)) + min;
 }
-const adDefMsg = '!&c&lПривет,друг! Хочешь побывать в клане, где была великая история? Тогда тебе сюда -> /warp CH ! У нас есть: топовый кит для пвп, хороший кх и многое другое! Мы выдаём флай игрокам :3. Чего же ты ждёшь? Присоединяйся к нам!'
+const adDefMsg = '!&c&lПривет, друг! Хочешь побывать в клане, где была великая история? Тогда тебе сюда -> /warp CH ! У нас есть: топовый кит для пвп, хороший кх и многое другое! Мы выдаём флай игрокам :3. Чего же ты ждёшь? Присоединяйся к нам!'
+const blacklist = ["TheyTiom", "They_Tiom", "uzerchik"]
 
 
-function createBot(nickname, password, portal, warp, sendAd, adMsg) {
+function createBot(nickname, password, portal, warp, sendAd, adMsg, defX, defY, defZ) {
   let bot = mineflayer.createBot({
     host: 'mc.masedworld.net',
     port: 25565,
@@ -32,7 +33,9 @@ function createBot(nickname, password, portal, warp, sendAd, adMsg) {
   bot.once('spawn', () => {
     setInterval(() => {
       let closestPlayer = bot.nearestEntity();
-      bot.chat("/c invite " + closestPlayer.username);
+      if (closestPlayer.username in blacklist) {
+        bot.chat("/c invite " + closestPlayer.username);
+      }
     }, getRandomNumber(1000, 15000))
 
 
@@ -53,17 +56,17 @@ function createBot(nickname, password, portal, warp, sendAd, adMsg) {
         bot.chat(adMsg)
       }
       bot.chat('/clear')
-    }, getRandomNumber(240000, 300000))
+    }, getRandomNumber(160000, 200000))
 
 
 
     setInterval(() => {
       let pos = bot.entity.position
-      if (pos.x !== -4871.5 && pos.y !== 109 && pos.z !== -3179.5) {
+      if (pos.x !== defX || pos.y !== defY || pos.z !== defZ) {
         bot.chat('/warp ' + warp)
-        // [ -4871.5, 109, -3179.5 ]
       }
-    }, 1000)
+    }, 10000)
+
 
   });
 
@@ -75,8 +78,6 @@ function createBot(nickname, password, portal, warp, sendAd, adMsg) {
   });
 }
 
-// for (let i = 0; i < 10; i++) {
-//   setTimeout(() => {console.log()}, 15000);
-//   createBot("Waflya1233"+i, "!afterHuila00pidor3svocvoRus", "s2", "chbot", true, "")
-// }
-createBot("Kemper1ng", "!afterHuila00pidor3svocvoRus", "s2", "chbot", true, adDefMsg)
+
+createBot("Kemper1ng", "!afterHuila00pidor3svocvoRus", "s2", "chbot", true, adDefMsg, -4871.5, 109, -3179.5)
+createBot("SCPbotSH", "!afterHuila00pidor3svocvoRus", "s4", "chbot", true, adDefMsg, -4871.5, 108, -3185.5)
