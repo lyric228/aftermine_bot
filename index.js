@@ -1,10 +1,8 @@
-const fs = require('fs');
 const mineflayer = require('mineflayer');
-const { exec } = require('child_process');
 
 const adDefMsg = '!&c&lПривет, друг! Хочешь побывать в клане, где была великая история? Тогда тебе сюда -> /warp CH ! У нас есть: топовый кит для пвп, хороший кх и многое другое! Мы выдаём флай игрокам :3. Чего же ты ждёшь? Присоединяйся к нам!';
 const adDefMsg2 = "!&c&lПривет, друг! Хочешь побывать в клане, где была великая история? Тогда тебе сюда -> /warp CH ! У нас есть: топовый кит для пвп, хороший кх и многое другое! Чего же ты ждёшь? Присоединяйся к нам!";
-const blacklist = ["TheyTiom", "They_Tiom", "uzerchik", "Milaina", "They_Kari"];
+const blacklist = ["uzerchik", "Milaina"];
 
 
 function getRandomNumber(min, max) {

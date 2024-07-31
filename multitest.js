@@ -41,7 +41,7 @@ function next (nickname, password, portal, warp) {
   }
 }
 
-// process.argv[2]
+
 // next("Adolfik00"+i, "!afterHuila00pidor3svocvoRus", "s2", "uch")
 // next("sigma6969"+i, "!afterHuila00pidor3svocvoRus", "s2", "uch")
 // next("CandyCrusher"+i, "!afterHuila00pidor3svocvoRus", "s2", "uch")
