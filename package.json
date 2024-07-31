@@ -13,6 +13,7 @@
     "mineflayer": "^4.20.1",
     "mineflayer-pathfinder": "^2.4.5",
     "prismarine-viewer": "^1.28.0",
+    "proxy-agent": "^6.4.0",
     "rbot": "^0.2.5"
   }
 }

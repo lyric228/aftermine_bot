@@ -1,88 +1,88 @@
+const fs = require('fs');
 const mineflayer = require('mineflayer');
+const { exec } = require('child_process');
+
+const adDefMsg = '!&c&lПривет, друг! Хочешь побывать в клане, где была великая история? Тогда тебе сюда -> /warp CH ! У нас есть: топовый кит для пвп, хороший кх и многое другое! Мы выдаём флай игрокам :3. Чего же ты ждёшь? Присоединяйся к нам!';
+const adDefMsg2 = "!&c&lПривет, друг! Хочешь побывать в клане, где была великая история? Тогда тебе сюда -> /warp CH ! У нас есть: топовый кит для пвп, хороший кх и многое другое! Чего же ты ждёшь? Присоединяйся к нам!";
+const blacklist = ["TheyTiom", "They_Tiom", "uzerchik", "Milaina", "They_Kari"];
 
 
 function getRandomNumber(min, max) {
   return Math.floor(Math.random() * (max - min + 1)) + min;
 }
-const adDefMsg = '!&c&lПривет, друг! Хочешь побывать в клане, где была великая история? Тогда тебе сюда -> /warp CH ! У нас есть: топовый кит для пвп, хороший кх и многое другое! Мы выдаём флай игрокам :3. Чего же ты ждёшь? Присоединяйся к нам!'
-const adDefMsg2 = "!&c&lПривет, друг! Хочешь побывать в клане, где была великая история? Тогда тебе сюда -> /warp CH ! У нас есть: топовый кит для пвп, хороший кх и многое другое! Чего же ты ждёшь? Присоединяйся к нам!"
-const blacklist = ["TheyTiom", "They_Tiom", "uzerchik", "Milaina"]
 
 
-function createBot(nickname, password, portal, warp, sendAd, adMsg, defX, defY, defZ) {
-  let bot = mineflayer.createBot({
+function handleSpawn(bot, password, portal) {
+  setTimeout(() => {
+    bot.chat(`/reg ${password}`);
+    bot.chat(`/login ${password}`);
+  }, 1000);
+
+  setTimeout(() => {
+    bot.chat(`/${portal}`);
+  }, 1000);
+
+  console.log(`${bot.username} has spawned`);
+}
+
+function invitePlayers(bot) {
+  setInterval(() => {
+    const closestPlayer = bot.nearestEntity();
+    if (closestPlayer && closestPlayer.type === 'player' && !blacklist.includes(closestPlayer.username)) {
+      bot.chat(`/c invite ${closestPlayer.username}`);
+    }
+  }, 10000);
+}
+
+function lookAtEntities(bot) {
+  setInterval(() => {
+    const entity = bot.nearestEntity();
+    if (entity) {
+      const lookPosition = entity.type === 'player' ? entity.position.offset(0, 1.6, 0) : entity.position;
+      bot.lookAt(lookPosition);
+    }
+  }, 10);
+}
+
+function sendAdvertisements(bot, sendAd, adMsg) {
+  setInterval(() => {
+    if (sendAd) {
+      bot.chat(adMsg);
+    }
+    bot.chat('/clear');
+  }, getRandomNumber(160000, 200000));
+}
+
+function monitorPosition(bot, defCord, warp) {
+  setInterval(() => {
+    const { x, y, z } = bot.entity.position;
+    if (x !== defCord[0] || y !== defCord[1] || z !== defCord[2]) {
+      bot.chat(`/warp ${warp}`);
+    }
+  }, 1000);
+}
+
+function createBot(nickname, password, portal, warp, sendAd, adMsg, defCord) {
+  const bot = mineflayer.createBot({
     host: 'mc.masedworld.net',
     port: 25565,
     username: nickname,
-  })
-
-
-
-  bot.on('spawn', () => {
-    setTimeout(() => {
-      bot.chat('/reg ' + password);
-      bot.chat('/login ' + password);
-    }, 3000);
-
-    setTimeout(() => {
-      bot.chat("/" + portal);
-    }, 3000);
-    console.log(nickname + ' has spawned');
   });
 
-
+  bot.on('spawn', () => handleSpawn(bot, password, portal));
   bot.once('spawn', () => {
-    setInterval(() => {
-      let closestPlayer = bot.nearestEntity();
-      if (closestPlayer !== null) {
-          if (closestPlayer.type === 'player') {
-            if (!(closestPlayer.username in blacklist)) {
-              bot.chat("/c invite " + closestPlayer.username);
-            }
-          }
-      }
-    }, 10000)
-
-
-    setInterval(() => {
-      let entity = bot.nearestEntity()
-      if (entity !== null) {
-        if (entity.type === 'player') {
-          bot.lookAt(entity.position.offset(0, 1.6, 0))
-        } else if (entity.type === 'mob') {
-          bot.lookAt(entity.position)
-        }
-      }
-    }, 10)
-
-
-    setInterval(() => {
-      if (sendAd === true) {
-        bot.chat(adMsg)
-      }
-      bot.chat('/clear')
-    }, getRandomNumber(160000, 240000))
-
-
-
-    setInterval(() => {
-      let pos = bot.entity.position
-      if (pos.x !== defX || pos.y !== defY || pos.z !== defZ) {
-        bot.chat('/warp ' + warp)
-      }
-    }, 10000)
-
-
+    invitePlayers(bot);
+    lookAtEntities(bot);
+    sendAdvertisements(bot, sendAd, adMsg);
+    monitorPosition(bot, defCord, warp);
   });
 
-
-  bot.on('error', (err) => console.log(err))
+  bot.on('error', (err) => console.log(err));
   bot.on('end', () => {
-    createBot(nickname, password, portal, warp, sendAd, adMsg);
-    console.log("Reconnection...");
+    console.log(`${nickname} - Reconnection...`);
+    createBot(nickname, password, portal, warp, sendAd, adMsg, defCord);
   });
 }
 
-
-// createBot("Kemper1ng", "!afterHuila00pidor3svocvoRus", "s2", "chbot", true, adDefMsg, -4871.5, 109, -3179.5)
-createBot("SCPbotSH", "!afterHuila00pidor3svocvoRus", "s4", "chbot", true, adDefMsg2, -4870.5, 109, -3178.5)
+createBot("Kemper1ng", "!afterHuila00pidor3svocvoRus", "s2", "chbot", true, adDefMsg, [-4871.5, 109, -3179.5])
+createBot("SCPbotSH", "!afterHuila00pidor3svocvoRus", "s4", "chbot", true, adDefMsg2, [-4870.5, 109, -3178.5])

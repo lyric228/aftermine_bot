@@ -1,4 +1,4 @@
-const mineflayer = require('mineflayer')
+const mineflayer = require('mineflayer');
 
 
 let i = 0
@@ -20,16 +20,16 @@ function next (nickname, password, portal, warp) {
       });
 
 
-    // bot.once('spawn', () => {
-    //   setInterval(() => {
-    //     let pos = bot.entity.position  //-9070.5 63 8179.5
-    //     if (pos.x !== -4871.5 || pos.y !== 108 || pos.z !== -3183.5) {
-    //       bot.chat('/warp ' + warp)
-    //
-    //       bot.chat('/c accept')
-    //     }
-    //   }, 1000)
-    // })
+    bot.once('spawn', () => {
+      setInterval(() => {
+        let pos = bot.entity.position  //-9070.5 63 8179.5
+        if (pos.x !== -4870.5 || pos.y !== 108 || pos.z !== -3185.5) {
+          bot.chat('/warp ' + warp)
+
+          bot.chat('/c accept')
+        }
+      }, 1000)
+    })
 
 
     bot.on('error', (err) => console.log(err))
@@ -45,8 +45,8 @@ function next (nickname, password, portal, warp) {
 // next("Adolfik00"+i, "!afterHuila00pidor3svocvoRus", "s2", "uch")
 // next("sigma6969"+i, "!afterHuila00pidor3svocvoRus", "s2", "uch")
 // next("CandyCrusher"+i, "!afterHuila00pidor3svocvoRus", "s2", "uch")
-for (let i = 1; i <= process.argv[2]; i++) {
-  next("Pipipuk"+i, "!afterHuila00pidor3svocvoRus", "s2", "uch")
+for (let i = 1; i <= 3; i++) {
+  next("Korry1000deaths"+i, "!afterHuila00pidor3svocvoRus", "s4", "uch");
 }
 
 
