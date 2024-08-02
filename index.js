@@ -34,7 +34,7 @@ function invitePlayers(bot) {
 
 function lookAtEntities(bot) {
   setInterval(() => {
-    const entity = bot.nearestEntity({ maxDistance: 16 });
+    const entity = bot.nearestEntity();
     // const nearestPlayer = bot.nearestEntity(bot.players, { maxDistance: 16 });
     if (entity) {
       const lookPosition = entity.type === 'player' ? entity.position.offset(0, 1.6, 0) : entity.position;
@@ -84,4 +84,4 @@ function createBot(nickname, password, portal, warp, sendAd, adMsg, defCord) {
 }
 
 createBot("Kemper1ng", "!afterHuila00pidor3svocvoRus", "s2", "botch", true, adDefMsg, [-4871.5, 109, -3179.5])
-// createBot("SCPbotSH", "!afterHuila00pidor3svocvoRus", "s4", "botch", true, adDefMsg2, [-4870.5, 109, -3178.5])
+createBot("SCPbotSH", "!afterHuila00pidor3svocvoRus", "s3", "chbot", true, adDefMsg2, [-4871.5, 109, -3179.5])
