@@ -95,3 +95,4 @@ function createBot(nickname, password, portal, warp, adMsg, defCord) {
 
 createBot("Kemper1ng", "!afterHuila00pidor3svocvoRus", "s2", "CHbot1", adDefMsg, [9105.5, 169, 10104.5])
 createBot("SCPbotSH", "!afterHuila00pidor3svocvoRus", "s3", "chbot", adDefMsg, [-4871.5, 109, -3179.5])
+createBot("Alfhelm", "!afterHuila00pidor3svocvoRus", "s7", "chbot", adDefMsg, [-4871.5, 109, -3179.5])
