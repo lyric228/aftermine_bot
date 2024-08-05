@@ -1,11 +1,11 @@
 const mineflayer = require("mineflayer");
 
 // const adDefMsgOld = "!&c&lПривет, друг! Хочешь побывать в клане, где была великая история? Тогда тебе сюда -> /warp CH ! У нас есть: топовый кит для пвп, хороший кх и многое другое! Мы выдаём флай игрокам :3. Чего же ты ждёшь? Присоединяйся к нам!";
-const adDefMsg1 = "!&c&lПривет, друг! Хочешь побывать в клане, где была великая история? Тогда тебе сюда -> /warp CH ! У нас есть: топовый кит для пвп, хороший кх и многое другое! Чего же ты ждёшь? Присоединяйся к нам!";
-const adDefMsg2 = "!&c&lПриветик! Хочешь с кайфом провести время, но не знаешь как? Тогда тебе подойдёт клан &4&lChert&0&lHouse &c&l! У нас ты найдёшь хороший кх, топовый кит и уважение клана. Чтоб вступить в клан пиши /warp CH"
-const adDefMsg3 = "!&c&lХочешь в крутой клан с многими плюшками? Тогда тебе нужен клан &4&lChert&0&lHouse&c&l ! У нас ты не только найдёшь топовый кит для пвп и хороший кх, но и дс сервер! А так же у нас открыт набор на модераторов! /warp CH"
+const adDefMsg1 = "!&c&lПривет, друг! Хочешь побывать в клане, где была великая история? Тогда тебе сюда -> /warp ChertHouse ! У нас есть: топовый кит для пвп, хороший кх и многое другое! Чего же ты ждёшь? Присоединяйся к нам!";
+const adDefMsg2 = "!&c&lПриветик! Хочешь с кайфом провести время, но не знаешь как? Тогда тебе подойдёт клан &4&lChert&0&lHouse &c&l! У нас ты найдёшь хороший кх, топовый кит и уважение клана. Чтоб вступить в клан пиши /warp ChertHouse"
+const adDefMsg3 = "!&c&lХочешь в крутой клан с многими плюшками? Тогда тебе нужен клан &4&lChert&0&lHouse&c&l ! У нас ты не только найдёшь топовый кит для пвп и хороший кх, но и дс сервер! А так же у нас открыт набор на модераторов! /warp ChertHouse"
 const adMessages = [adDefMsg1, adDefMsg2, adDefMsg3];
-const blacklist = ["uzerchik", "Milaina", "Диего_санчез"];
+const blacklist = ["uzerchik", "Milaina", "Диего_санчез", "TimohaFriend638"];
 const cheat_check = "[system]: Пожайлуста прекратите читерить или вы будете забанены!";
 
 
@@ -49,8 +49,8 @@ function lookAtEntities(bot) {
 function sendAdvertisements(bot, adMsgs) {
   setInterval(() => {
     bot.chat("/clear");
-    bot.chat(adMsgs[getRandomNumber(0, adMsgs.length)]);
-  }, getRandomNumber(150000, 180000));
+    bot.chat(adMsgs[getRandomNumber(0, adMsgs.length-1)]);
+  }, getRandomNumber(140000, 180000));
 }
 
 function monitorPosition(bot, defCord, warp) {
