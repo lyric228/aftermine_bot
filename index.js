@@ -54,17 +54,20 @@ function sendAdvertisements(bot, adMsgs) {
 }
 
 function monitorPosition(bot, defCord, warp) {
-  if (!Array.isArray(defCord) || defCord.length !== 3) {
-    console.error("defCord должен быть массивом из трех элементов [x, y, z]");
-    return;
-  }
   setInterval(() => {
-    const { x, y, z } = bot.entity.position;
-
-    if (x !== defCord[0] || y !== defCord[1] || z !== defCord[2]) {
-      bot.chat(`/warp ${warp}`);  // fix
-    }
-  }, 1000);
+    bot.chat(`/warp ${warp}`);
+  }, 10*60*1000);
+  // if (!Array.isArray(defCord) || defCord.length !== 3) {
+  //   console.error("defCord должен быть массивом из трех элементов [x, y, z]");
+  //   return;
+  // }
+  // setInterval(() => {
+  //   const { x, y, z } = bot.entity.position;
+  //
+  //   if (x !== defCord[0] || y !== defCord[1] || z !== defCord[2]) {
+  //     bot.chat(`/warp ${warp}`);  // fix
+  //   }
+  // }, 1000);
 }
 
 function messagesMonitoring(position, jsonMsg, bot) {
