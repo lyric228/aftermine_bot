@@ -67,11 +67,11 @@ function messagesMonitoring(position, jsonMsg, bot) {
   // console.log(message);  // Лог сообщений
   const matchLeave = message.match(/› (.*?) покинул клан\./);
   const matchJoin = message.match(/› (.*?) присоеденился к клану\./);
-  if (matchJoin) {
+  if (matchJoin && matchJoin[1]) {
     const new_member = matchJoin[1];
     bot.chat(`/cc Добро пожаловать в клан, ${new_member}! Обязательно вступи в наш дискорд, там много всего интересного! Ссылка на дискорд находится в /c infо`);
   }
-  if (matchLeave) {
+  if (matchLeave && matchLeave[1]) {
     const leave_member = matchLeave[1];
     bot.chat(`/cc ${leave_member} выходит из клана, на штык его!`);
   }
