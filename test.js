@@ -1,48 +1,53 @@
-const mineflayer = require('mineflayer');
+const mineflayer = require("mineflayer");
+const { HttpProxyAgent } = require("http-proxy-agent");
+const fs = require("fs");
+const password = "!afterHuila00pidor3svocvoRus";
 
 
-function handleSpawn(bot, password, portal) {
+function getRandomProxy() {
+  // Функция для получения случайного прокси из файла
+  const proxies = fs.readFileSync('./proxies.txt', 'utf-8').split('\n').filter(line => line.trim() !== '');
+  const randomIndex = Math.floor(Math.random() * proxies.length);
+  return proxies[randomIndex];
+}
+
+function handleSpawn(bot, portal) {
+  // Функция для обработки спавна бота, то есть регистрации \ логина и захода в портал
   setTimeout(() => {
     bot.chat(`/reg ${password}`);
     bot.chat(`/login ${password}`);
-  }, 3000);
+  }, 1000);
 
   setTimeout(() => {
     bot.chat(`/${portal}`);
-  }, 3000);
+  }, 2000);
 
   console.log(`${bot.username} has spawned`);
 }
 
-function monitorPosition(bot, defCord, warp) {
-  setInterval(() => {
-    const { x, y, z } = bot.entity.position;
-    if (x !== defCord[0] || y !== defCord[1] || z !== defCord[2]) {
-      bot.chat(`/warp ${warp}`);
-      bot.chat('/c accept');
-    }
-  }, 1000);
-}
-
-function createBot(nickname, password, portal, warp, defCord) {
+function createBot(nickname, portal) {
+  // Функция для создания бота
+  const proxy = getRandomProxy();
+  const agent = new HttpProxyAgent(`http://${proxy}`);
   const bot = mineflayer.createBot({
-    host: 'mc.masedworld.net',
+    host: "mc.masedworld.net",
     port: 25565,
     username: nickname,
+    agent: agent,
   });
 
-  bot.on('spawn', () => handleSpawn(bot, password, portal));
-  bot.once('spawn', () => {
-    monitorPosition(bot, defCord, warp);
-  });
+  setTimeout(() => {
+    bot.end();
+  }, 60 * 60 * 1000);  // Рестарт бота раз в 1 час
 
-  bot.on('error', (err) => console.log(err));
-  bot.on('end', () => {
+  bot.on("spawn", () => handleSpawn(bot, portal));
+
+  bot.on("error", (err) => console.log(err));
+  bot.on("end", () => {
     console.log(`${nickname} - Reconnection...`);
-    createBot(nickname, password, portal, warp, defCord);
+    createBot(nickname, portal);
   });
 }
 
-for (let i = 0; i < 3; i++) {
-  createBot("evreiTupoi"+i, "!afterHuila00pidor3svocvoRus", "s4", "piska", [253.5, 83, 166.5]);
-}
+// Создание ботов
+for (let i = 0; i < 20; i++) createBot(`zaziza${i}`, "s7");
