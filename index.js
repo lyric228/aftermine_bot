@@ -5,7 +5,8 @@ const adDefMsg1 = "!&c&lПривет, друг! Хочешь побывать в
 const adDefMsg2 = "!&c&lПриветик! Хочешь с кайфом провести время, но не знаешь как? Тогда тебе подойдёт клан &4&lChert&0&lHouse &c&l! У нас ты найдёшь хороший кх, топовый кит и уважение клана. Чтоб вступить в клан пиши /warp CH или /warp ChertHouse"
 const adDefMsg3 = "!&c&lХочешь в крутой клан с многими плюшками? Тогда тебе нужен клан &4&lChert&0&lHouse&c&l ! У нас ты не только найдёшь топовый кит для пвп и хороший кх, но и дс сервер! А так же у нас открыт набор на модераторов! /warp CH или /warp ChertHouse"
 const adMessages = [adDefMsg1, adDefMsg2, adDefMsg3];
-let blacklist = ["uzerchik", "Milaina", "Диего_санчез", "TimohaFriend638", "0fansik", "menvixss", "pro7070", "affa", "alibaba12"];
+const password = "!afterHuila00pidor3svocvoRus";
+let blacklist = ["uzerchik", "Milaina", "Диего_санчез", "TimohaFriend638", "menvixss", "pro7070", "affa", "alibaba12", "ZLO_DEMON666"];
 let lastKilledPlayer = "";
 let lastKilledPlayerCount = 0;
 
@@ -14,7 +15,7 @@ function getRandomNumber(min, max) {
 }
 
 
-function handleSpawn(bot, password, portal) {
+function handleSpawn(bot, portal) {
   setTimeout(() => {
     bot.chat(`/reg ${password}`);
     bot.chat(`/login ${password}`);
@@ -55,24 +56,17 @@ function sendAdvertisements(bot, adMsgs) {
 
 function monitorPosition(bot, defCord, warp) {
   setInterval(() => {
-    bot.chat(`/warp ${warp}`);
-  }, 10*60*1000);
-  // if (!Array.isArray(defCord) || defCord.length !== 3) {
-  //   console.error("defCord должен быть массивом из трех элементов [x, y, z]");
-  //   return;
-  // }
-  // setInterval(() => {
-  //   const { x, y, z } = bot.entity.position;
-  //
-  //   if (x !== defCord[0] || y !== defCord[1] || z !== defCord[2]) {
-  //     bot.chat(`/warp ${warp}`);  // fix
-  //   }
-  // }, 1000);
+    let botPos = bot.entity.position;
+    console.log(botPos);
+    if (botPos[0] !== defCord[0] || botPos[1] !== defCord[1] || botPos[2] !== defCord[2]) {
+      bot.chat(`/warp ${warp}`);
+    }
+  }, 100);
 }
 
 function messagesMonitoring(position, jsonMsg, bot) {
   const message = `[${position}]: ${jsonMsg}`;
-  // console.log(message);  // Лог сообщений
+  console.log(message);  // Лог сообщений
   const matchLeave = message.match(/› (.*?) покинул клан\./);
   const matchJoin = message.match(/› (.*?) присоеденился к клану\./);
   const matchKdr = message.match(/убил игрока (\w+)/);
@@ -84,7 +78,6 @@ function messagesMonitoring(position, jsonMsg, bot) {
     const leave_member = matchLeave[1];
     bot.chat(`/cc ${leave_member} выходит из клана, на штык его!`);
   }
-  //console.log(lastKilledPlayer);
   if (matchKdr && matchKdr[1]) {
     const killedPlayer = matchKdr[1];
     console.log(killedPlayer);
@@ -103,7 +96,7 @@ function messagesMonitoring(position, jsonMsg, bot) {
   if (message.includes(cheatCheck)) bot.end();
 }
 
-function createBot(nickname, password, portal, warp, adMsgs, defCord) {
+function createBot(nickname, portal, warp, adMsgs, defCord) {
   const bot = mineflayer.createBot({
     host: "mc.masedworld.net",
     port: 25565,
@@ -114,7 +107,7 @@ function createBot(nickname, password, portal, warp, adMsgs, defCord) {
     bot.end();
   }, 60*60*1000);  // Рестарт бота раз в 1 час
 
-  bot.on("spawn", () => handleSpawn(bot, password, portal));
+  bot.on("spawn", () => handleSpawn(bot, portal));
 
   bot.on("message", (jsonMsg, position ) => messagesMonitoring(position, jsonMsg, bot));
 
@@ -127,11 +120,11 @@ function createBot(nickname, password, portal, warp, adMsgs, defCord) {
   bot.on('error', (err) => console.log(err));
   bot.on('end', () => {
     console.log(`${nickname} - Reconnection...`);
-    createBot(nickname, password, portal, warp, defCord);
+    createBot(nickname, portal, warp, defCord);
   });
 }
 // [system]: ›~dj_mintyPryanik покончил жизнь самоубийством.
 // [system]: playre_567890 убил игрока SadLyric111
-createBot("Kemper1ng", "!afterHuila00pidor3svocvoRus", "s2", "nf9akf30k", adMessages, [9105.5, 169, 10104.5])
-//createBot("SCPbotSH", "!afterHuila00pidor3svocvoRus", "s3", "nf9akf30k", adMessages, [-4871.5, 109, -3179.5])
-//createBot("Alfhelm", "!afterHuila00pidor3svocvoRus", "s7", "nf9akf30k", adMessages, [-10206.5, 159, -13028.5])
+//createBot("Kemper1ng", "s2", "nf9akf30k", adMessages, [9105.5, 169, 10104.5])
+//createBot("SCPbotSH", "s3", "nf9akf30k", adMessages, [-4871.5, 109, -3179.5])
+createBot("Alfhelm", "s7", "nf9akf30k", adMessages, [-10206.5, 159, -13028.5])
