@@ -8,7 +8,7 @@ const adMsgs = [
   "!&c&lХочешь в крутой клан с многими плюшками? Тогда тебе нужен клан &4&lChert&0&lHouse&c&l ! У нас ты не только найдёшь топовый кит для пвп и хороший кх, но и дс сервер! А так же у нас открыт набор на модераторов! /warp CH или /warp ChertHouse"
 ];
 const password = "!afterHuila00pidor3svocvoRus";
-let blacklist = ["uzerchik", "Milaina", "Диего_санчез", "TimohaFriend638", "0fansik", "menvixss", "pro7070", "affa", "alibaba12", "reizor", "IIe4e4Ka"];
+let blacklist = ["uzerchik", "Milaina", "Диего_санчез", "TimohaFriend638", "0fansik", "menvixss", "pro7070", "affa", "alibaba12", "reizor", "IIe4e4Ka", "menesixx"];
 let lastKilledPlayer = "";
 let lastKilledPlayerCount = 0;
 
