@@ -8,7 +8,7 @@ const adMsgs = [
   "!&c&lХочешь в крутой клан с многими плюшками? Тогда тебе нужен клан &4&lChert&0&lHouse&c&l ! У нас ты не только найдёшь топовый кит для пвп и хороший кх, но и дс сервер! А так же у нас открыт набор на модераторов! /warp CH или /warp ChertHouse"
 ];
 const password = "!afterHuila00pidor3svocvoRus";
-let blacklist = ["uzerchik", "Milaina", "Диего_санчез", "TimohaFriend638", "0fansik", "menvixss", "pro7070", "affa", "alibaba12"];
+let blacklist = ["uzerchik", "Milaina", "Диего_санчез", "TimohaFriend638", "0fansik", "menvixss", "pro7070", "affa", "alibaba12", "reizor", "IIe4e4Ka"];
 let lastKilledPlayer = "";
 let lastKilledPlayerCount = 0;
 
@@ -159,4 +159,5 @@ function createBot(nickname, portal, warp, defCord) {
 // Создание ботов
 createBot("Kemper1ng", "s2", "nf9akf30k", [9105.5, 169, 10104.5])
 createBot("SCPbotSH", "s3", "nf9akf30k", [-4871.5, 109, -3179.5])
-createBot("Alfhelm", "s7", "nf9akf30k", [-10206.5, 159, -13028.5])
+createBot("AntiKemper1ng", "s7", "nf9akf30k", [-10206.5, 159, -13028.5])
+//createBot("Alfhelm", "s7", "nf9akf30k", [-10206.5, 159, -13028.5])
