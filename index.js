@@ -160,4 +160,4 @@ function createBot(nickname, portal, warp, defCord) {
 createBot("Kemper1ng", "s2", "nf9akf30k", [9105.5, 169, 10104.5])
 createBot("SCPbotSH", "s3", "nf9akf30k", [-4871.5, 109, -3179.5])
 createBot("AntiKemper1ng", "s7", "nf9akf30k", [-10206.5, 159, -13028.5])
-//createBot("Alfhelm", "s7", "nf9akf30k", [-10206.5, 159, -13028.5])
+createBot("Alfhelm", "s5", "nf9akf30k", [-2542.5, 158, 11732.5])
