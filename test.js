@@ -21,17 +21,18 @@ function handleSpawn(bot, portal) {
   }, 2000);
 
   console.log(`${bot.username} has spawned`);
+  bot.chat("/warp huihui");
 }
 
 
-function extractTextFromChatMessage(chatMessage) {
-  // Функция для извлечения текста из объекта ChatMessage
-  if (typeof chatMessage === 'string') return chatMessage;
-
-  return chatMessage.extra
-    ? chatMessage.extra.map(extractTextFromChatMessage).join('')
-    : chatMessage.text || '';
-}
+// function extractTextFromChatMessage(chatMessage) {
+//   // Функция для извлечения текста из объекта ChatMessage
+//   if (typeof chatMessage === 'string') return chatMessage;
+//
+//   return chatMessage.extra
+//     ? chatMessage.extra.map(extractTextFromChatMessage).join('')
+//     : chatMessage.text || '';
+// }
 
 function createBot(nickname, portal) {
   const proxy = getRandomProxy();
@@ -42,7 +43,6 @@ function createBot(nickname, portal) {
     port: 25565,
     username: nickname,
     agent: agent,
-    connectTimeout: 30000,
   });
 
   bot.on("spawn", () => handleSpawn(bot, portal));
@@ -51,13 +51,13 @@ function createBot(nickname, portal) {
 
   bot.on("end", () => {
     console.log(`${nickname} - Reconnection...`);
-    createBot(nickname, portal);
+    //createBot(nickname, portal);
   });
 
-  bot.on("message", (message) => {
-    const extractedText = extractTextFromChatMessage(message);
-    //console.log("Received message:", extractedText);
-  });
+  // bot.on("message", (message) => {
+  //   const extractedText = extractTextFromChatMessage(message);
+  //   console.log("Received message:", extractedText);
+  // });
 
   setTimeout(() => {
     bot.end();
@@ -65,9 +65,4 @@ function createBot(nickname, portal) {
 }
 
 // Создание ботов
-for(let i = 0; i <= 10; i++) {
-  setTimeout(() => {
-    const botName = `zaziza${i}`;
-    createBot(botName, "s7");
-  }, 3000);
-}
+createBot("CandyCrush2", "s3");

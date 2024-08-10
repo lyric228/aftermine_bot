@@ -1,7 +1,7 @@
 const mineflayer = require("mineflayer");
 const { HttpProxyAgent } = require("http-proxy-agent");
 const fs = require("fs");
-const cheatCheck = "[system]: Пожайлуста прекратите читерить или вы будете забанены!";
+const cheatCheck = "Пожайлуста прекратите читерить или вы будете забанены!: Пожайлуста прекратите читерить или вы будете забанены!";
 const adMsgs = [
   "!&c&lПривет, друг! Хочешь побывать в клане, где была великая история? Тогда тебе сюда -> /warp CH или /warp ChertHouse ! У нас есть: топовый кит для пвп, хороший кх и многое другое! Чего же ты ждёшь? Присоединяйся к нам!",
   "!&c&lПриветик! Хочешь с кайфом провести время, но не знаешь как? Тогда тебе подойдёт клан &4&lChert&0&lHouse &c&l! У нас ты найдёшь хороший кх, топовый кит и уважение клана. Чтоб вступить в клан пиши /warp CH или /warp ChertHouse",
@@ -67,27 +67,24 @@ function sendAdvertisements(bot) {
   }, getRandomNumber(140000, 180000));
 }
 
+
 function monitorPosition(bot, defCord, warp) {
-  setInterval(() => {
-    let botPos = bot.entity.position;
-    if (Math.abs(botPos.x - defCord[0]) > 1 || Math.abs(botPos.y - defCord[1]) > 1 || Math.abs(botPos.z - defCord[2]) > 1) {
-      bot.chat(`/warp ${warp}`);
-    }
-  }, 1000);
+  let botPos = bot.entity.position;
+  if (Math.abs(botPos.x - defCord[0]) > 1 || Math.abs(botPos.y - defCord[1]) > 1 || Math.abs(botPos.z - defCord[2]) > 1) {
+    bot.chat(`/warp ${warp}`);
+  }
 }
 
 function messagesMonitoring(jsonMsg, bot) {
   const message = jsonMsg.text || '';
   const extra = jsonMsg.extra || [];
-
-
   let fullMessage = message;
   extra.forEach(part => {
-    fullMessage += part.text || '';
+    fullMessage += part.text || "";
   });
 
   // Обработка сообщений
-  const formattedMessage = `[${jsonMsg.position}]: ${fullMessage}`;
+  const formattedMessage = `${extra[0]}: ${fullMessage}`;
   const matchLeave = formattedMessage.match(/› (.*?) покинул клан\./);
   const matchJoin = formattedMessage.match(/› (.*?) присоеденился к клану\./);
   const matchKdr = formattedMessage.match(/убил игрока (\w+)/);
@@ -115,6 +112,7 @@ function messagesMonitoring(jsonMsg, bot) {
     }
   }
   if (formattedMessage.includes(cheatCheck)) bot.end();
+  console.log(formattedMessage);
 }
 
 function createBot(nickname, portal, warp, defCord) {
@@ -146,9 +144,8 @@ function createBot(nickname, portal, warp, defCord) {
     invitePlayers(bot);
     lookAtEntities(bot);
     sendAdvertisements(bot);
-    monitorPosition(bot, defCord, warp);
   });
-
+  bot.on("forcedMove", () => monitorPosition(bot, defCord, warp));
   bot.on("error", (err) => console.log(err));
   bot.on("end", () => {
     console.log(`${nickname} - Reconnection...`);
@@ -157,7 +154,7 @@ function createBot(nickname, portal, warp, defCord) {
 }
 
 // Создание ботов
-createBot("Kemper1ng", "s2", "nf9akf30k", [9105.5, 169, 10104.5])
-createBot("SCPbotSH", "s3", "nf9akf30k", [-4871.5, 109, -3179.5])
-createBot("AntiKemper1ng", "s7", "nf9akf30k", [-10206.5, 159, -13028.5])
-createBot("Alfhelm", "s5", "nf9akf30k", [-2542.5, 158, 11732.5])
+createBot("Kemper1ng", "s2", "nf9akf30k", [9105.5, 169, 10104.5]);
+createBot("SCPbotSH", "s3", "nf9akf30k", [-4871.5, 109, -3179.5]);
+createBot("AntiKemper1ng", "s7", "nf9akf30k", [-10206.5, 159, -13028.5]);
+createBot("Alfhelm", "s5", "nf9akf30k", [-2542.5, 158, 11732.5]);
