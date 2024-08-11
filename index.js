@@ -74,7 +74,7 @@ function sendAdvertisements(bot) {
   setInterval(() => {
     bot.chat("/clear");
     bot.chat(adMsgs[getRandomNumber(0, adMsgs.length - 1)]);
-  }, getRandomNumber(140000, 180000));
+  }, getRandomNumber(140000, 160000));
 }
 
 
