@@ -81,7 +81,7 @@ function sendAdvertisements(bot) {
 function messagesMonitoring(message, bot) {
   let fullMessage = extractTextFromChatMessage(message);
 
-  console.log(fullMessage);  // Парсинг чата для дебага
+  // console.log(fullMessage);  // Парсинг чата для дебага
 
   const matchLeave = fullMessage.match(/› (.*?) покинул клан\./);
   const matchJoin = fullMessage.match(/› (.*?) присоеденился к клану\./);
@@ -148,7 +148,7 @@ function createBot(nickname, portal, warp) {
 }
 
 // Создание ботов
-//createBot("Kemper1ng", "s2", allBotWarp);
+createBot("Kemper1ng", "s2", allBotWarp);
 createBot("SCPbotSH", "s3", allBotWarp);
-//createBot("AntiKemper1ng", "s7", allBotWarp);
-//createBot("Alfhelm", "s5", allBotWarp);
+createBot("AntiKemper1ng", "s7", allBotWarp);
+createBot("Alfhelm", "s5", allBotWarp);

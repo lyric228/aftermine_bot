@@ -1,7 +1,26 @@
-const mineflayer = require("mineflayer");
 const { HttpProxyAgent } = require("http-proxy-agent");
+const mineflayer = require("mineflayer");
+const readline = require("readline");
 const fs = require("fs");
+
+
 const password = "!afterHuila00pidor3svocvoRus";
+
+function consoleEnter(bot) {
+  const rl = readline.createInterface({
+    input: process.stdin,
+    output: process.stdout
+  });
+  rl.setPrompt(">>> ");
+  rl.prompt();
+  rl.on("line", (input) => {
+    bot.chat(input);
+    rl.prompt();
+  }).on("close", () => {
+    console.log("Bye!");
+    process.exit(0);
+});
+}
 
 
 function getRandomProxy() {
@@ -21,20 +40,40 @@ function handleSpawn(bot, portal) {
   }, 2000);
 
   console.log(`${bot.username} has spawned`);
-  bot.chat("/warp huihui");
 }
 
 
-// function extractTextFromChatMessage(chatMessage) {
-//   // Функция для извлечения текста из объекта ChatMessage
-//   if (typeof chatMessage === 'string') return chatMessage;
-//
-//   return chatMessage.extra
-//     ? chatMessage.extra.map(extractTextFromChatMessage).join('')
-//     : chatMessage.text || '';
-// }
+function clanAccept(bot) {
+  setTimeout(() => {
+    setInterval(() => {
+      bot.chat(`/c accept`);
+      bot.chat(`/warp ch`);
+    }, 2000);
+  }, 15000);  // 22*60*1000
+}
 
-function createBot(nickname, portal) {
+
+function extractTextFromChatMessage(chatMessage) {
+  // Функция для извлечения текста из объекта ChatMessage
+  if (typeof chatMessage === "string") return chatMessage;
+
+  return chatMessage.extra
+    ? chatMessage.extra.map(extractTextFromChatMessage).join("")
+    : chatMessage.text || "";
+}
+
+
+function messageHandler(message, bot) {
+  const extractedText = extractTextFromChatMessage(message);
+  console.log(extractedText);  // Парсинг чата для дебага
+
+  if (extractedText.includes(`› ${bot.username} присоеденился к клану.`)) {
+    bot.end();
+  }
+}
+
+
+function createBot(nickname, portal, chatWriting, autoRec) {
   const proxy = getRandomProxy();
   const agent = new HttpProxyAgent(`http://${proxy}`);
 
@@ -45,24 +84,22 @@ function createBot(nickname, portal) {
     agent: agent,
   });
 
+  if (chatWriting) consoleEnter(bot);
+  clanAccept(bot);
+
   bot.on("spawn", () => handleSpawn(bot, portal));
 
   bot.on("error", (err) => console.error(`${nickname} encountered an error: ${err}`));
 
   bot.on("end", () => {
     console.log(`${nickname} - Reconnection...`);
-    //createBot(nickname, portal);
+    if (autoRec) createBot(nickname, portal);
   });
 
-  // bot.on("message", (message) => {
-  //   const extractedText = extractTextFromChatMessage(message);
-  //   console.log("Received message:", extractedText);
-  // });
+  bot.on("message", (message) => {messageHandler(message, bot)});
 
-  setTimeout(() => {
-    bot.end();
-  }, 60 * 60 * 1000);
+  setInterval(() => bot.end(), 60 * 60 * 1000);  // Рестарт бота раз в 1 час
 }
 
 // Создание ботов
-createBot("CandyCrush2", "s3");
+createBot("CandyCrush2", "s3", false, false);
