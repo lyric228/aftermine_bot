@@ -1,13 +1,14 @@
 const mineflayer = require("mineflayer");
 const { HttpProxyAgent } = require("http-proxy-agent");
 const fs = require("fs");
-const cheatCheck = "Пожайлуста прекратите читерить или вы будете забанены!: Пожайлуста прекратите читерить или вы будете забанены!";
+const cheatCheck = "Пожайлуста прекратите читерить или вы будете забанены!";
 const adMsgs = [
   "!&c&lПривет, друг! Хочешь побывать в клане, где была великая история? Тогда тебе сюда -> /warp CH или /warp ChertHouse ! У нас есть: топовый кит для пвп, хороший кх и многое другое! Чего же ты ждёшь? Присоединяйся к нам!",
   "!&c&lПриветик! Хочешь с кайфом провести время, но не знаешь как? Тогда тебе подойдёт клан &4&lChert&0&lHouse &c&l! У нас ты найдёшь хороший кх, топовый кит и уважение клана. Чтоб вступить в клан пиши /warp CH или /warp ChertHouse",
   "!&c&lХочешь в крутой клан с многими плюшками? Тогда тебе нужен клан &4&lChert&0&lHouse&c&l ! У нас ты не только найдёшь топовый кит для пвп и хороший кх, но и дс сервер! А так же у нас открыт набор на модераторов! /warp CH или /warp ChertHouse"
 ];
 const password = "!afterHuila00pidor3svocvoRus";
+const allBotWarp = "nf9akf30k"
 let blacklist = ["uzerchik", "Milaina", "Диего_санчез", "TimohaFriend638", "0fansik", "menvixss", "pro7070", "affa", "alibaba12", "reizor", "IIe4e4Ka", "menesixx"];
 let lastKilledPlayer = "";
 let lastKilledPlayerCount = 0;
@@ -17,9 +18,18 @@ function getRandomNumber(min, max) {
   return Math.floor(Math.random() * (max - min + 1)) + min;
 }
 
+function extractTextFromChatMessage(chatMessage) {
+  // Функция для извлечения текста из объекта ChatMessage
+  if (typeof chatMessage === "string") return chatMessage;
+
+  return chatMessage.extra
+    ? chatMessage.extra.map(extractTextFromChatMessage).join("")
+    : chatMessage.text || "";
+}
+
 function getRandomProxy() {
   // Функция для получения случайного прокси из файла
-  const proxies = fs.readFileSync('./proxies.txt', 'utf-8').split('\n').filter(line => line.trim() !== '');
+  const proxies = fs.readFileSync("./proxies.txt", "utf-8").split('\n').filter(line => line.trim() !== "");
   const randomIndex = Math.floor(Math.random() * proxies.length);
   return proxies[randomIndex];
 }
@@ -68,35 +78,26 @@ function sendAdvertisements(bot) {
 }
 
 
-function monitorPosition(bot, defCord, warp) {
-  let botPos = bot.entity.position;
-  if (Math.abs(botPos.x - defCord[0]) > 1 || Math.abs(botPos.y - defCord[1]) > 1 || Math.abs(botPos.z - defCord[2]) > 1) {
-    bot.chat(`/warp ${warp}`);
-  }
-}
+function messagesMonitoring(message, bot) {
+  let fullMessage = extractTextFromChatMessage(message);
 
-function messagesMonitoring(jsonMsg, bot) {
-  const message = jsonMsg.text || '';
-  const extra = jsonMsg.extra || [];
-  let fullMessage = message;
-  extra.forEach(part => {
-    fullMessage += part.text || "";
-  });
+  console.log(fullMessage);  // Парсинг чата для дебага
 
-  // Обработка сообщений
-  const formattedMessage = `${extra[0]}: ${fullMessage}`;
-  const matchLeave = formattedMessage.match(/› (.*?) покинул клан\./);
-  const matchJoin = formattedMessage.match(/› (.*?) присоеденился к клану\./);
-  const matchKdr = formattedMessage.match(/убил игрока (\w+)/);
+  const matchLeave = fullMessage.match(/› (.*?) покинул клан\./);
+  const matchJoin = fullMessage.match(/› (.*?) присоеденился к клану\./);
+  const matchKdr = fullMessage.match(/убил игрока (\w+)/);
+
 
   if (matchJoin && matchJoin[1]) {
     const new_member = matchJoin[1];
     bot.chat(`/cc Добро пожаловать в клан, ${new_member}! Обязательно вступи в наш дискорд, там много всего интересного! Ссылка на дискорд находится в /c infо`);
   }
+
   if (matchLeave && matchLeave[1]) {
     const leave_member = matchLeave[1];
     bot.chat(`/cc ${leave_member} выходит из клана, на штык его!`);
   }
+
   if (matchKdr && matchKdr[1]) {
     const killedPlayer = matchKdr[1];
     if (lastKilledPlayerCount >= 5) {
@@ -105,17 +106,19 @@ function messagesMonitoring(jsonMsg, bot) {
       lastKilledPlayerCount = 0;
       lastKilledPlayer = "";
     }
+
     if (killedPlayer === lastKilledPlayer) lastKilledPlayerCount++;
+
     else {
       lastKilledPlayer = killedPlayer;
       lastKilledPlayerCount = 0;
     }
   }
-  if (formattedMessage.includes(cheatCheck)) bot.end();
-  console.log(formattedMessage);
+
+  if (fullMessage === cheatCheck) bot.end();
 }
 
-function createBot(nickname, portal, warp, defCord) {
+function createBot(nickname, portal, warp) {
   // Функция для создания бота
   const proxy = getRandomProxy();
   const agent = new HttpProxyAgent(`http://${proxy}`);
@@ -126,35 +129,26 @@ function createBot(nickname, portal, warp, defCord) {
     agent: agent,
   });
 
-  setTimeout(() => {
-    bot.end();
-  }, 60 * 60 * 1000);  // Рестарт бота раз в 1 час
+  setTimeout(() =>  bot.end(), 60 * 60 * 1000);  // Рестарт бота раз в 1 час
 
   bot.on("spawn", () => handleSpawn(bot, portal));
-  bot.on("message", (jsonMsg) => {
-    try {
-      messagesMonitoring(jsonMsg, bot);
-    } catch (error) {
-      console.error("Error processing message:", jsonMsg);
-      console.error(error);
-    }
-  });
+  bot.on("message", (message) => { messagesMonitoring(message, bot); });
 
   bot.once("spawn", () => {
     invitePlayers(bot);
     lookAtEntities(bot);
     sendAdvertisements(bot);
   });
-  bot.on("forcedMove", () => monitorPosition(bot, defCord, warp));
+  bot.on("forcedMove", () => bot.chat(`/warp ${warp}`));
   bot.on("error", (err) => console.log(err));
   bot.on("end", () => {
     console.log(`${nickname} - Reconnection...`);
-    createBot(nickname, portal, warp, defCord);
+    createBot(nickname, portal, warp);
   });
 }
 
 // Создание ботов
-createBot("Kemper1ng", "s2", "nf9akf30k", [9105.5, 169, 10104.5]);
-createBot("SCPbotSH", "s3", "nf9akf30k", [-4871.5, 109, -3179.5]);
-createBot("AntiKemper1ng", "s7", "nf9akf30k", [-10206.5, 159, -13028.5]);
-createBot("Alfhelm", "s5", "nf9akf30k", [-2542.5, 158, 11732.5]);
+//createBot("Kemper1ng", "s2", allBotWarp);
+createBot("SCPbotSH", "s3", allBotWarp);
+//createBot("AntiKemper1ng", "s7", allBotWarp);
+//createBot("Alfhelm", "s5", allBotWarp);
