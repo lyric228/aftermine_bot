@@ -129,7 +129,8 @@ function createBot(nickname, portal, warp) {
     agent: agent,
   });
 
-  setTimeout(() =>  bot.end(), 60 * 60 * 1000);  // Рестарт бота раз в 1 час
+  setInterval(() =>  bot.end(), 60 * 60 * 1000);  // Рестарт бота раз в 1 час
+  setInterval(() =>  bot.chat(`/warp ${warp}`), 10 * 60 * 1000);
 
   bot.on("spawn", () => handleSpawn(bot, portal));
   bot.on("message", (message) => { messagesMonitoring(message, bot); });

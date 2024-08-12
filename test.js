@@ -6,6 +6,7 @@ const fs = require("fs");
 
 const password = "!afterHuila00pidor3svocvoRus";
 
+
 function consoleEnter(bot) {
   const rl = readline.createInterface({
     input: process.stdin,
@@ -44,12 +45,11 @@ function handleSpawn(bot, portal) {
 
 
 function clanAccept(bot) {
-  setTimeout(() => {
-    setInterval(() => {
-      bot.chat(`/c accept`);
-      bot.chat(`/warp ch`);
-    }, 2000);
-  }, 15000);  // 22*60*1000
+  setTimeout(() => console.log("Launched!"), 21*60*1000);
+  setInterval(() => {
+    bot.chat("/c accept");
+    bot.chat("/warp ch");
+  }, 2000);
 }
 
 
@@ -65,11 +65,9 @@ function extractTextFromChatMessage(chatMessage) {
 
 function messageHandler(message, bot) {
   const extractedText = extractTextFromChatMessage(message);
-  console.log(extractedText);  // Парсинг чата для дебага
+  // console.log(extractedText);  // Парсинг чата для дебага
 
-  if (extractedText.includes(`› ${bot.username} присоеденился к клану.`)) {
-    bot.end();
-  }
+  if (extractedText.includes(`› ${bot.username} присоеденился к клану.`)) bot.end();
 }
 
 
@@ -85,21 +83,51 @@ function createBot(nickname, portal, chatWriting, autoRec) {
   });
 
   if (chatWriting) consoleEnter(bot);
-  clanAccept(bot);
 
   bot.on("spawn", () => handleSpawn(bot, portal));
 
   bot.on("error", (err) => console.error(`${nickname} encountered an error: ${err}`));
 
   bot.on("end", () => {
-    console.log(`${nickname} - Reconnection...`);
-    if (autoRec) createBot(nickname, portal);
+    if (!autoRec) console.log(`${nickname} - Leaved...`);
+    else {
+      console.log(`${nickname} - Reconnection...`);
+      createBot(nickname, portal);
+    }
   });
 
   bot.on("message", (message) => {messageHandler(message, bot)});
 
-  setInterval(() => bot.end(), 60 * 60 * 1000);  // Рестарт бота раз в 1 час
+  clanAccept(bot);
 }
 
 // Создание ботов
-createBot("CandyCrush2", "s3", false, false);
+// for (let i = 0; i < 15; i++) {
+//   setTimeout(() => {
+//     createBot(`CannonadeDegenhart${i}`, "s3", false, false);
+//   }, 1000);  // Рестарт бота раз в 1 час
+// }
+
+// createBot("CandyCrush0", "s3", false, false);
+// setTimeout(() => {}, 1000);
+// createBot("CandyCrush1", "s3", false, false);
+
+// createBot("CandyCrush2", "s3", false, false);
+// setTimeout(() => {}, 1000);
+// createBot("CandyCrush3", "s3", false, false);
+
+// createBot("CandyCrush4", "s3", false, false);
+// setTimeout(() => {}, 1000);
+// createBot("CandyCrush5", "s3", false, false);
+
+// createBot("CandyCrush6", "s3", false, false);
+// setTimeout(() => {}, 1000);
+// createBot("Zazaka123", "s3", false, false);
+
+// createBot("Pizdoliz888", "s3", false, false);
+// setTimeout(() => {}, 1000);
+// createBot("Pizdoliz889", "s3", false, false);
+
+// createBot("Pizdoliz890", "s3", false, false);
+// setTimeout(() => {}, 1000);
+// createBot("Pizdoliz891", "s3", false, false);
