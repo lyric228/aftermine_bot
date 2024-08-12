@@ -7,8 +7,9 @@ const adMsgs = [
   "!&c&lПриветик! Хочешь с кайфом провести время, но не знаешь как? Тогда тебе подойдёт клан &4&lChert&0&lHouse &c&l! У нас ты найдёшь хороший кх, топовый кит и уважение клана. Чтоб вступить в клан пиши /warp CH или /warp ChertHouse",
   "!&c&lХочешь в крутой клан с многими плюшками? Тогда тебе нужен клан &4&lChert&0&lHouse&c&l ! У нас ты не только найдёшь топовый кит для пвп и хороший кх, но и дс сервер! А так же у нас открыт набор на модераторов! /warp CH или /warp ChertHouse"
 ];
+const unterMsg = "/cc А вы знали, что афтердарк - хуйня? Глава у них школьник, который сосет хуй, а также персонал у них полная хуйня. Если вы не хотите быть хуеглотом, то смело оставайтесь у нас и получайте нашу поддержку.";
 const password = "!afterHuila00pidor3svocvoRus";
-const allBotWarp = "nf9akf30k"
+const allBotWarp = "nf9akf30k";
 let blacklist = ["uzerchik", "Milaina", "Диего_санчез", "TimohaFriend638", "0fansik", "menvixss", "pro7070", "affa", "alibaba12", "reizor", "IIe4e4Ka", "menesixx"];
 let lastKilledPlayer = "";
 let lastKilledPlayerCount = 0;
@@ -81,7 +82,7 @@ function sendAdvertisements(bot) {
 function messagesMonitoring(message, bot) {
   let fullMessage = extractTextFromChatMessage(message);
 
-  // console.log(fullMessage);  // Парсинг чата для дебага
+  console.log(fullMessage);  // Парсинг чата для дебага
 
   const matchLeave = fullMessage.match(/› (.*?) покинул клан\./);
   const matchJoin = fullMessage.match(/› (.*?) присоеденился к клану\./);
@@ -116,6 +117,7 @@ function messagesMonitoring(message, bot) {
   }
 
   if (fullMessage === cheatCheck) bot.end();
+  if (fullMessage.includes(": afterdark") && fullMessage.includes("КЛАН:")) bot.chat(unterMsg);
 }
 
 function createBot(nickname, portal, warp) {
@@ -149,7 +151,7 @@ function createBot(nickname, portal, warp) {
 }
 
 // Создание ботов
-createBot("Kemper1ng", "s2", allBotWarp);
+//createBot("Kemper1ng", "s2", allBotWarp);
 createBot("SCPbotSH", "s3", allBotWarp);
-createBot("AntiKemper1ng", "s7", allBotWarp);
-createBot("Alfhelm", "s5", allBotWarp);
+//createBot("AntiKemper1ng", "s7", allBotWarp);
+//createBot("Alfhelm", "s5", allBotWarp);

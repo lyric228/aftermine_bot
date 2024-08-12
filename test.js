@@ -108,26 +108,31 @@ function createBot(nickname, portal, chatWriting, autoRec) {
 //   }, 1000);  // Рестарт бота раз в 1 час
 // }
 
-// createBot("CandyCrush0", "s3", false, false);
+// createBot("CandyCrush0", "s5", false, false);
 // setTimeout(() => {}, 1000);
-// createBot("CandyCrush1", "s3", false, false);
+// createBot("CandyCrush1", "s5", false, false);
 
-// createBot("CandyCrush2", "s3", false, false);
 // setTimeout(() => {}, 1000);
-// createBot("CandyCrush3", "s3", false, false);
+// createBot("CandyCrush2", "s5", false, false);
+// setTimeout(() => {}, 1000);
+// createBot("CandyCrush3", "s5", false, false);
 
-// createBot("CandyCrush4", "s3", false, false);
 // setTimeout(() => {}, 1000);
-// createBot("CandyCrush5", "s3", false, false);
+// createBot("CandyCrush4", "s5", false, false);
+// setTimeout(() => {}, 1000);
+// createBot("Zazozka", "s5", false, false);
 
-// createBot("CandyCrush6", "s3", false, false);
 // setTimeout(() => {}, 1000);
-// createBot("Zazaka123", "s3", false, false);
+// createBot("Carboniferous", "s5", false, false);
+// setTimeout(() => {}, 1000);
+// createBot("Zazaka123", "s5", false, false);
 
-// createBot("Pizdoliz888", "s3", false, false);
-// setTimeout(() => {}, 1000);
-// createBot("Pizdoliz889", "s3", false, false);
+setTimeout(() => {}, 1000);
+createBot("TurboRear23", "s5", false, false);
+setTimeout(() => {}, 1000);
+createBot("MonkeyShot1", "s5", false, false);
 
-// createBot("Pizdoliz890", "s3", false, false);
 // setTimeout(() => {}, 1000);
-// createBot("Pizdoliz891", "s3", false, false);
+// createBot("Pizdoliz890", "s5", false, false);
+// setTimeout(() => {}, 1000);
+// createBot("Pizdoliz891", "s5", false, false);
