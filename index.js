@@ -82,7 +82,7 @@ function sendAdvertisements(bot) {
 function messagesMonitoring(message, bot) {
   let fullMessage = extractTextFromChatMessage(message);
 
-  console.log(fullMessage);  // Парсинг чата для дебага
+  // console.log(fullMessage);  // Парсинг чата для дебага
 
   const matchLeave = fullMessage.match(/› (.*?) покинул клан\./);
   const matchJoin = fullMessage.match(/› (.*?) присоеденился к клану\./);
