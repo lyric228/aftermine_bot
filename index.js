@@ -1,6 +1,9 @@
-const mineflayer = require("mineflayer");
 const { HttpProxyAgent } = require("http-proxy-agent");
+const mineflayer = require("mineflayer");
+const readline = require("readline");
 const fs = require("fs");
+
+
 const cheatCheck = "Пожайлуста прекратите читерить или вы будете забанены!";
 const adMsgs = [
   "!&c&lПривет, друг! Хочешь побывать в клане, где была великая история? Тогда тебе сюда -> /warp CH или /warp ChertHouse ! У нас есть: топовый кит для пвп, хороший кх и многое другое! Чего же ты ждёшь? Присоединяйся к нам!",
@@ -8,19 +11,36 @@ const adMsgs = [
   "!&c&lХочешь в крутой клан с многими плюшками? Тогда тебе нужен клан &4&lChert&0&lHouse&c&l ! У нас ты не только найдёшь топовый кит для пвп и хороший кх, но и дс сервер! А так же у нас открыт набор на модераторов! /warp CH или /warp ChertHouse"
 ];
 const unterMsg = "/cc А вы знали, что афтердарк - хуйня? Глава у них школьник, который сосет хуй, а также персонал у них полная хуйня. Если вы не хотите быть хуеглотом, то смело оставайтесь у нас и получайте нашу поддержку.";
-const password = "!afterHuila00pidor3svocvoRus";
+const defPassword = "!afterHuila00pidor3svocvoRus";
 const allBotWarp = "nf9akf30k";
-let blacklist = ["uzerchik", "Milaina", "Диего_санчез", "TimohaFriend638", "0fansik", "menvixss", "pro7070", "affa", "alibaba12", "reizor", "IIe4e4Ka", "menesixx"];
+let blacklist = ["uzerchik", "Milaina", "Диего_санчез", "TimohaFriend638", "menvixss", "pro7070", "affa", "alibaba12", "reizor", "menesixx"];
 let lastKilledPlayer = "";
 let lastKilledPlayerCount = 0;
+
 
 function getRandomNumber(min, max) {
   // Функция для генерации рандомного числа
   return Math.floor(Math.random() * (max - min + 1)) + min;
 }
 
+function consoleEnter(bot) {
+  const rl = readline.createInterface({
+    input: process.stdin,
+    output: process.stdout
+  });
+  rl.setPrompt(">>> ");
+  rl.prompt();
+  rl.on("line", (input) => {
+    bot._client.chat(input);
+    rl.prompt();
+  }).on("close", () => {
+    console.log("Bye!");
+    process.exit(0);
+});
+}
+
 function extractTextFromChatMessage(chatMessage) {
-  // Функция для извлечения текста из объекта ChatMessage
+  // Функция для форматирования текста из объекта ChatMessage в более удобный и читаемый вид
   if (typeof chatMessage === "string") return chatMessage;
 
   return chatMessage.extra
@@ -31,19 +51,19 @@ function extractTextFromChatMessage(chatMessage) {
 function getRandomProxy() {
   // Функция для получения случайного прокси из файла
   const proxies = fs.readFileSync("./proxies.txt", "utf-8").split('\n').filter(line => line.trim() !== "");
-  const randomIndex = Math.floor(Math.random() * proxies.length);
+  const randomIndex = getRandomNumber(0, adMsgs.length - 1)
   return proxies[randomIndex];
 }
 
-function handleSpawn(bot, portal) {
-  // Функция для обработки спавна бота, то есть регистрации \ логина и захода в портал
+function handleSpawn(bot, portal, password) {
+  // Функция для логина и захода в портал при спавне бота
   setTimeout(() => {
-    bot.chat(`/reg ${password}`);
-    bot.chat(`/login ${password}`);
-  }, 1000);
+    bot._client.chat(`/reg ${password}`);
+    bot._client.chat(`/login ${password}`);
+  }, 2000);
 
   setTimeout(() => {
-    bot.chat(`/${portal}`);
+    bot._client.chat(`/${portal}`);
   }, 2000);
 
   console.log(`${bot.username} has spawned`);
@@ -52,10 +72,16 @@ function handleSpawn(bot, portal) {
 function invitePlayers(bot) {
   // Функция для приглашения ближайшего игрока в клан
   setInterval(() => {
-    const closestPlayer = bot.nearestEntity(entity => entity.type === "player");
-    if (closestPlayer && !blacklist.includes(closestPlayer.username)) {
-      bot.chat(`/c invite ${closestPlayer.username}`);
+    try {
+      const closestPlayer = bot.nearestEntity(entity => entity.type === "player");
+      if (closestPlayer && !blacklist.includes(closestPlayer.username)) {
+        bot._client.chat(`/c invite ${closestPlayer.username}`);
+      }
+    } catch (error) {
+      bot.end("An error has occurred");
+      console.log(error);
     }
+
   }, getRandomNumber(1000, 15000));
 }
 
@@ -73,8 +99,10 @@ function lookAtEntities(bot) {
 function sendAdvertisements(bot) {
   // Функция для рассылки рандомного сообщения рекламы клана в глобальный чат
   setInterval(() => {
-    bot.chat("/clear");
-    bot.chat(adMsgs[getRandomNumber(0, adMsgs.length - 1)]);
+    bot._client.chat("/heal");
+    bot._client.chat(`/disarmtroll ${bot.username}`);
+    bot._client.chat("/clear");
+    bot._client.chat(adMsgs[getRandomNumber(0, adMsgs.length - 1)]);
   }, getRandomNumber(140000, 160000));
 }
 
@@ -91,18 +119,18 @@ function messagesMonitoring(message, bot) {
 
   if (matchJoin && matchJoin[1]) {
     const new_member = matchJoin[1];
-    bot.chat(`/cc Добро пожаловать в клан, ${new_member}! Обязательно вступи в наш дискорд, там много всего интересного! Ссылка на дискорд находится в /c infо`);
+    bot._client.chat(`/cc Добро пожаловать в клан, ${new_member}! Обязательно вступи в наш дискорд, там много всего интересного! Ссылка на дискорд находится в /c infо`);
   }
 
   if (matchLeave && matchLeave[1]) {
     const leave_member = matchLeave[1];
-    bot.chat(`/cc ${leave_member} выходит из клана, на штык его!`);
+    bot._client.chat(`/cc ${leave_member} выходит из клана, на штык его!`);
   }
 
   if (matchKdr && matchKdr[1]) {
     const killedPlayer = matchKdr[1];
     if (lastKilledPlayerCount >= 5) {
-      bot.chat(`/c kick ${killedPlayer}`);
+      bot._client.chat(`/c kick ${killedPlayer}`);
       blacklist.push(killedPlayer);
       lastKilledPlayerCount = 0;
       lastKilledPlayer = "";
@@ -117,24 +145,25 @@ function messagesMonitoring(message, bot) {
   }
 
   if (fullMessage === cheatCheck) bot.end();
-  if (fullMessage.includes(": afterdark") && fullMessage.includes("КЛАН:")) bot.chat(unterMsg);
+  if (fullMessage.includes(": afterdark") && fullMessage.includes("КЛАН:")) bot._client.chat(unterMsg);
 }
 
-function createBot(nickname, portal, warp) {
+function createBot(nickname, portal, warp = allBotWarp, chatWriting = false, password = defPassword, host = "mc.masedworld.net", port = 25565) {
   // Функция для создания бота
   const proxy = getRandomProxy();
   const agent = new HttpProxyAgent(`http://${proxy}`);
   const bot = mineflayer.createBot({
-    host: "mc.masedworld.net",
-    port: 25565,
+    host: host,
+    port: port,
     username: nickname,
     agent: agent,
   });
 
   setInterval(() =>  bot.end(), 60 * 60 * 1000);  // Рестарт бота раз в 1 час
-  setInterval(() =>  bot.chat(`/warp ${warp}`), 10 * 60 * 1000);
+  setInterval(() =>  bot._client.chat(`/warp ${warp}`), 3 * 60 * 1000);
+  if (chatWriting) consoleEnter(bot);
 
-  bot.on("spawn", () => handleSpawn(bot, portal));
+  bot.on("spawn", () => handleSpawn(bot, portal, password));
   bot.on("message", (message) => { messagesMonitoring(message, bot); });
 
   bot.once("spawn", () => {
@@ -142,8 +171,8 @@ function createBot(nickname, portal, warp) {
     lookAtEntities(bot);
     sendAdvertisements(bot);
   });
-  bot.on("forcedMove", () => bot.chat(`/warp ${warp}`));
-  bot.on("error", (err) => console.log(err));
+  bot.on("forcedMove", () => bot._client.chat(`/warp ${warp}`));
+  bot.on("error", (err) => bot.end(`An error has occurred ${err}`));
   bot.on("end", () => {
     console.log(`${nickname} - Reconnection...`);
     createBot(nickname, portal, warp);
@@ -151,7 +180,7 @@ function createBot(nickname, portal, warp) {
 }
 
 // Создание ботов
-createBot("Kemper1ng", "s2", allBotWarp);
-createBot("SCPbotSH", "s3", allBotWarp);
-createBot("AntiKemper1ng", "s7", allBotWarp);
-createBot("Alfhelm", "s5", allBotWarp);
+createBot("AntiKemper1ng", "s7");
+createBot("Kemper1ng", "s2");
+createBot("SCPbotSH", "s3");
+createBot("Alfhelm", "s5");

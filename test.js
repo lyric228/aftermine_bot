@@ -5,6 +5,7 @@ const fs = require("fs");
 
 
 const password = "!afterHuila00pidor3svocvoRus";
+let botList = [];
 
 
 function consoleEnter(bot) {
@@ -21,6 +22,17 @@ function consoleEnter(bot) {
     console.log("Bye!");
     process.exit(0);
 });
+}
+
+
+function generateRandomString(length = 10) {
+  const characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+  let result = "";
+  for (let i = 0; i < length; i++) {
+    const randomIndex = Math.floor(Math.random() * characters.length);
+    result += characters[randomIndex];
+  }
+  return result;
 }
 
 
@@ -41,6 +53,7 @@ function handleSpawn(bot, portal) {
   }, 2000);
 
   console.log(`${bot.username} has spawned`);
+  bot.chat("/warp jijih")  // Авто возвращение на варп при смерти
 }
 
 
@@ -71,7 +84,7 @@ function messageHandler(message, bot) {
 }
 
 
-function createBot(nickname, portal, chatWriting, autoRec) {
+function createBot(nickname, portal, chatWriting = false, autoRec = false, listBot = false, clanBot = true) {
   const proxy = getRandomProxy();
   const agent = new HttpProxyAgent(`http://${proxy}`);
 
@@ -81,8 +94,10 @@ function createBot(nickname, portal, chatWriting, autoRec) {
     username: nickname,
     agent: agent,
   });
-
+  setInterval(() => {bot.chat("/warp jijih")}, 60*1000);
   if (chatWriting) consoleEnter(bot);
+  if (listBot) botList.push(bot);
+  if (clanBot) clanAccept(bot);
 
   bot.on("spawn", () => handleSpawn(bot, portal));
 
@@ -97,42 +112,24 @@ function createBot(nickname, portal, chatWriting, autoRec) {
   });
 
   bot.on("message", (message) => {messageHandler(message, bot)});
-
-  clanAccept(bot);
 }
 
+
+function createMultiBot(count, portal, clanBot, autoRec = false, multiSendMessage = false, nicknameLength = 8) {
+  for (let i = 0; i < count; i++) {
+    setTimeout( () => createBot(generateRandomString(nicknameLength), portal, false, autoRec, multiSendMessage, clanBot), 1000);
+  }
+}
+
+function sendMultiMessages(botList, message) {
+  for (let i = 0; i < botList.length; i++) {
+    botList[i].chat(message);
+  }
+}
+
+
 // Создание ботов
-// for (let i = 0; i < 15; i++) {
-//   setTimeout(() => {
-//     createBot(`CannonadeDegenhart${i}`, "s3", false, false);
-//   }, 1000);  // Рестарт бота раз в 1 час
-// }
-
-// createBot("CandyCrush0", "s5", false, false);
-// setTimeout(() => {}, 1000);
-// createBot("CandyCrush1", "s5", false, false);
-
-// setTimeout(() => {}, 1000);
-// createBot("CandyCrush2", "s5", false, false);
-// setTimeout(() => {}, 1000);
-// createBot("CandyCrush3", "s5", false, false);
-
-// setTimeout(() => {}, 1000);
-// createBot("CandyCrush4", "s5", false, false);
-// setTimeout(() => {}, 1000);
-// createBot("Zazozka", "s5", false, false);
-
-// setTimeout(() => {}, 1000);
-// createBot("Carboniferous", "s5", false, false);
-// setTimeout(() => {}, 1000);
-// createBot("Zazaka123", "s5", false, false);
-
-setTimeout(() => {}, 1000);
-createBot("TurboRear23", "s5", false, false);
-setTimeout(() => {}, 1000);
-createBot("MonkeyShot1", "s5", false, false);
-
-// setTimeout(() => {}, 1000);
-// createBot("Pizdoliz890", "s5", false, false);
-// setTimeout(() => {}, 1000);
-// createBot("Pizdoliz891", "s5", false, false);
+setTimeout(() => console.log(">>> "), 5000);
+createMultiBot(3, "s7", false, true, true);
+// setTimeout(() => console.log(">>> "), 15000);
+// sendMultiMessages(botList, "!бубубубабабыабабба")
