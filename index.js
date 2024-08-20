@@ -4,7 +4,6 @@ const readline = require("readline");
 const fs = require("fs");
 
 
-const cheatCheck = "Пожайлуста прекратите читерить или вы будете забанены!";
 const adMsgs = [
   "!&c&lПривет, друг! Хочешь побывать в клане, где была великая история? Тогда тебе сюда -> /warp CH или /warp ChertHouse ! У нас есть: топовый кит для пвп, хороший кх и многое другое! Чего же ты ждёшь? Присоединяйся к нам!",
   "!&c&lПриветик! Хочешь с кайфом провести время, но не знаешь как? Тогда тебе подойдёт клан &4&lChert&0&lHouse &c&l! У нас ты найдёшь хороший кх, топовый кит и уважение клана. Чтоб вступить в клан пиши /warp CH или /warp ChertHouse",
@@ -13,16 +12,65 @@ const adMsgs = [
 const unterMsg = "/cc А вы знали, что афтердарк - хуйня? Глава у них школьник, который сосет хуй, а также персонал у них полная хуйня. Если вы не хотите быть хуеглотом, то смело оставайтесь у нас и получайте нашу поддержку.";
 const defPassword = "!afterHuila00pidor3svocvoRus";
 const allBotWarp = "nf9akf30k";
-let blacklist = ["uzerchik", "Milaina", "Диего_санчез", "TimohaFriend638", "menvixss", "pro7070", "affa", "alibaba12", "reizor", "menesixx"];
-let lastKilledPlayer = "";
-let lastKilledPlayerCount = 0;
+let blacklist = loadBlacklist();
+let playerDeaths = loadDeaths()
+
+// Функция для сохранения данных в черный список
+function saveBlacklist(blacklist) {
+  const text = blacklist.join("\n");
+  fs.writeFileSync("blacklist.txt", text);
+}
+
+// Функция для загрузки данных из черного списка
+function loadBlacklist() {
+  try {
+    const text = fs.readFileSync("blacklist.txt", "utf8");
+    return text.split("\n");
+  } catch (err) {
+    if (err.code === "ENOENT") return [];
+  }
+}
 
 
+// Функция для сохранения данных о смертях
+function saveDeaths() {
+  const jsonString = JSON.stringify(playerDeaths);
+  fs.writeFileSync("deaths.json", jsonString);
+}
+
+// Функция для загрузки данных о смертях
+function loadDeaths() {
+  try {
+    const jsonString = fs.readFileSync("deaths.json", "utf8");
+    return JSON.parse(jsonString);
+  } catch (err) {
+    if (err.code === "ENOENT") return {};
+  }
+}
+
+// Функция для изменения смертей по нику
+function countDie(nickname) {
+  if (playerDeaths[nickname] == null) {
+    playerDeaths[nickname] = 0;
+  }
+  playerDeaths[nickname] += 1;
+}
+
+//
+function writeClanLog(text) {
+  const date = new Date().toLocaleString();
+  const logText = `${date}: ${text}\n`;
+  fs.appendFile("ClanLog.txt", logText, (err) => {
+    if (err) console.error(err);
+  });
+}
+
+// Функция для генерации рандомного числа
 function getRandomNumber(min, max) {
-  // Функция для генерации рандомного числа
   return Math.floor(Math.random() * (max - min + 1)) + min;
 }
 
+// Функция для отправки сообщений в чат через консоль от лица бота
 function consoleEnter(bot) {
   const rl = readline.createInterface({
     input: process.stdin,
@@ -39,8 +87,8 @@ function consoleEnter(bot) {
 });
 }
 
+// Функция для форматирования текста из объекта ChatMessage в более удобный и читаемый вид
 function extractTextFromChatMessage(chatMessage) {
-  // Функция для форматирования текста из объекта ChatMessage в более удобный и читаемый вид
   if (typeof chatMessage === "string") return chatMessage;
 
   return chatMessage.extra
@@ -48,15 +96,15 @@ function extractTextFromChatMessage(chatMessage) {
     : chatMessage.text || "";
 }
 
+// Функция для получения случайного прокси из файла
 function getRandomProxy() {
-  // Функция для получения случайного прокси из файла
   const proxies = fs.readFileSync("./proxies.txt", "utf-8").split('\n').filter(line => line.trim() !== "");
   const randomIndex = getRandomNumber(0, adMsgs.length - 1)
   return proxies[randomIndex];
 }
 
+// Функция для логина и захода в портал при спавне бота
 function handleSpawn(bot, portal, password) {
-  // Функция для логина и захода в портал при спавне бота
   setTimeout(() => {
     bot._client.chat(`/reg ${password}`);
     bot._client.chat(`/login ${password}`);
@@ -69,8 +117,8 @@ function handleSpawn(bot, portal, password) {
   console.log(`${bot.username} has spawned`);
 }
 
+// Функция для приглашения ближайшего игрока в клан
 function invitePlayers(bot) {
-  // Функция для приглашения ближайшего игрока в клан
   setInterval(() => {
     try {
       const closestPlayer = bot.nearestEntity(entity => entity.type === "player");
@@ -85,8 +133,8 @@ function invitePlayers(bot) {
   }, getRandomNumber(1000, 15000));
 }
 
+// Функция чтобы бот смотрел на ближайшего игрока
 function lookAtEntities(bot) {
-  // Функция чтобы бот смотрел на ближайшего игрока
   setInterval(() => {
     const closestPlayer = bot.nearestEntity(entity => entity.type === "player");
     if (closestPlayer) {
@@ -96,17 +144,19 @@ function lookAtEntities(bot) {
   }, 100);
 }
 
+// Функция для рассылки рандомного сообщения рекламы клана в глобальный чат
 function sendAdvertisements(bot) {
-  // Функция для рассылки рандомного сообщения рекламы клана в глобальный чат
   setInterval(() => {
+    bot._client.chat("/gm 1");
     bot._client.chat("/heal");
-    bot._client.chat(`/disarmtroll ${bot.username}`);
+    bot.unequip("head");
     bot._client.chat("/clear");
     bot._client.chat(adMsgs[getRandomNumber(0, adMsgs.length - 1)]);
-  }, getRandomNumber(140000, 160000));
+
+  }, getRandomNumber(2.5*60*1000, 3*60*1000));
 }
 
-
+// Функция для работы с сообщениями
 function messagesMonitoring(message, bot) {
   let fullMessage = extractTextFromChatMessage(message);
 
@@ -114,11 +164,12 @@ function messagesMonitoring(message, bot) {
 
   const matchLeave = fullMessage.match(/› (.*?) покинул клан\./);
   const matchJoin = fullMessage.match(/› (.*?) присоеденился к клану\./);
-  const matchKdr = fullMessage.match(/убил игрока (\w+)/);
+  const matchKdr = fullMessage.match(/игрока\s*(.*)/);
 
 
   if (matchJoin && matchJoin[1]) {
     const new_member = matchJoin[1];
+    if (playerDeaths[new_member]) playerDeaths[new_member] = 0;
     bot._client.chat(`/cc Добро пожаловать в клан, ${new_member}! Обязательно вступи в наш дискорд, там много всего интересного! Ссылка на дискорд находится в /c infо`);
   }
 
@@ -128,24 +179,23 @@ function messagesMonitoring(message, bot) {
   }
 
   if (matchKdr && matchKdr[1]) {
-    const killedPlayer = matchKdr[1];
-    if (lastKilledPlayerCount >= 5) {
+    let killedPlayer = matchKdr[1];
+
+    countDie(killedPlayer);
+    const deathsCount = playerDeaths[killedPlayer]
+    if (deathsCount >= 5) {
       bot._client.chat(`/c kick ${killedPlayer}`);
       blacklist.push(killedPlayer);
-      lastKilledPlayerCount = 0;
-      lastKilledPlayer = "";
+      saveBlacklist(blacklist);
     }
-
-    if (killedPlayer === lastKilledPlayer) lastKilledPlayerCount++;
-
-    else {
-      lastKilledPlayer = killedPlayer;
-      lastKilledPlayerCount = 0;
-    }
+    saveDeaths();
   }
 
-  if (fullMessage === cheatCheck) bot.end();
-  if (fullMessage.includes(": afterdark") && fullMessage.includes("КЛАН:")) bot._client.chat(unterMsg);
+  if (fullMessage === "Пожайлуста прекратите читерить или вы будете забанены!") bot.end();
+  if (fullMessage.startsWith("КЛАН:")) {
+    if (fullMessage.includes(": afterdark")) bot._client.chat(unterMsg);
+    writeClanLog(fullMessage);
+  }
 }
 
 function createBot(nickname, portal, warp = allBotWarp, chatWriting = false, password = defPassword, host = "mc.masedworld.net", port = 25565) {
@@ -163,14 +213,15 @@ function createBot(nickname, portal, warp = allBotWarp, chatWriting = false, pas
   setInterval(() =>  bot._client.chat(`/warp ${warp}`), 3 * 60 * 1000);
   if (chatWriting) consoleEnter(bot);
 
-  bot.on("spawn", () => handleSpawn(bot, portal, password));
-  bot.on("message", (message) => { messagesMonitoring(message, bot); });
-
   bot.once("spawn", () => {
     invitePlayers(bot);
     lookAtEntities(bot);
     sendAdvertisements(bot);
+    bot._client.chat("/skin SadLyric111");
   });
+
+  bot.on("spawn", () => handleSpawn(bot, portal, password));
+  bot.on("message", (message) => { messagesMonitoring(message, bot); });
   bot.on("forcedMove", () => bot._client.chat(`/warp ${warp}`));
   bot.on("error", (err) => bot.end(`An error has occurred ${err}`));
   bot.on("end", () => {
