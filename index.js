@@ -192,7 +192,7 @@ function messagesMonitoring(message, bot) {
 
   if (matchLeave && matchLeave[1]) {
     const leave_member = matchLeave[1];
-    bot._client.chat(`/cc ${leave_member} выходит из клана, на штык его!`);
+    bot._client.chat(`/cc ${leave_member} выходит из клана, на штык егo!`);
   }
 
   if (matchKdr && matchKdr[1]) {
