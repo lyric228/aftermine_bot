@@ -56,7 +56,7 @@ function countDie(nickname) {
   playerDeaths[nickname] += 1;
 }
 
-//
+// Функция для записи логов клана в файл
 function writeClanLog(text) {
   const date = new Date().toLocaleString();
   const logText = `${date}: ${text}\n`;
@@ -156,6 +156,23 @@ function sendAdvertisements(bot) {
   }, getRandomNumber(2.5*60*1000, 3*60*1000));
 }
 
+// Функция с прочими циклами бота
+function otherBotLoops(bot, warp, chatWriting) {
+  setInterval(() =>  bot.end(), 60 * 60 * 1000);  // Рестарт бота раз в 1 час
+  setInterval(() =>  bot._client.chat(`/warp ${warp}`), 3 * 60 * 1000);
+  if (chatWriting) consoleEnter(bot);
+}
+
+// Функция для переподключения бота на сервер
+function reconnectBot(nickname, portal, warp) {
+  console.log(`${nickname} - Reconnection...`);
+  createBot(nickname, portal, warp);
+}
+
+function setSkin(bot, skinName) {
+  bot._client.chat(`/skin ${skinName}`);
+}
+
 // Функция для работы с сообщениями
 function messagesMonitoring(message, bot) {
   let fullMessage = extractTextFromChatMessage(message);
@@ -198,8 +215,8 @@ function messagesMonitoring(message, bot) {
   }
 }
 
+// Функция для создания бота
 function createBot(nickname, portal, warp = allBotWarp, chatWriting = false, password = defPassword, host = "mc.masedworld.net", port = 25565) {
-  // Функция для создания бота
   const proxy = getRandomProxy();
   const agent = new HttpProxyAgent(`http://${proxy}`);
   const bot = mineflayer.createBot({
@@ -217,21 +234,19 @@ function createBot(nickname, portal, warp = allBotWarp, chatWriting = false, pas
     invitePlayers(bot);
     lookAtEntities(bot);
     sendAdvertisements(bot);
-    bot._client.chat("/skin SadLyric111");
+    otherBotLoops(bot, warp, chatWriting);
+    setSkin(bot, "0_Define_0");
   });
 
   bot.on("spawn", () => handleSpawn(bot, portal, password));
   bot.on("message", (message) => { messagesMonitoring(message, bot); });
   bot.on("forcedMove", () => bot._client.chat(`/warp ${warp}`));
   bot.on("error", (err) => bot.end(`An error has occurred ${err}`));
-  bot.on("end", () => {
-    console.log(`${nickname} - Reconnection...`);
-    createBot(nickname, portal, warp);
-  });
+  bot.on("end", () => reconnectBot(nickname, portal, warp));
 }
 
 // Создание ботов
-createBot("AntiKemper1ng", "s7");
+// createBot("AntiKemper1ng", "s7");
 createBot("Kemper1ng", "s2");
-createBot("SCPbotSH", "s3");
-createBot("Alfhelm", "s5");
+// createBot("SCPbotSH", "s3");
+// createBot("Alfhelm", "s5");
