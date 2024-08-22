@@ -4,7 +4,6 @@ const readline = require("readline");
 const fs = require("fs");
 
 
-const password = "!afterHuila00pidor3svocvoRus";
 let botList = [];
 
 
@@ -42,7 +41,7 @@ function getRandomProxy() {
   return proxies[randomIndex];
 }
 
-function handleSpawn(bot, portal) {
+function handleSpawn(bot, portal, password) {
   setTimeout(() => {
     bot.chat(`/reg ${password}`);
     bot.chat(`/login ${password}`);
@@ -58,11 +57,10 @@ function handleSpawn(bot, portal) {
 
 
 function clanAccept(bot) {
-  setTimeout(() => console.log("Launched!"), 21*60*1000);
   setInterval(() => {
     bot.chat("/c accept");
     bot.chat("/warp ch");
-  }, 2000);
+  }, 21*60*1000);
 }
 
 
@@ -87,6 +85,7 @@ function messageHandler(message, bot) {
 function createBot(nickname, portal, chatWriting = false, autoRec = false, listBot = false, clanBot = true) {
   const proxy = getRandomProxy();
   const agent = new HttpProxyAgent(`http://${proxy}`);
+  const password = generateRandomString(10);
 
   const bot = mineflayer.createBot({
     host: "mc.masedworld.net",
@@ -99,7 +98,7 @@ function createBot(nickname, portal, chatWriting = false, autoRec = false, listB
   if (listBot) botList.push(bot);
   if (clanBot) clanAccept(bot);
 
-  bot.on("spawn", () => handleSpawn(bot, portal));
+  bot.on("spawn", () => handleSpawn(bot, portal, password));
 
   bot.on("error", (err) => console.error(`${nickname} encountered an error: ${err}`));
 
@@ -130,6 +129,6 @@ function sendMultiMessages(botList, message) {
 
 // Создание ботов
 setTimeout(() => console.log(">>> "), 5000);
-createMultiBot(3, "s7", false, true, true);
+createMultiBot(5, "s2", true, false, false);
 // setTimeout(() => console.log(">>> "), 15000);
 // sendMultiMessages(botList, "!бубубубабабыабабба")

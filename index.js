@@ -98,7 +98,7 @@ function extractTextFromChatMessage(chatMessage) {
 
 // Функция для получения случайного прокси из файла
 function getRandomProxy() {
-  const proxies = fs.readFileSync("./proxies.txt", "utf-8").split('\n').filter(line => line.trim() !== "");
+  const proxies = fs.readFileSync("./proxies.txt", "utf-8").split("\n").filter(line => line.trim() !== "");
   const randomIndex = getRandomNumber(0, adMsgs.length - 1)
   return proxies[randomIndex];
 }
@@ -106,61 +106,78 @@ function getRandomProxy() {
 // Функция для логина и захода в портал при спавне бота
 function handleSpawn(bot, portal, password) {
   setTimeout(() => {
-    bot._client.chat(`/reg ${password}`);
-    bot._client.chat(`/login ${password}`);
+    sendMsg(bot,`/reg ${password}`);
+    sendMsg(bot,`/login ${password}`);
   }, 2000);
 
   setTimeout(() => {
-    bot._client.chat(`/${portal}`);
+    sendMsg(bot,`/${portal}`);
+    console.log(`${bot.username} has spawned`);
   }, 2000);
-
-  console.log(`${bot.username} has spawned`);
 }
 
 // Функция для приглашения ближайшего игрока в клан
 function invitePlayers(bot) {
   setInterval(() => {
-    try {
       const closestPlayer = bot.nearestEntity(entity => entity.type === "player");
-      if (closestPlayer && !blacklist.includes(closestPlayer.username)) {
-        bot._client.chat(`/c invite ${closestPlayer.username}`);
-      }
-    } catch (error) {
-      bot.end("An error has occurred");
-      console.log(error);
-    }
-
+      if (closestPlayer && !blacklist.includes(closestPlayer.username)) sendMsg(bot, `/c invite ${closestPlayer.username}`);
   }, getRandomNumber(1000, 15000));
 }
 
 // Функция чтобы бот смотрел на ближайшего игрока
 function lookAtEntities(bot) {
-  setInterval(() => {
-    const closestPlayer = bot.nearestEntity(entity => entity.type === "player");
-    if (closestPlayer) {
-      let lookPosition = closestPlayer.position.offset(0, 1.6, 0);
-      bot.lookAt(lookPosition);
-    }
-  }, 100);
+  setInterval(() => lookAtNearestPlayer(bot), 100);
 }
 
 // Функция для рассылки рандомного сообщения рекламы клана в глобальный чат
 function sendAdvertisements(bot) {
   setInterval(() => {
-    bot._client.chat("/gm 1");
-    bot._client.chat("/heal");
-    bot.unequip("head");
-    bot._client.chat("/clear");
-    bot._client.chat(adMsgs[getRandomNumber(0, adMsgs.length - 1)]);
+    sendMsg(bot,"/gm 1");
+    sendMsg(bot,"/heal");
+    // bot.unequip("head");
+    sendMsg(bot,"/tptoggle disable");
+    sendMsg(bot,"/clear");
+    sendMsg(bot,adMsgs[getRandomNumber(0, adMsgs.length - 1)]);
 
   }, getRandomNumber(2.5*60*1000, 3*60*1000));
 }
 
 // Функция с прочими циклами бота
 function otherBotLoops(bot, warp, chatWriting) {
-  setInterval(() =>  bot.end(), 60 * 60 * 1000);  // Рестарт бота раз в 1 час
-  setInterval(() =>  bot._client.chat(`/warp ${warp}`), 3 * 60 * 1000);
-  if (chatWriting) consoleEnter(bot);
+  setInterval(() => bot.end("Restart"), 60 * 60 * 1000);  // Рестарт бота раз в час
+  setInterval(() => tpWarp(bot, warp), 3 * 60 * 1000);  // Автотп на варп раз в 3 минуты
+  setInterval(() => sendMsg(bot, `/kiss ${getNearestPlayer(bot).username}`), 15 * 60 * 1000);  // Рандомные поцелуи ближайшему игроку раз в 15 минуты
+  if (chatWriting) consoleEnter(bot);  // Активация консоли если нужно
+}
+
+// Функция, чтоб получить ближайшего игрока
+function getNearestPlayer(bot) {
+  return bot.nearestEntity(entity => entity.type === "player");
+}
+
+function lookAtNearestPlayer(bot, closestPlayer = getNearestPlayer(bot)) {
+  if (closestPlayer) {
+    const lookPosition = closestPlayer.position.offset(0, 1.6, 0);
+    bot.lookAt(lookPosition);
+  }
+}
+
+// Функция для отправки сообщений с try/catch
+function sendMsg(bot, msg) {
+  try {
+    bot._client.chat(msg);
+  } catch (error) {
+    console.log("Error!");
+  }
+}
+
+// Функция для телепортации на варп с try/catch
+function tpWarp(bot, warp) {
+  try {
+      sendMsg(bot, `/warp ${warp}`);
+  } catch (error) {
+      bot.end("An error has occurred");
+  }
 }
 
 // Функция для переподключения бота на сервер
@@ -169,8 +186,9 @@ function reconnectBot(nickname, portal, warp) {
   createBot(nickname, portal, warp);
 }
 
+// Функция для установки скина
 function setSkin(bot, skinName) {
-  bot._client.chat(`/skin ${skinName}`);
+  sendMsg(bot, `/skin ${skinName}`);
 }
 
 // Функция для работы с сообщениями
@@ -183,16 +201,15 @@ function messagesMonitoring(message, bot) {
   const matchJoin = fullMessage.match(/› (.*?) присоеденился к клану\./);
   const matchKdr = fullMessage.match(/игрока\s*(.*)/);
 
-
   if (matchJoin && matchJoin[1]) {
-    const new_member = matchJoin[1];
-    if (playerDeaths[new_member]) playerDeaths[new_member] = 0;
-    bot._client.chat(`/cc Добро пожаловать в клан, ${new_member}! Обязательно вступи в наш дискорд, там много всего интересного! Ссылка на дискорд находится в /c infо`);
+    const newMember = matchJoin[1];
+    if (playerDeaths[newMember]) playerDeaths[newMember] = 0;
+    sendMsg(bot, `/cc Добро пожаловать в клан, ${newMember}! Обязательно вступи в наш дискорд, там много всего интересного! Вот ссылка на дискорд: https://discord.gg/SnjzDQfYZX`);
   }
 
   if (matchLeave && matchLeave[1]) {
-    const leave_member = matchLeave[1];
-    bot._client.chat(`/cc ${leave_member} выходит из клана, на штык егo!`);
+    const leaveMember = matchLeave[1];
+    sendMsg(bot, `/cc ${leaveMember} выходит из клана, на штык егo!`);
   }
 
   if (matchKdr && matchKdr[1]) {
@@ -201,22 +218,23 @@ function messagesMonitoring(message, bot) {
     countDie(killedPlayer);
     const deathsCount = playerDeaths[killedPlayer]
     if (deathsCount >= 5) {
-      bot._client.chat(`/c kick ${killedPlayer}`);
+      sendMsg(bot,`/c kick ${killedPlayer}`);
       blacklist.push(killedPlayer);
       saveBlacklist(blacklist);
     }
     saveDeaths();
   }
 
+  if (fullMessage.startsWith("› В вас плюнул") || fullMessage.startsWith("› В вас смачно плюнул")) sendMsg(bot, "/spit");
   if (fullMessage === "Пожайлуста прекратите читерить или вы будете забанены!") bot.end();
   if (fullMessage.startsWith("КЛАН:")) {
-    if (fullMessage.includes(": afterdark")) bot._client.chat(unterMsg);
+    if (fullMessage.includes(": afterdark")) sendMsg(bot, unterMsg);
     writeClanLog(fullMessage);
   }
 }
 
 // Функция для создания бота
-function createBot(nickname, portal, warp = allBotWarp, chatWriting = false, password = defPassword, host = "mc.masedworld.net", port = 25565) {
+function createBot(nickname, portal, chatWriting = false, warp = allBotWarp, password = defPassword, host = "mc.masedworld.net", port = 25565) {
   const proxy = getRandomProxy();
   const agent = new HttpProxyAgent(`http://${proxy}`);
   const bot = mineflayer.createBot({
@@ -226,21 +244,18 @@ function createBot(nickname, portal, warp = allBotWarp, chatWriting = false, pas
     agent: agent,
   });
 
-  setInterval(() =>  bot.end(), 60 * 60 * 1000);  // Рестарт бота раз в 1 час
-  setInterval(() =>  bot._client.chat(`/warp ${warp}`), 3 * 60 * 1000);
-  if (chatWriting) consoleEnter(bot);
-
   bot.once("spawn", () => {
     invitePlayers(bot);
     lookAtEntities(bot);
     sendAdvertisements(bot);
     otherBotLoops(bot, warp, chatWriting);
     setSkin(bot, "0_Define_0");
+    sendMsg(bot, "/kiss confirm off")
   });
 
   bot.on("spawn", () => handleSpawn(bot, portal, password));
-  bot.on("message", (message) => { messagesMonitoring(message, bot); });
-  bot.on("forcedMove", () => bot._client.chat(`/warp ${warp}`));
+  bot.on("message", (message) => messagesMonitoring(message, bot));
+  bot.on("forcedMove", () => tpWarp(bot, warp));
   bot.on("error", (err) => bot.end(`An error has occurred ${err}`));
   bot.on("end", () => reconnectBot(nickname, portal, warp));
 }
@@ -248,5 +263,6 @@ function createBot(nickname, portal, warp = allBotWarp, chatWriting = false, pas
 // Создание ботов
 createBot("AntiKemper1ng", "s7");
 createBot("Kemper1ng", "s2");
-createBot("SCPbotSH", "s3");
-createBot("Alfhelm", "s5");
+//createBot("SCPbotSH", "s3");
+//createBot("Alfhelm", "s5");
+//
