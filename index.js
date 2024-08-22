@@ -146,7 +146,7 @@ function sendAdvertisements(bot) {
 function otherBotLoops(bot, warp, chatWriting) {
   setInterval(() => bot.end("Restart"), 60 * 60 * 1000);  // Рестарт бота раз в час
   setInterval(() => tpWarp(bot, warp), 3 * 60 * 1000);  // Автотп на варп раз в 3 минуты
-  setInterval(() => sendMsg(bot, `/kiss ${getNearestPlayer(bot).username}`), 15 * 60 * 1000);  // Рандомные поцелуи ближайшему игроку раз в 15 минуты
+  // setInterval(() => sendMsg(bot, `/kiss ${getNearestPlayer(bot).username}`), 15 * 60 * 1000);  // Рандомные поцелуи ближайшему игроку раз в 15 минуты
   if (chatWriting) consoleEnter(bot);  // Активация консоли если нужно
 }
 
