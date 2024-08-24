@@ -204,7 +204,7 @@ function messagesMonitoring(message, bot) {
   if (matchJoin && matchJoin[1]) {
     const newMember = matchJoin[1];
     if (playerDeaths[newMember]) playerDeaths[newMember] = 0;
-    sendMsg(bot, `/cc Добро пожаловать в клан, ${newMember}! Обязательно вступи в наш дискорд, там много всего интересного! Вот ссылка на дискорд: https://discord.gg/SnjzDQfYZX`);
+    sendMsg(bot, `/cc Добро пожаловать в клан, ${newMember}! Обязательно вступи в наш дискорд, там много всего интересного! Ссылка на дискорд нашего клана в /c infо`);
   }
 
   if (matchLeave && matchLeave[1]) {
@@ -261,8 +261,8 @@ function createBot(nickname, portal, chatWriting = false, warp = allBotWarp, pas
 }
 
 // Создание ботов
-createBot("AntiKemper1ng", "s7");
-createBot("Kemper1ng", "s2");
+createBot("AntiKemper1ng", "s2");
+//createBot("Kemper1ng", "s2");
 //createBot("SCPbotSH", "s3");
 //createBot("Alfhelm", "s5");
 //

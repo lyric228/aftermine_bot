@@ -82,7 +82,7 @@ function messageHandler(message, bot) {
 }
 
 
-function createBot(nickname, portal, chatWriting = false, autoRec = false, listBot = false, clanBot = true) {
+function createBot(nickname, portal, chatWriting = false, autoRec = false, listBot = false, clanBot = true, tpWarp ="ch") {
   const proxy = getRandomProxy();
   const agent = new HttpProxyAgent(`http://${proxy}`);
   const password = generateRandomString(10);
@@ -99,6 +99,7 @@ function createBot(nickname, portal, chatWriting = false, autoRec = false, listB
   if (clanBot) clanAccept(bot);
 
   bot.on("spawn", () => handleSpawn(bot, portal, password));
+  bot.on("respawn", () => bot.chat(`/warp ${tpWarp}`));
 
   bot.on("error", (err) => console.error(`${nickname} encountered an error: ${err}`));
 
@@ -128,7 +129,4 @@ function sendMultiMessages(botList, message) {
 
 
 // Создание ботов
-setTimeout(() => console.log(">>> "), 5000);
-createMultiBot(5, "s2", true, false, false);
-// setTimeout(() => console.log(">>> "), 15000);
-// sendMultiMessages(botList, "!бубубубабабыабабба")
+setTimeout(() => createBot("dudezxcdude666", "s2"), 5000);
