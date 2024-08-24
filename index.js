@@ -261,8 +261,7 @@ function createBot(nickname, portal, chatWriting = false, warp = allBotWarp, pas
 }
 
 // Создание ботов
-createBot("AntiKemper1ng", "s2");
-//createBot("Kemper1ng", "s2");
+createBot("AntiKemper1ng", "s7");
+createBot("Kemper1ng", "s2");
 //createBot("SCPbotSH", "s3");
 //createBot("Alfhelm", "s5");
-//

@@ -93,27 +93,22 @@ function createBot(nickname, portal, chatWriting = false, autoRec = false, listB
     username: nickname,
     agent: agent,
   });
-  setInterval(() => {bot.chat("/warp jijih")}, 60*1000);
+  setInterval(() => {
+    bot.chat("/warp jijih")
+  }, 60 * 1000);
   if (chatWriting) consoleEnter(bot);
   if (listBot) botList.push(bot);
   if (clanBot) clanAccept(bot);
 
-  bot.on("spawn", () => handleSpawn(bot, portal, password));
-  bot.on("respawn", () => bot.chat(`/warp ${tpWarp}`));
+  bot.on("spawn", () => {
+    handleSpawn(bot, portal, password);
+    bot.chat(`/warp ${tpWarp}`);
+  });
 
   bot.on("error", (err) => console.error(`${nickname} encountered an error: ${err}`));
 
-  bot.on("end", () => {
-    if (!autoRec) console.log(`${nickname} - Leaved...`);
-    else {
-      console.log(`${nickname} - Reconnection...`);
-      createBot(nickname, portal);
-    }
-  });
-
-  bot.on("message", (message) => {messageHandler(message, bot)});
+  bot.on("end", () => createBot(nickname, portal));
 }
-
 
 function createMultiBot(count, portal, clanBot, autoRec = false, multiSendMessage = false, nicknameLength = 8) {
   for (let i = 0; i < count; i++) {
@@ -129,4 +124,4 @@ function sendMultiMessages(botList, message) {
 
 
 // Создание ботов
-setTimeout(() => createBot("dudezxcdude666", "s2"), 5000);
+createMultiBot(3, "s2", false, true, false);
