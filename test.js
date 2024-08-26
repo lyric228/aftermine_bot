@@ -15,7 +15,7 @@ function consoleEnter(bot) {
   rl.setPrompt(">>> ");
   rl.prompt();
   rl.on("line", (input) => {
-    bot.chat(input);
+    sendMsg(bot, input);
     rl.prompt();
   }).on("close", () => {
     console.log("Bye!");
@@ -43,23 +43,23 @@ function getRandomProxy() {
 
 function handleSpawn(bot, portal, password) {
   setTimeout(() => {
-    bot.chat(`/reg ${password}`);
-    bot.chat(`/login ${password}`);
+    sendMsg(bot, `/reg ${password}`);
+    sendMsg(bot, `/login ${password}`);
   }, 1000);
 
   setTimeout(() => {
-    bot.chat(`/${portal}`);
+    sendMsg(bot, `/${portal}`);
   }, 2000);
 
   console.log(`${bot.username} has spawned`);
-  bot.chat("/warp jijih")  // Авто возвращение на варп при смерти
+  sendMsg(bot, "/warp kristltrap")  // Авто возвращение на варп при смерти
 }
 
 
 function clanAccept(bot) {
   setInterval(() => {
-    bot.chat("/c accept");
-    bot.chat("/warp ch");
+    sendMsg(bot, "/c accept");
+    sendMsg(bot, "/warp kristltrap");
   }, 21*60*1000);
 }
 
@@ -76,13 +76,23 @@ function extractTextFromChatMessage(chatMessage) {
 
 function messageHandler(message, bot) {
   const extractedText = extractTextFromChatMessage(message);
-  // console.log(extractedText);  // Парсинг чата для дебага
+  console.log(extractedText);  // Парсинг чата для дебага
 
   if (extractedText.includes(`› ${bot.username} присоеденился к клану.`)) bot.end();
 }
 
+function sendMsg(bot, msg) {
+  try {
+    bot.chat(msg);
+  } catch (error) {
+    console.log("Error!");
+  }
+}
 
-function createBot(nickname, portal, chatWriting = false, autoRec = false, listBot = false, clanBot = true, tpWarp ="ch") {
+
+function createBot(nickname, portal, chatWriting = false, autoRec = true, listBot = false, clanBot = true, tpWarp ="kristltrap") {
+  let deaths = 0;
+  let cname = generateRandomString(5);
   const proxy = getRandomProxy();
   const agent = new HttpProxyAgent(`http://${proxy}`);
   const password = generateRandomString(10);
@@ -93,21 +103,30 @@ function createBot(nickname, portal, chatWriting = false, autoRec = false, listB
     username: nickname,
     agent: agent,
   });
-  setInterval(() => {
-    bot.chat("/warp jijih")
-  }, 60 * 1000);
   if (chatWriting) consoleEnter(bot);
   if (listBot) botList.push(bot);
   if (clanBot) clanAccept(bot);
+  sendMsg(bot, `/c create ${cname}`)
+
+  setInterval(() => {
+    if (deaths >= 10) {
+      setTimeout(() => sendMsg(bot, `/c create ${cname}`), 300);
+      deaths = 0;
+    }
+  }, 300);
+  setInterval(() => sendMsg(bot ,"/warp kristltrap"), 5000)
 
   bot.on("spawn", () => {
+    deaths += 1
     handleSpawn(bot, portal, password);
-    bot.chat(`/warp ${tpWarp}`);
+    sendMsg(bot, `/warp kristltrap`);
   });
 
   bot.on("error", (err) => console.error(`${nickname} encountered an error: ${err}`));
 
   bot.on("end", () => createBot(nickname, portal));
+
+  //bot.on("message", (message) => messageHandler(message, bot));
 }
 
 function createMultiBot(count, portal, clanBot, autoRec = false, multiSendMessage = false, nicknameLength = 8) {
@@ -124,4 +143,23 @@ function sendMultiMessages(botList, message) {
 
 
 // Создание ботов
-createMultiBot(3, "s2", false, true, false);
+createBot("kristlsos11", "s2");
+createBot("kristlsos22", "s2");
+createBot("kristlsos33", "s2");
+createBot("kristlsos44", "s2");
+createBot("kristlsos55", "s2");
+createBot("kristlsos66", "s2");
+createBot("kristlsos77", "s2");
+createBot("kristlsos88", "s2");
+createBot("kristlsos99", "s2");
+createBot("kristlsos00", "s2");
+createBot("kristlsos111", "s2");
+createBot("kristlsos222", "s2");
+createBot("kristlsos333", "s2");
+createBot("kristlsos444", "s2");
+createBot("kristlsos555", "s2");
+createBot("kristlsos666", "s2");
+createBot("kristlsos777", "s2");
+createBot("kristlsos888", "s2");
+createBot("kristlsos999", "s2");
+createBot("kristlsos000", "s2");
