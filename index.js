@@ -4,12 +4,21 @@ const readline = require("readline");
 const fs = require("fs");
 
 
+// const adMsgs = [
+//   "!&c&lПривет, друг! Хочешь побывать в клане, где была великая история? Тогда тебе сюда -> /warp KH ! У нас есть: топовый кит для пвп, хороший кх и многое другое! Чего же ты ждёшь? Присоединяйся к нам!",
+//   "!&c&lПриветик! Хочешь с кайфом провести время, но не знаешь как? Тогда тебе подойдёт клан &4&lChert&0&lHouse &c&l! У нас ты найдёшь хороший кх, топовый кит и уважение клана. Чтоб вступить в клан пиши /warp KH",
+//   "!&c&lХочешь в крутой клан с многими плюшками? Тогда тебе нужен клан &4&lChert&0&lHouse&c&l ! У нас ты не только найдёшь топовый кит для пвп и хороший кх, но и дс сервер! А так же у нас открыт набор на модераторов! /warp KH"
+// ];
 const adMsgs = [
-  "!&c&lПривет, друг! Хочешь побывать в клане, где была великая история? Тогда тебе сюда -> /warp KH ! У нас есть: топовый кит для пвп, хороший кх и многое другое! Чего же ты ждёшь? Присоединяйся к нам!",
-  "!&c&lПриветик! Хочешь с кайфом провести время, но не знаешь как? Тогда тебе подойдёт клан &4&lChert&0&lHouse &c&l! У нас ты найдёшь хороший кх, топовый кит и уважение клана. Чтоб вступить в клан пиши /warp KH",
-  "!&c&lХочешь в крутой клан с многими плюшками? Тогда тебе нужен клан &4&lChert&0&lHouse&c&l ! У нас ты не только найдёшь топовый кит для пвп и хороший кх, но и дс сервер! А так же у нас открыт набор на модераторов! /warp KH"
-];
-const unterMsg = "/cc А вы знали, что афтердарк - хуйня? Глава у них школьник, который сосет хуй, а также персонал у них полная хуйня. Если вы не хотите быть хуеглотом, то смело оставайтесь у нас и получайте нашу поддержку.";
+  "!&5&lПриветик! Хочешь с кайфом провести время, но не знаешь как? Тогда тебе подойдёт клан KristlHouse &5&l! У нас ты найдёшь хороший кх, топовый кит и уважение клана. Чтоб вступить в клан пиши /warp KristlHouse",
+  "!&5&lХочешь в крутой клан с многими плюшками? Тогда тебе нужен клан KristlHouse ! У нас ты не только найдёшь топовый кит для пвп и хороший кх, но и дс сервер! А так же у нас открыт набор на модераторов! /warp KristlHouse",
+]
+const unterMsgs = {
+  "afterdark": "/cc А вы знали, что афтердарк - хуйня? Глава у них школьник, который сосет хуй, а также персонал у них полная хуйня. Если вы не хотите быть хуеглотом, то смело оставайтесь у нас и получайте нашу поддержку.",
+  "wortex": "/cc А вы знали, что клан вортекс - сборище даунов? Глава у них нихуя не умеет,  а их уебанские игроки готовы отсосать за клан). Не будь как они, будь как мы (самыми крутыми)!",
+  "goldlight": "/cc А вы знали, что GoldLight - клан хохлов? Глава у них каждый день на киеве глотает бомбы и ракеты в ротик, а люди из их клана готовы ебаться за афтердарк))). Не будь салом, стань ёбырём (как наш клан).",
+  "blyyeti": "/cc А вы знали, что клан BlyYety - клан одних хелперов с ебучими правами? Глава у них сосал хуй у всех кланов, менендес хавал хуи на каждом шагу, а Rooli шлюха, которая готова отсосать у соника. Не будь как они, оставайся у нас и всё будет заебись!",
+}
 const defPassword = "!afterHuila00pidor3svocvoRus";
 const allBotWarp = "nf9akf30k";
 let blacklist = loadBlacklist();
@@ -155,6 +164,7 @@ function getNearestPlayer(bot) {
   return bot.nearestEntity(entity => entity.type === "player");
 }
 
+// Функция чтобы бот смотрел на ближайшего игрока
 function lookAtNearestPlayer(bot, closestPlayer = getNearestPlayer(bot)) {
   if (closestPlayer) {
     const lookPosition = closestPlayer.position.offset(0, 1.6, 0);
@@ -228,13 +238,17 @@ function messagesMonitoring(message, bot) {
   if (fullMessage.startsWith("› В вас плюнул") || fullMessage.startsWith("› В вас смачно плюнул")) sendMsg(bot, "/spit");
   if (fullMessage === "Пожайлуста прекратите читерить или вы будете забанены!") bot.end();
   if (fullMessage.startsWith("КЛАН:")) {
-    if (fullMessage.includes(": afterdark")) sendMsg(bot, unterMsg);
+    const lowFullMessage = fullMessage.toLowerCase();
+    if (lowFullMessage.includes(": afterdark")) sendMsg(bot, unterMsgs["afterdark"]);
+    else if (lowFullMessage.includes(": wortex")) sendMsg(bot, unterMsgs["wortex"]);
+    else if (lowFullMessage.includes(": goldlight")) sendMsg(bot, unterMsgs["goldlight"]);
+    else if (lowFullMessage.includes(": blyyet")) sendMsg(bot, unterMsgs["blyyeti"]);
     writeClanLog(fullMessage);
   }
 }
 
 // Функция для создания бота
-function createBot(nickname, portal, chatWriting = false, warp = allBotWarp, password = defPassword, host = "mc.masedworld.net", port = 25565) {
+function createBot(nickname, portal, warp = allBotWarp, chatWriting = false, password = defPassword, host = "mc.masedworld.net", port = 25565) {
   const proxy = getRandomProxy();
   const agent = new HttpProxyAgent(`http://${proxy}`);
   const bot = mineflayer.createBot({
@@ -249,7 +263,7 @@ function createBot(nickname, portal, chatWriting = false, warp = allBotWarp, pas
     lookAtEntities(bot);
     sendAdvertisements(bot);
     otherBotLoops(bot, warp, chatWriting);
-    setSkin(bot, "0_Define_0");
+    setSkin(bot, "SadLyric111");
     sendMsg(bot, "/kiss confirm off")
   });
 
@@ -261,7 +275,11 @@ function createBot(nickname, portal, chatWriting = false, warp = allBotWarp, pas
 }
 
 // Создание ботов
-createBot("AntiKemper1ng", "s7", false, "n9dn28fj3");
-createBot("Kemper1ng", "s2");
-//createBot("SCPbotSH", "s3");
-//createBot("Alfhelm", "s5");
+createBot("VectorKemper1ng", "s1");
+createBot("Kemper1ng", "s2", "o");
+createBot("SCPbotSH", "s3");
+createBot("NeoKemper1ng", "s4");
+createBot("Alfhelm", "s5");
+createBot("QuaKemper1ng", "s6");
+createBot("AntiKemper1ng", "s7");
+createBot("Temper1ng", "s8");
