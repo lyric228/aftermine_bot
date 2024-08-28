@@ -142,7 +142,6 @@ function lookAtEntities(bot) {
 function sendAdvertisements(bot) {
   setInterval(() => {
     sendMsg(bot,"/gm 1");
-    sendMsg(bot,"/heal");
     // bot.unequip("head");
     sendMsg(bot,"/tptoggle disable");
     sendMsg(bot,"/clear");
@@ -155,7 +154,7 @@ function sendAdvertisements(bot) {
 function otherBotLoops(bot, warp, chatWriting) {
   setInterval(() => bot.end("Restart"), 60 * 60 * 1000);  // Рестарт бота раз в час
   setInterval(() => tpWarp(bot, warp), 3 * 60 * 1000);  // Автотп на варп раз в 3 минуты
-  // setInterval(() => sendMsg(bot, `/kiss ${getNearestPlayer(bot).username}`), 15 * 60 * 1000);  // Рандомные поцелуи ближайшему игроку раз в 15 минуты
+  setInterval(() => sendMsg(bot, "/heal"), 65*1000);
   if (chatWriting) consoleEnter(bot);  // Активация консоли если нужно
 }
 
@@ -239,9 +238,9 @@ function messagesMonitoring(message, bot) {
   if (fullMessage === "Пожайлуста прекратите читерить или вы будете забанены!") bot.end();
   if (fullMessage.startsWith("КЛАН:")) {
     const lowFullMessage = fullMessage.toLowerCase();
-    if (lowFullMessage.includes(": afterdark")) sendMsg(bot, unterMsgs["afterdark"]);
-    else if (lowFullMessage.includes(": wortex")) sendMsg(bot, unterMsgs["wortex"]);
-    else if (lowFullMessage.includes(": goldlight")) sendMsg(bot, unterMsgs["goldlight"]);
+    if (lowFullMessage.includes(": afterdar")) sendMsg(bot, unterMsgs["afterdark"]);
+    else if (lowFullMessage.includes(": worte")) sendMsg(bot, unterMsgs["wortex"]);
+    else if (lowFullMessage.includes(": goldligh")) sendMsg(bot, unterMsgs["goldlight"]);
     else if (lowFullMessage.includes(": blyyet")) sendMsg(bot, unterMsgs["blyyeti"]);
     writeClanLog(fullMessage);
   }
@@ -272,6 +271,15 @@ function createBot(nickname, portal, warp = allBotWarp, chatWriting = false, pas
   bot.on("forcedMove", () => tpWarp(bot, warp));
   bot.on("error", (err) => bot.end(`An error has occurred ${err}`));
   bot.on("end", () => reconnectBot(nickname, portal, warp));
+  bot.on("entityEffect", () => {
+    try {
+      sendMsg(bot, "/heal");
+    tpWarp(bot, warp);
+    bot.creative.startFlying();
+    } catch (error) {
+      console.log("Error!");
+    }
+  })
 }
 
 // Создание ботов
