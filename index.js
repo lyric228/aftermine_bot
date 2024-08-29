@@ -18,9 +18,11 @@ const unterMsgs = {
   "wortex": "/cc А вы знали, что клан вортекс - сборище даунов? Глава у них нихуя не умеет,  а их уебанские игроки готовы отсосать за клан). Не будь как они, будь как мы (самыми крутыми)!",
   "goldlight": "/cc А вы знали, что GoldLight - клан хохлов? Глава у них каждый день на киеве глотает бомбы и ракеты в ротик, а люди из их клана готовы ебаться за афтердарк))). Не будь салом, стань ёбырём (как наш клан).",
   "blyyeti": "/cc А вы знали, что клан BlyYety - клан одних хелперов с ебучими правами? Глава у них сосал хуй у всех кланов, менендес хавал хуи на каждом шагу, а Rooli шлюха, которая готова отсосать у соника. Не будь как они, оставайся у нас и всё будет заебись!",
+  "hellteam": "/cc А вы знали, что клан HellTeam - клан ебанных лицемерских пидоров, которые затерялись где то на дне альфы. А еще вы знали то, что глава их пиздабол и думает то, что он топ 1 с читами. Не будь пидорасами как они будь крутыми как мы)",
 }
 const defPassword = "!afterHuila00pidor3svocvoRus";
 const allBotWarp = "nf9akf30k";
+const botCommands = "&eСписок доступных команд&f - #Команды , #ЧёрныйСписок , #ФункцииБота , #Союзы , #Враги , #ДоскаПозора , #СписокБотов . &bКоманды писать в клан чат&f.";
 let blacklist = loadBlacklist();
 let playerDeaths = loadDeaths()
 
@@ -114,15 +116,10 @@ function getRandomProxy() {
 
 // Функция для логина и захода в портал при спавне бота
 function handleSpawn(bot, portal, password) {
-  setTimeout(() => {
-    sendMsg(bot,`/reg ${password}`);
-    sendMsg(bot,`/login ${password}`);
-  }, 2000);
-
-  setTimeout(() => {
-    sendMsg(bot,`/${portal}`);
-    console.log(`${bot.username} has spawned`);
-  }, 2000);
+  sendMsg(bot,`/reg ${password}`);
+  sendMsg(bot,`/login ${password}`);
+  sendMsg(bot,`/${portal}`);
+  console.log(`${bot.username} has spawned`);
 }
 
 // Функция для приглашения ближайшего игрока в клан
@@ -154,7 +151,7 @@ function sendAdvertisements(bot) {
 function otherBotLoops(bot, warp, chatWriting) {
   setInterval(() => bot.end("Restart"), 60 * 60 * 1000);  // Рестарт бота раз в час
   setInterval(() => tpWarp(bot, warp), 3 * 60 * 1000);  // Автотп на варп раз в 3 минуты
-  setInterval(() => sendMsg(bot, "/heal"), 65*1000);
+  setInterval(() => sendMsg(bot, "/heal"), 65 * 1000);
   if (chatWriting) consoleEnter(bot);  // Активация консоли если нужно
 }
 
@@ -170,6 +167,27 @@ function lookAtNearestPlayer(bot, closestPlayer = getNearestPlayer(bot)) {
     bot.lookAt(lookPosition);
   }
 }
+
+//
+function mainBotLoops(bot, warp, chatWriting) {
+  invitePlayers(bot);
+  lookAtEntities(bot);
+  sendAdvertisements(bot);
+  otherBotLoops(bot, warp, chatWriting);
+  setSkin(bot, "SadLyric111");
+  sendMsg(bot, "/kiss confirm off")
+}
+
+// Функция, которая реагирует на эффект левитации \ чего-то другого
+function effectReact(bot, warp) {
+    try {
+      sendMsg(bot, "/heal");
+    tpWarp(bot, warp);
+    bot.creative.startFlying();
+    } catch (error) {
+      console.log("Error!");
+    }
+  }
 
 // Функция для отправки сообщений с try/catch
 function sendMsg(bot, msg) {
@@ -190,8 +208,8 @@ function tpWarp(bot, warp) {
 }
 
 // Функция для переподключения бота на сервер
-function reconnectBot(nickname, portal, warp) {
-  console.log(`${nickname} - Reconnection...`);
+function reconnectBot(nickname, portal, warp, reason) {
+  console.log(`${nickname} - Reconnection... (${reason})`);
   createBot(nickname, portal, warp);
 }
 
@@ -202,13 +220,15 @@ function setSkin(bot, skinName) {
 
 // Функция для работы с сообщениями
 function messagesMonitoring(message, bot) {
-  let fullMessage = extractTextFromChatMessage(message);
+  const fullMessage = extractTextFromChatMessage(message);
+  const textMessage = message.getText();
 
-  // console.log(fullMessage);  // Парсинг чата для дебага
+  console.log(message.getText());  // Парсинг чата для дебага
 
   const matchLeave = fullMessage.match(/› (.*?) покинул клан\./);
   const matchJoin = fullMessage.match(/› (.*?) присоеденился к клану\./);
   const matchKdr = fullMessage.match(/игрока\s*(.*)/);
+  const matchInvite = textMessage.match(/›\[(.*?) ->/);
 
   if (matchJoin && matchJoin[1]) {
     const newMember = matchJoin[1];
@@ -219,6 +239,11 @@ function messagesMonitoring(message, bot) {
   if (matchLeave && matchLeave[1]) {
     const leaveMember = matchLeave[1];
     sendMsg(bot, `/cc ${leaveMember} выходит из клана, на штык егo!`);
+  }
+
+  if (matchInvite && matchInvite[1] && textMessage.includes("#invite")) {
+    const invitePlayer = matchInvite[1];
+    sendMsg(bot, `/c invite ${invitePlayer}`);
   }
 
   if (matchKdr && matchKdr[1]) {
@@ -234,7 +259,7 @@ function messagesMonitoring(message, bot) {
     saveDeaths();
   }
 
-  if (fullMessage.startsWith("› В вас плюнул") || fullMessage.startsWith("› В вас смачно плюнул")) sendMsg(bot, "/spit");
+  // if (fullMessage.startsWith("› В вас плюнул") || fullMessage.startsWith("› В вас смачно плюнул")) sendMsg(bot, "/spit");
   if (fullMessage === "Пожайлуста прекратите читерить или вы будете забанены!") bot.end();
   if (fullMessage.startsWith("КЛАН:")) {
     const lowFullMessage = fullMessage.toLowerCase();
@@ -242,6 +267,9 @@ function messagesMonitoring(message, bot) {
     else if (lowFullMessage.includes(": worte")) sendMsg(bot, unterMsgs["wortex"]);
     else if (lowFullMessage.includes(": goldligh")) sendMsg(bot, unterMsgs["goldlight"]);
     else if (lowFullMessage.includes(": blyyet")) sendMsg(bot, unterMsgs["blyyeti"]);
+    else if (lowFullMessage.includes(": helltea")) sendMsg(bot, unterMsgs["hellteam"]);
+
+    else if (lowFullMessage.includes((": #Команды"))) sendMsg(bot, botCommands)
     writeClanLog(fullMessage);
   }
 }
@@ -256,38 +284,24 @@ function createBot(nickname, portal, warp = allBotWarp, chatWriting = false, pas
     username: nickname,
     agent: agent,
   });
+  handleSpawn(bot, portal, password)
 
-  bot.once("spawn", () => {
-    invitePlayers(bot);
-    lookAtEntities(bot);
-    sendAdvertisements(bot);
-    otherBotLoops(bot, warp, chatWriting);
-    setSkin(bot, "SadLyric111");
-    sendMsg(bot, "/kiss confirm off")
-  });
+  bot.once("spawn", () => mainBotLoops(bot, warp, chatWriting));
 
   bot.on("spawn", () => handleSpawn(bot, portal, password));
   bot.on("message", (message) => messagesMonitoring(message, bot));
   bot.on("forcedMove", () => tpWarp(bot, warp));
   bot.on("error", (err) => bot.end(`An error has occurred ${err}`));
-  bot.on("end", () => reconnectBot(nickname, portal, warp));
-  bot.on("entityEffect", () => {
-    try {
-      sendMsg(bot, "/heal");
-    tpWarp(bot, warp);
-    bot.creative.startFlying();
-    } catch (error) {
-      console.log("Error!");
-    }
-  })
+  bot.on("end", (reason) => reconnectBot(nickname, portal, warp, reason));
+  bot.on("entityEffect", () => effectReact(bot, warp));
 }
 
 // Создание ботов
-createBot("VectorKemper1ng", "s1");
+// createBot("VectorKemper1ng", "s1");
 createBot("Kemper1ng", "s2", "o");
-createBot("SCPbotSH", "s3");
-createBot("NeoKemper1ng", "s4");
-createBot("Alfhelm", "s5");
-createBot("QuaKemper1ng", "s6");
-createBot("AntiKemper1ng", "s7");
-createBot("Temper1ng", "s8");
+// createBot("SCPbotSH", "s3");
+// createBot("NeoKemper1ng", "s4");
+// createBot("Alfhelm", "s5");
+// createBot("QuaKemper1ng", "s6");
+// createBot("AntiKemper1ng", "s7");
+// createBot("Temper1ng", "s8");
