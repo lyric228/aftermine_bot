@@ -116,7 +116,6 @@ function consoleEnter(bot) {
 // Функция для форматирования текста из объекта ChatMessage в более удобный и читаемый вид
 function extractTextFromChatMessage(chatMessage) {
   if (typeof chatMessage === "string") return chatMessage;
-
   return chatMessage.extra
     ? chatMessage.extra.map(extractTextFromChatMessage).join("")
     : chatMessage.text || "";
@@ -141,7 +140,7 @@ function handleSpawn(bot, portal, password) {
 function invitePlayers(bot) {
   setInterval(() => {
       const closestPlayer = bot.nearestEntity(entity => entity.type === "player");
-      if (closestPlayer && !blacklist.includes(closestPlayer.username)) sendMsg(bot, `/c invite ${closestPlayer.username}`);
+      if (closestPlayer && (!blacklist.includes(closestPlayer.username || !blacklist.includes(closestPlayer.username.toLowerCase())))) sendMsg(bot, `/c invite ${closestPlayer.username}`);
   }, getRandomNumber(1000, 15000));
 }
 
@@ -244,6 +243,7 @@ function setSkin(bot, skinName) {
 function messagesMonitoring(message, bot) {
   const fullMessage = extractTextFromChatMessage(message);
   const textMessage = message.getText();
+  const lowFullMessage = fullMessage.toLowerCase();
 
   // console.log(fullMessage);  // Парсинг чата для дебага
 
@@ -260,7 +260,7 @@ function messagesMonitoring(message, bot) {
 
   if (matchLeave && matchLeave[1]) {
     const leaveMember = matchLeave[1];
-    sendMsg(bot, `/cc ${leaveMember} выходит из клана, на штык егo!`);
+    sendMsg(bot, `/cc ${leaveMember} выходит из клана, ОБОССАТЬ И НА МОРОЗ!`);
   }
 
   if (matchInvite && matchInvite[1] && textMessage.includes("#invite")) {
@@ -285,7 +285,6 @@ function messagesMonitoring(message, bot) {
   if (fullMessage === "Пожайлуста прекратите читерить или вы будете забанены!") bot.end();
   if (fullMessage.startsWith("КЛАН:")) {
     // Последняя буква в проверках убрана чтобы если человек ошибся или ещё что-то бот всё равно ответил ему
-    const lowFullMessage = fullMessage.toLowerCase();
     if (lowFullMessage.includes(": afterdar")) sendMsg(bot, unterMsgs["afterdark"]);
     else if (lowFullMessage.includes(": worte")) sendMsg(bot, unterMsgs["wortex"]);
     else if (lowFullMessage.includes(": goldligh")) sendMsg(bot, unterMsgs["goldlight"]);
