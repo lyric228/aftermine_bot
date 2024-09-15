@@ -237,12 +237,13 @@ function setSkin(bot, skinName) {
 }
 
 // Функция для работы с сообщениями
-function messagesMonitoring(message, bot, our) {
+function messagesMonitoring(message, bot, our, warp) {
   const fullMessage = extractTextFromChatMessage(message);
+  if (fullMessage.includes("Перемещение на")) tpWarp(warp);
   const textMessage = message.getText();
   const lowFullMessage = fullMessage.toLowerCase();
 
-  console.log(fullMessage);  // Парсинг чата для дебага
+  // console.log(fullMessage);  // Парсинг чата для дебага
 
   const matchLeave = fullMessage.match(/› (.*?) покинул клан\./);
   const matchJoin = fullMessage.match(/› (.*?) присоеденился к клану\./);
@@ -316,7 +317,7 @@ function createBot(nickname, portal, warp = allBotWarp, our = true, chatWriting 
   bot.once("spawn", () => mainBotLoops(bot, warp, chatWriting, our));
 
   bot.on("spawn", () => handleSpawn(bot, portal, password));
-  bot.on("message", (message) => messagesMonitoring(message, bot, our));
+  bot.on("message", (message) => messagesMonitoring(message, bot, our, warp));
   bot.on("forcedMove", () => tpWarp(bot, warp));
   bot.on("error", (err) => bot.end(`An error has occurred ${err}`));
   bot.on("end", (reason) => reconnectBot(nickname, portal, warp, reason));
