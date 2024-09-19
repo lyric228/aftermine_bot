@@ -27,22 +27,17 @@ const unterMsgs = {
   "hellteam": "/cc А вы знали, что клан HellTeam - клан ебанных лицемерских пидоров, которые затерялись где то на дне альфы. А еще вы знали то, что глава их пиздабол и думает то, что он топ 1 с читами. Не будь пидорасами как они будь крутыми как мы)",
 }
 const commandsMsgs = {
-  "commandList": "/cc &eСписок доступных команд&f - #Команды , #ЧёрныйСписок , #ФункцииБота , #Союзы , #Враги , #ДоскаПозора , #СписокБотов , #ВерсииБота. &bКоманды писать в клан чат&f.",
+  "commandList": "/cc &eСписок доступных команд&f - #Команды , #ЧёрныйСписок , #ФункцииБота , #Союзы , #Враги , #ДоскаПозора , #СписокБотов , #Вопросы. &bКоманды писать в клан чат&f.",
   "botList": "/cc &c1&f. &bKemper1ng&f. &32&f. &bAntiKemper1ng&f. &a3&f. &2Alfhelm&f. &64&f. &eVectorKemper1ng&f. &d5&f. &1SCPbotSH&f. &26&f. &3QuaKemper1ng&f. &97&f. &cNeoKemper1ng&f. &58&f. Temper1ng.",
   "allies": "/cc &fНаши союзы на &cданный момент&f: &1PEPSICO&F , &ELaEspada &f.",
   "enemies": "/cc &fНаши &cвраги&f: У нас нет врагов! ",
   "functions": "/cc &aФункции&f нашего бота: &cАнтиТп&f, &bПриглашение в клан&f, &eАнти Слив КДР&F , &dРеклама в чате &f, &3АвтоРекконект &f(каждый час), &0Чёрный Список&f, &EЗащита от фризтрола&f, &aЗащита от убийств и эффектов&f, &lКоманды в клан чате &f. ",
   "shame": `/cc 1. - ${shameBoard[0]} 2. - ${shameBoard[1]} 3. - ${shameBoard[2]} 4. - ${shameBoard[3]} 5. - ${shameBoard[4]}`,
   "blacklist": `/cc &fЧёрный список: 1. ${blacklist[-1]} 2. ${blacklist[-2]} 3. ${blacklist[-3]} 4. ${blacklist[-4]} 5. ${blacklist[-5]} 6. ${blacklist[-6]} 7. ${blacklist[-7]} 8. ${blacklist[-8]}`,
-  "versions": {
-    "1": "/cc Alpha 0.01 - Добавлены функции Инвайта в клан, Пиар, Заход на сервер и прочие базовые функции. Alpha 0.02 - Добавлена функция AntiTp. Alpha 0.03 - Добавлен второй бот.",
-    "2": "/cc Beta 0.1 - Добавлен третий бот Alfhelm. Beta 0.2 - Добавлен прокси, Добавлен черный список. Beta 0.5 - Добавлена оптимизация на АнтиТп, добавлены все боты.",
-    "3": "/cc Beta 0.6 - Ответ на плевок. Beta 0.7 - Небольшие изменения. Beta 0.8 - обновлен черный список, ClanLog, смерти. Beta 0.9 - небольшие изменения. РЕЛИЗ 1.0 - Добавлена анти-трапка.",
-  }
 }
-const uhaText = "!Присоединяйтесь к клану &d&luUha! &fМы - &aдружная &fи &dотзывчивая &fкоманда, готовая помочь вам в любой &2проблеме! &fУ нас есть &1сильные &fи &eопытные &fигроки, планирующие победить всех врагов и добраться до самых вершин в &6PvP. &d&l/warp uUha";
+const uhaText = "!&a&lХей,&r с нами ты найдёшь не только красивое КХ, кит и адекватных сокланов, но и &e&lдружескую &fатмосферу. Не упусти шанс &c&lприсоединиться &fк клану &d&luUha &fи стать частью нашей &9&lдружной&f семьи. С радостью ждем тебя на &d&l/warp uUha!";
 const defPassword = "!afterHuila00pidor3svocvoRus";
-const allBotWarp = "n9rfktf1";
+const allBotWarp = "nf9akf30k";
 
 // Функция для сохранения данных в черный список
 function saveBlacklist(blacklist) {
@@ -153,12 +148,14 @@ function lookAtEntities(bot) {
 }
 
 // Функция для рассылки рандомного сообщения рекламы клана в глобальный чат
-function sendAdvertisements(bot) {
+function sendAdvertisements(bot, ourText = "None") {
   setInterval(() => {
     sendMsg(bot,"/gm 1");
+    // bot.unequip("head");
     sendMsg(bot,"/tptoggle disable");
     sendMsg(bot,"/clear");
-    sendMsg(bot, adMsgs[getRandomNumber(0, adMsgs.length - 1)]);
+    if (ourText === "None") sendMsg(bot, adMsgs[getRandomNumber(0, adMsgs.length - 1)]);
+    else sendMsg(bot, ourText);
   }, getRandomNumber(2.5*60*1000, 3*60*1000));
 }
 
@@ -189,20 +186,28 @@ function clearConsole(interval) {
   }, interval*1000)
 }
 
-// Основные циклы для бота без рекламы
-function mainBotLoopsNoAd(bot, warp, chatWriting) {
+// Основные циклы для бота
+function mainBotLoops(bot, warp, chatWriting, our) {
   invitePlayers(bot);
   lookAtEntities(bot);
+  if (our) sendAdvertisements(bot);
+  else sendAdvertisements(bot, uhaText);
   otherBotLoops(bot, warp, chatWriting);
   setSkin(bot, "SadLyric111");
   sendMsg(bot, "/kiss confirm off")
+  clearConsole(10*60);
 }
 
-// Основные циклы для бота
-function mainBotLoops(bot, warp, chatWriting) {
-  mainBotLoopsNoAd(bot, warp, chatWriting);
-  sendAdvertisements(bot);
-}
+// Функция, которая реагирует на эффект левитации \ чего-то другого
+// function effectReact(bot, warp) {
+//     try {
+//       sendMsg(bot, "/heal");
+//     tpWarp(bot, warp);
+//     bot.creative.startFlying();
+//     } catch (error) {
+//       console.log("Error!");
+//     }
+//   }
 
 // Функция для отправки сообщений с try/catch
 function sendMsg(bot, msg) {
@@ -234,13 +239,12 @@ function setSkin(bot, skinName) {
 }
 
 // Функция для работы с сообщениями
-function messagesMonitoring(message, bot, warp, our = true) {
+function messagesMonitoring(message, bot, our) {
   const fullMessage = extractTextFromChatMessage(message);
-  if (fullMessage.includes("Перемещение на")) tpWarp(warp);
   const textMessage = message.getText();
   const lowFullMessage = fullMessage.toLowerCase();
 
-  console.log(fullMessage);  // Парсинг чата для дебага
+  // console.log(fullMessage);  // Парсинг чата для дебага
 
   const matchLeave = fullMessage.match(/› (.*?) покинул клан\./);
   const matchJoin = fullMessage.match(/› (.*?) присоеденился к клану\./);
@@ -285,7 +289,6 @@ function messagesMonitoring(message, bot, warp, our = true) {
     else if (lowFullMessage.includes(": goldligh")) sendMsg(bot, unterMsgs["goldlight"]);
     else if (lowFullMessage.includes(": blyyet")) sendMsg(bot, unterMsgs["blyyeti"]);
     else if (lowFullMessage.includes(": helltea")) sendMsg(bot, unterMsgs["hellteam"]);
-
     if (our) {
       if (lowFullMessage.includes((": #команд"))) sendMsg(bot, commandsMsgs["commandList"]);
       else if (lowFullMessage.includes((": #списокбото"))) sendMsg(bot, commandsMsgs["botList"]);
@@ -300,33 +303,8 @@ function messagesMonitoring(message, bot, warp, our = true) {
   }
 }
 
-// Функция для создания бота ухи
-function createBotUha(nickname, portal, warp, chatWriting = false, password = defPassword, host = "mc.masedworld.net", port = 25565, auth = "offline") {
-  const proxy = getRandomProxy();
-  const agent = new HttpProxyAgent(`http://${proxy}`);
-  const bot = mineflayer.createBot({
-    host: host,
-    port: port,
-    username: nickname,
-    agent: agent,
-    auth: auth,
-  });
-
-  bot.once("spawn", () => {
-    mainBotLoopsNoAd(bot, warp, chatWriting);
-    // setInterval(() => sendMsg(bot, "/cc ss" + uhaText), 5 * 1000);  // 2.5 * 60 * 1000
-  });
-  setInterval(() => bot.chat("/cc ss" + uhaText), 15 * 1000);  // 2.5 * 60 * 1000
-
-  bot.on("spawn", () => handleSpawn(bot, portal, password));
-  bot.on("message", (message) => messagesMonitoring(message, bot, warp));
-  bot.on("forcedMove", () => tpWarp(bot, warp));
-  bot.on("error", (err) => bot.end(`An error has occurred ${err}`));
-  bot.on("end", (reason) => reconnectBot(nickname, portal, warp, reason));
-}
-
 // Функция для создания бота
-function createBot(nickname, portal, warp = allBotWarp, chatWriting = false, password = defPassword, host = "mc.masedworld.net", port = 25565, auth = "offline") {
+function createBot(nickname, portal, warp = allBotWarp, our = true, chatWriting = false, password = defPassword, host = "mc.masedworld.net", port = 25565, auth = "offline") {
   const proxy = getRandomProxy();
   const agent = new HttpProxyAgent(`http://${proxy}`);
   const bot = mineflayer.createBot({
@@ -337,26 +315,24 @@ function createBot(nickname, portal, warp = allBotWarp, chatWriting = false, pas
     auth: auth,
   });
 
-  bot.once("spawn", () => mainBotLoops(bot, warp, chatWriting));
+  bot.once("spawn", () => mainBotLoops(bot, warp, chatWriting, our));
 
   bot.on("spawn", () => handleSpawn(bot, portal, password));
-  bot.on("message", (message) => messagesMonitoring(message, bot, warp, false));
+  bot.on("message", (message) => messagesMonitoring(message, bot, our));
   bot.on("forcedMove", () => tpWarp(bot, warp));
   bot.on("error", (err) => bot.end(`An error has occurred ${err}`));
   bot.on("end", (reason) => reconnectBot(nickname, portal, warp, reason));
+  //bot.on("entityEffect", () => effectReact(bot, warp));
 }
 
-clearConsole(10*60);
 // Создание ботов
 //
-createBot("VectorKemper1ng", "s1");
+// createBot("VectorKemper1ng", "s1");
 createBot("Kemper1ng", "s2");
-createBot("NeoKemper1ng", "s3");
-createBot("SCPbotSH", "s4");
+createBot("NeoKemper1ng", "s3", "i");
+// createBot("SCPbotSH", "s4");
 createBot("Alfhelm", "s5");
 createBot("QuaKemper1ng", "s6");
-createBot("AntiKemper1ng", "s7");
-createBot("Temper1ng", "s8");
-//
-// Создание бота ухи
-//createBotUha("Temper1ng", "s2", "n71kfht1");
+// ! ВКЛЮЧИТЬ !  createBot("AntiKemper1ng", "s7");
+createBot("Temper1ng", "s2", "n6fghlt", false);
+// createBot("Temper1ng", "s8");
