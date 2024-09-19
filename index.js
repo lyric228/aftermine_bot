@@ -240,7 +240,7 @@ function messagesMonitoring(message, bot, warp, our = true) {
   const textMessage = message.getText();
   const lowFullMessage = fullMessage.toLowerCase();
 
-  console.log(fullMessage);  // Парсинг чата для дебага
+  // console.log(fullMessage);  // Парсинг чата для дебага
 
   const matchLeave = fullMessage.match(/› (.*?) покинул клан\./);
   const matchJoin = fullMessage.match(/› (.*?) присоеденился к клану\./);
