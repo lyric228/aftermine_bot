@@ -330,7 +330,7 @@ clearConsole(10*60);
 //
 createBot("VectorKemper1ng", "s1");
 createBot("Kemper1ng", "s2");
-//createBot("NeoKemper1ng", "s3");
+createBot("NeoKemper1ng", "s3");
 createBot("SCPbotSH", "s4");
 createBot("Alfhelm", "s5");
 createBot("QuaKemper1ng", "s6");
