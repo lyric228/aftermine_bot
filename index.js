@@ -7,7 +7,7 @@ const fs = require("fs");
 let blacklist = loadBlacklist();
 let playerDeaths = loadDeaths()
 const shameBoard = [
-  ".",
+  "forltop_W",
   ".",
   ".",
   ".",
@@ -18,6 +18,7 @@ const adMsgs = [
   "!&fПриветик! Хочешь с &dкайфом &fпровести время, но не знаешь как? Тогда тебе подойдёт &cклан &4&lChert&0&lHouse &f! У нас ты найдёшь &eхороший кх&f, &bтоповый кит &fи &nуважение клана&f. Чтоб вступить в клан пиши &c/warp CH",
   "!&fХочешь в &dкрутой клан &fс многими &eплюшками? Тогда тебе нужен клан &4&lChert&0&lHouse&fl ! У нас ты не только найдёшь &bтоповый кит для пвп&f и&e хороший кх&f, но и дс сервер! А так же у нас открыт набор на модераторов! &c/warp CH",
   "!&fИщешь &aотличный клан &fс &eкрутыми возможностями&f? Тогда тебе подходит клан &4&lChert&0&lHouse &f! &bТоповый кит&f, &6функциональный бот&f, всё это ты найдёшь на &c/warp ch&f . Заинтересовало? Ждём именно тебя!",
+  "!&eТоповый кх&f, &bахеренный кит&f, &6функциональный бот&f, всё это есть в клане &4&lChetrt&0&lHouse&f! Ощути весь кайф в &cнашем клане&f, побывай в нашем &aдс сервере &fи не только! Просто напиши в лс боту #invite ! &7(/warp ch)",
 ];
 const unterMsgs = {
   "afterdark": "/cc А вы знали, что афтердарк - хуйня? Глава у них школьник, который сосет хуй, а также персонал у них полная хуйня. Если вы не хотите быть хуеглотом, то смело оставайтесь у нас и получайте нашу поддержку.",
@@ -25,28 +26,31 @@ const unterMsgs = {
   "goldlight": "/cc А вы знали, что GoldLight - клан хохлов? Глава у них каждый день на киеве глотает бомбы и ракеты в ротик, а люди из их клана готовы ебаться за афтердарк))). Не будь салом, стань ёбырём (как наш клан).",
   "blyyeti": "/cc А вы знали, что клан BlyYety - клан одних хелперов с ебучими правами? Глава у них сосал хуй у всех кланов, менендес хавал хуи на каждом шагу, а Rooli шлюха, которая готова отсосать у соника. Не будь как они, оставайся у нас и всё будет заебись!",
   "hellteam": "/cc А вы знали, что клан HellTeam - клан ебанных лицемерских пидоров, которые затерялись где то на дне альфы. А еще вы знали то, что глава их пиздабол и думает то, что он топ 1 с читами. Не будь пидорасами как они будь крутыми как мы)",
+  "kristl": "/cc А вы знали, что клан KRISTL - клан ублюдков? Глава у них школьник, которому 12 лет, а их мелкие ебанаты готовы отсосать за клан)) Кристл настолько скатились, что даже на альфе не могут топ 1 занять) Не будь уебаном, будь сигмой как мы!",
 }
 const commandsMsgs = {
-  "commandList": "/cc &eСписок доступных команд&f - #Команды , #ЧёрныйСписок , #ФункцииБота , #Союзы , #Враги , #ДоскаПозора , #СписокБотов , #ВерсииБота. &bКоманды писать в клан чат&f.",
+  "commandList": "/cc &eСписок доступных команд&f - #Команды , #ЧёрныйСписок , #ФункцииБота , #Союзы , #Враги , #ДоскаПозора , #СписокБотов , #ВерсииБота. &bКоманды писать в клан чат.&f",
   "botList": "/cc &c1&f. &bKemper1ng&f. &32&f. &bAntiKemper1ng&f. &a3&f. &2Alfhelm&f. &64&f. &eVectorKemper1ng&f. &d5&f. &1SCPbotSH&f. &26&f. &3QuaKemper1ng&f. &97&f. &cNeoKemper1ng&f. &58&f. Temper1ng.",
-  "allies": "/cc &fНаши союзы на &cданный момент&f: &1PEPSICO&F , &ELaEspada &f.",
+  "allies": "/cc &fНаши союзы на &cданный момент&f: &1PEPSICO&f , &eLaEspada &f.",
   "enemies": "/cc &fНаши &cвраги&f: У нас нет врагов! ",
-  "functions": "/cc &aФункции&f нашего бота: &cАнтиТп&f, &bПриглашение в клан&f, &eАнти Слив КДР&F , &dРеклама в чате &f, &3АвтоРекконект &f(каждый час), &0Чёрный Список&f, &EЗащита от фризтрола&f, &aЗащита от убийств и эффектов&f, &lКоманды в клан чате &f. ",
+  "functions": "/cc &aФункции&f нашего бота: &cАнтиТп&f, &bПриглашение в клан&f, &eАнти Слив КДР&f , &dРеклама в чате &f, &3АвтоРекконект &f(каждый час), &0Чёрный Список&f, &eЗащита от фризтрола&f, &aЗащита от убийств и эффектов&f, &lКоманды в клан чате &f.",
   "shame": `/cc 1. - ${shameBoard[0]} 2. - ${shameBoard[1]} 3. - ${shameBoard[2]} 4. - ${shameBoard[3]} 5. - ${shameBoard[4]}`,
-  "blacklist": `/cc &fЧёрный список: 1. ${blacklist[-1]} 2. ${blacklist[-2]} 3. ${blacklist[-3]} 4. ${blacklist[-4]} 5. ${blacklist[-5]} 6. ${blacklist[-6]} 7. ${blacklist[-7]} 8. ${blacklist[-8]}`,
+  "blacklist": `/cc &fЧёрный список: 1. ${blacklist[blacklist.length-1]} 2. ${blacklist[blacklist.length-2]} 3. ${blacklist[blacklist.length-3]} 4. ${blacklist[blacklist.length-4]} 5. ${blacklist[blacklist.length-5]} 6. ${blacklist[blacklist.length-6]} 7. ${blacklist[blacklist.length-7]} 8. ${blacklist[blacklist.length-8]}`,
+  "discord": "/cc &fХочешь быть всегда в курсе что и где происходит в клане? Тогда тебе нужен наш &cклановый дискорд сервер&f! У нас есть новости, наборы, ивенты и тд! Заинтересовало? Пиши мне - kotik16f",
   "versions": {
     "1": "/cc Alpha 0.01 - Добавлены функции Инвайта в клан, Пиар, Заход на сервер и прочие базовые функции. Alpha 0.02 - Добавлена функция AntiTp. Alpha 0.03 - Добавлен второй бот.",
     "2": "/cc Beta 0.1 - Добавлен третий бот Alfhelm. Beta 0.2 - Добавлен прокси, Добавлен черный список. Beta 0.5 - Добавлена оптимизация на АнтиТп, добавлены все боты.",
-    "3": "/cc Beta 0.6 - Ответ на плевок. Beta 0.7 - Небольшие изменения. Beta 0.8 - обновлен черный список, ClanLog, смерти. Beta 0.9 - небольшие изменения. РЕЛИЗ 1.0 - Добавлена анти-трапка.",
+    "3": "/cc Beta 0.6 - Ответ на плевок. Beta 0.7 - Небольшие изменения. Beta 0.8 - обновлен черный список, ClanLog, смерти. Beta 0.9 - небольшие изменения. Release 1.0 - Добавлена анти-трапка.",
+    "4": "/cc Release 1.1 - Исправлено множество ошибок, а также прочие небольшие изменения.",
   }
 }
-const discordText = "/cc &fХочешь быть всегда в курсе что и где происходит в клане? Тогда тебе нужен наш &cклановый дискорд сервер&f! У нас есть новости, наборы, ивенты и тд! Заинтересовало? Пиши мне - kotik16f"
 const defPassword = "!afterHuila00pidor3svocvoRus";
 const allBotWarp = "n930gkh1r";
 
 // Функция для сохранения данных в черный список
 function saveBlacklist(blacklist) {
   const text = blacklist.join("\n");
+  blacklist.sort(() => Math.random() - 0.5);
   fs.writeFileSync("blacklist.txt", text);
 }
 
@@ -79,19 +83,15 @@ function loadDeaths() {
 
 // Функция для изменения смертей по нику
 function countDie(nickname) {
-  if (playerDeaths[nickname] == null) {
-    playerDeaths[nickname] = 0;
-  }
+  if (playerDeaths[nickname] == null) playerDeaths[nickname] = 0;
   playerDeaths[nickname] += 1;
 }
 
-// Функция для записи логов клана в файл
-function writeClanLog(text) {
+// Функция для записи логов в файл
+function writeLog(text, path) {
   const date = new Date().toLocaleString();
   const logText = `${date}: ${text}\n`;
-  fs.appendFile("ClanLog.txt", logText, (err) => {
-    if (err) console.error(err);
-  });
+  fs.appendFile(`logs/${path}`, logText, (err) => { if (err) console.error(err) });
 }
 
 // Функция для генерации рандомного числа
@@ -127,7 +127,7 @@ function extractTextFromChatMessage(chatMessage) {
 // Функция для получения случайного прокси из файла
 function getRandomProxy() {
   const proxies = fs.readFileSync("./proxies.txt", "utf-8").split("\n").filter(line => line.trim() !== "");
-  const randomIndex = getRandomNumber(0, adMsgs.length - 1)
+  const randomIndex = getRandomNumber(0, proxies.length - 1)
   return proxies[randomIndex];
 }
 
@@ -157,17 +157,20 @@ function sendAdvertisements(bot) {
   setInterval(() => {
     sendMsg(bot,"/gm 1");
     sendMsg(bot,"/tptoggle disable");
-    sendMsg(bot,"/clear");
+    // try {
+    //   const promise = bot.creative.clearSlot(36);
+    //   promise.then(() => { console.log("Cleared!") });
+    // } catch (error) { console.log("Not cleared! ") }
     sendMsg(bot, adMsgs[getRandomNumber(0, adMsgs.length - 1)]);
   }, getRandomNumber(2.5*60*1000, 3*60*1000));
-  setInterval(() => sendMsg(bot, discordText), getRandomNumber(60*1000, 2*60*1000));
+  setInterval(() => sendMsg(bot, commandsMsgs["discord"]), getRandomNumber(60*1000, 2*60*1000));
 }
 
 // Функция с прочими циклами бота
 function otherBotLoops(bot, warp, chatWriting) {
   setInterval(() => bot.end("Restart"), 60 * 60 * 1000);  // Рестарт бота раз в час
-  setInterval(() => tpWarp(bot, warp), 3 * 60 * 1000);  // Автотп на варп раз в 3 минуты
-  setInterval(() => sendMsg(bot, "/heal"), 65 * 1000);
+  setInterval(() => tpWarp(bot, warp), 10 * 60 * 1000);  // Телепорт бота раз в 10 минут
+  setInterval(() => sendMsg(bot, "/heal"), 65 * 1000);  // Хил бота раз в 10 минут
   if (chatWriting) consoleEnter(bot);  // Активация консоли если нужно
 }
 
@@ -184,24 +187,18 @@ function lookAtNearestPlayer(bot, closestPlayer = getNearestPlayer(bot)) {
   }
 }
 
+// Функция для очистки консоли с определенным интервалом
 function clearConsole(interval) {
-  setInterval(() => {
-    console.clear();
-  }, interval*1000)
+  setInterval(() => console.clear(), interval*1000)
 }
 
-// Основные циклы для бота без рекламы
-function mainBotLoopsNoAd(bot, warp, chatWriting) {
+// Основные циклы для бота
+function mainBotLoops(bot, warp, chatWriting) {
   invitePlayers(bot);
   lookAtEntities(bot);
   otherBotLoops(bot, warp, chatWriting);
   setSkin(bot, "SadLyric111");
   sendMsg(bot, "/kiss confirm off")
-}
-
-// Основные циклы для бота
-function mainBotLoops(bot, warp, chatWriting) {
-  mainBotLoopsNoAd(bot, warp, chatWriting);
   sendAdvertisements(bot);
 }
 
@@ -239,13 +236,13 @@ function messagesMonitoring(message, bot, warp) {
   const fullMessage = extractTextFromChatMessage(message);
   if (fullMessage.includes("Перемещение на")) tpWarp(warp);
   const textMessage = message.getText();
-  const lowFullMessage = fullMessage.toLowerCase();
+  const lowTextMessage = textMessage.toLowerCase();
 
-  // console.log(fullMessage);  // Парсинг чата для дебага
+  // console.log(textMessage);  // Парсинг чата для дебага
 
-  const matchLeave = fullMessage.match(/› (.*?) покинул клан\./);
-  const matchJoin = fullMessage.match(/› (.*?) присоеденился к клану\./);
-  const matchKdr = fullMessage.match(/игрока\s*(.*)/);
+  const matchLeave = textMessage.match(/› (.*?) покинул клан\./);
+  const matchJoin = textMessage.match(/› (.*?) присоеденился к клану\./);
+  const matchKdr = textMessage.match(/игрока\s*(.*)/);
   const matchInvite = textMessage.match(/›\[(.*?) ->/);
 
   if (matchJoin && matchJoin[1]) {
@@ -254,22 +251,22 @@ function messagesMonitoring(message, bot, warp) {
     sendMsg(bot, `/cc Добро пожаловать в клан, ${newMember}! Обязательно вступи в наш дискорд, там много всего интересного! Если хочешь вступить в наш дискорд сервер, то пиши мне - kotik16f`);
   }
 
-  if (matchLeave && matchLeave[1]) {
+  else if (matchLeave && matchLeave[1]) {
     const leaveMember = matchLeave[1];
     sendMsg(bot, `/cc ${leaveMember} выходит из клана, ОБОССАТЬ И НА МОРОЗ!`);
   }
 
-  if (matchInvite && matchInvite[1] && textMessage.includes("#invite")) {
+  else if (matchInvite && matchInvite[1] && lowTextMessage.includes("#invite")) {
     const invitePlayer = matchInvite[1];
     sendMsg(bot, `/c invite ${invitePlayer}`);
   }
 
-  if (matchKdr && matchKdr[1]) {
+  else if (matchKdr && matchKdr[1]) {
     let killedPlayer = matchKdr[1];
 
     countDie(killedPlayer);
     const deathsCount = playerDeaths[killedPlayer]
-    if (deathsCount >= 5) {
+    if (deathsCount > 4) {
       sendMsg(bot,`/c kick ${killedPlayer}`);
       blacklist.push(killedPlayer);
       saveBlacklist(blacklist);
@@ -277,26 +274,34 @@ function messagesMonitoring(message, bot, warp) {
     saveDeaths();
   }
 
-  // if (fullMessage.startsWith("› В вас плюнул") || fullMessage.startsWith("› В вас смачно плюнул")) sendMsg(bot, "/spit");
   if (fullMessage === "Пожайлуста прекратите читерить или вы будете забанены!") bot.end();
-  if (fullMessage.startsWith("КЛАН:")) {
-    // Последняя буква в проверках убрана чтобы если человек ошибся или ещё что-то бот всё равно ответил ему
-    if (lowFullMessage.includes(": afterdar")) sendMsg(bot, unterMsgs["afterdark"]);
-    else if (lowFullMessage.includes(": worte")) sendMsg(bot, unterMsgs["wortex"]);
-    else if (lowFullMessage.includes(": goldligh")) sendMsg(bot, unterMsgs["goldlight"]);
-    else if (lowFullMessage.includes(": blyyet")) sendMsg(bot, unterMsgs["blyyeti"]);
-    else if (lowFullMessage.includes(": helltea")) sendMsg(bot, unterMsgs["hellteam"]);
+  if (lowTextMessage.startsWith("клан:")) {
+    if (lowTextMessage.includes("afterdar")) sendMsg(bot, unterMsgs["afterdark"]);
+    else if (lowTextMessage.includes("worte")) sendMsg(bot, unterMsgs["wortex"]);
+    else if (lowTextMessage.includes("goldligh")) sendMsg(bot, unterMsgs["goldlight"]);
+    else if (lowTextMessage.includes("blyyet")) sendMsg(bot, unterMsgs["blyyeti"]);
+    else if (lowTextMessage.includes("helltea")) sendMsg(bot, unterMsgs["hellteam"]);
+    else if (lowTextMessage.includes("krist")) sendMsg(bot, unterMsgs["kristl"]);
 
-    if (lowFullMessage.includes((": #команд"))) sendMsg(bot, commandsMsgs["commandList"]);
-    else if (lowFullMessage.includes((": #списокбото"))) sendMsg(bot, commandsMsgs["botList"]);
-    else if (lowFullMessage.includes((": #союз"))) sendMsg(bot, commandsMsgs["allies"]);
-    else if (lowFullMessage.includes((": #враг"))) sendMsg(bot, commandsMsgs["enemies"]);
-    else if (lowFullMessage.includes((": #функциибот"))) sendMsg(bot, commandsMsgs["functions"]);
-    else if (lowFullMessage.includes((": #доскапозор"))) sendMsg(bot, commandsMsgs["shame"]);
-    else if ((lowFullMessage.includes((": #чёрныйсписо"))) || (lowFullMessage.includes((": #черныйсписо")))) sendMsg(bot, commandsMsgs["blacklist"]);
+    if (lowTextMessage.includes(("#команд"))) sendMsg(bot, commandsMsgs["commandList"]);
+    else if (lowTextMessage.includes(("#списокбото"))) sendMsg(bot, commandsMsgs["botList"]);
+    else if (lowTextMessage.includes(("#союз"))) sendMsg(bot, commandsMsgs["allies"]);
+    else if (lowTextMessage.includes(("#враг"))) sendMsg(bot, commandsMsgs["enemies"]);
+    else if (lowTextMessage.includes(("#функци"))) sendMsg(bot, commandsMsgs["functions"]);
+    else if (lowTextMessage.includes(("#доскапозор"))) sendMsg(bot, commandsMsgs["shame"]);
+    else if ((lowTextMessage.includes(("#чёрныйсписо"))) || (lowTextMessage.includes(("#черныйсписо")))) sendMsg(bot, commandsMsgs["blacklist"]);
+    else if (lowTextMessage.includes("#версиибота")) {
+      if (lowTextMessage.includes("1")) sendMsg(bot, commandsMsgs["versions"]["1"]);
+      else if (lowTextMessage.includes("2")) sendMsg(bot, commandsMsgs["versions"]["2"]);
+      else if (lowTextMessage.includes("3")) sendMsg(bot, commandsMsgs["versions"]["3"]);
+      else if (lowTextMessage.includes("4")) sendMsg(bot, commandsMsgs["versions"]["4"]);
+    }
 
-    writeClanLog(fullMessage);
+    writeLog(fullMessage, "ClanLog.txt");
   }
+
+  else if (fullMessage.startsWith("[ɢ]")) writeLog(fullMessage, "GlobalLog.txt");
+  else if (fullMessage.startsWith("[ʟ]")) writeLog(fullMessage, "LocalLog.txt");
 }
 
 // Функция для создания бота
@@ -325,9 +330,9 @@ clearConsole(10*60);
 //
 createBot("VectorKemper1ng", "s1");
 createBot("Kemper1ng", "s2");
-createBot("NeoKemper1ng", "s3");
+//createBot("NeoKemper1ng", "s3");
 createBot("SCPbotSH", "s4");
 createBot("Alfhelm", "s5");
 createBot("QuaKemper1ng", "s6");
-createBot("AntiKemper1ng", "s7");
+// createBot("AntiKemper1ng", "s7");  // Бан на 3 дня до 1 октября
 createBot("Temper1ng", "s8");
