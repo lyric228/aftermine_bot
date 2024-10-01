@@ -1,7 +1,7 @@
-const { HttpProxyAgent } = require("http-proxy-agent");
-const mineflayer = require("mineflayer");
-const readline = require("readline");
-const fs = require("fs");
+import { readFileSync, writeFileSync, appendFile } from "fs";
+import { HttpProxyAgent } from "http-proxy-agent";
+import { createInterface } from "readline";
+import { createBot } from "mineflayer";
 
 
 let blacklist = loadBlacklist();
@@ -36,37 +36,34 @@ const commandsMsgs = {
     "4": "/cc Release 1.1 - Исправлено множество ошибок, а также прочие небольшие изменения.",
   }
 }
-const defPassword = "yagey";
-const allBotWarp = "n9831knt";
 
 // Функция для сохранения данных в черный список
 function saveBlacklist(blacklist) {
   const text = blacklist.join("\n");
   blacklist.sort(() => Math.random() - 0.5);
-  fs.writeFileSync("blacklist.txt", text);
+  writeFileSync("blacklist.txt", text);
 }
 
 // Функция для загрузки данных из черного списка
 function loadBlacklist() {
   try {
-    const text = fs.readFileSync("blacklist.txt", "utf8");
+    const text = readFileSync("blacklist.txt", "utf8");
     return text.split("\n");
   } catch (err) {
     if (err.code === "ENOENT") return [];
   }
 }
 
-
 // Функция для сохранения данных о смертях
 function saveDeaths() {
   const jsonString = JSON.stringify(playerDeaths);
-  fs.writeFileSync("deaths.json", jsonString);
+  writeFileSync("deaths.json", jsonString);
 }
 
 // Функция для загрузки данных о смертях
 function loadDeaths() {
   try {
-    const jsonString = fs.readFileSync("deaths.json", "utf8");
+    const jsonString = readFileSync("deaths.json", "utf8");
     return JSON.parse(jsonString);
   } catch (err) {
     if (err.code === "ENOENT") return {};
@@ -83,7 +80,7 @@ function countDie(nickname) {
 function writeLog(text, path) {
   const date = new Date().toLocaleString();
   const logText = `${date}: ${text}\n`;
-  fs.appendFile(`UuhaLogs/${path}`, logText, (err) => { if (err) console.error(err) });
+  appendFile(`UuhaLogs/${path}`, logText, (err) => { if (err) console.error(err) });
 }
 
 // Функция для генерации рандомного числа
@@ -93,7 +90,7 @@ function getRandomNumber(min, max) {
 
 // Функция для отправки сообщений в чат через консоль от лица бота
 function consoleEnter(bot) {
-  const rl = readline.createInterface({
+  const rl = createInterface({
     input: process.stdin,
     output: process.stdout
   });
@@ -118,7 +115,7 @@ function extractTextFromChatMessage(chatMessage) {
 
 // Функция для получения случайного прокси из файла
 function getRandomProxy() {
-  const proxies = fs.readFileSync("./proxies.txt", "utf-8").split("\n").filter(line => line.trim() !== "");
+  const proxies = readFileSync("./proxies.txt", "utf-8").split("\n").filter(line => line.trim() !== "");
   const randomIndex = getRandomNumber(0, proxies.length - 1)
   return proxies[randomIndex];
 }
@@ -204,7 +201,7 @@ function tpWarp(bot, warp) {
 // Функция для переподключения бота на сервер
 function reconnectBot(nickname, portal, warp, reason) {
   console.log(`${nickname} - Reconnection... (${reason})`);
-  createBot(nickname, portal, warp);
+  createBotUha(nickname, portal, warp);
 }
 
 // Функция для установки скина
@@ -283,10 +280,10 @@ function messagesMonitoring(message, bot, warp) {
 }
 
 // Функция для создания бота
-function createBot(nickname, portal, warp = allBotWarp, chatWriting = false, password = defPassword, host = "mc.masedworld.net", port = 25565, auth = "offline") {
+export function createBotUha(nickname, portal, warp, chatWriting = false, password, host = "mc.masedworld.net", port = 25565, auth = "offline") {
   const proxy = getRandomProxy();
   const agent = new HttpProxyAgent(`http://${proxy}`);
-  const bot = mineflayer.createBot({
+  const bot = createBot({
     host: host,
     port: port,
     username: nickname,
@@ -302,5 +299,3 @@ function createBot(nickname, portal, warp = allBotWarp, chatWriting = false, pas
   bot.on("error", (err) => bot.end(`An error has occurred ${err}`));
   bot.on("end", (reason) => reconnectBot(nickname, portal, warp, reason));
 }
-
-createBot("M2ndar1HoBbIui", "s2", allBotWarp, false, "yagey");

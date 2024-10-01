@@ -1,18 +1,31 @@
-const { HttpProxyAgent } = require("http-proxy-agent");
-const mineflayer = require("mineflayer");
-const readline = require("readline");
-const fs = require("fs");
+import {appendFile, readFileSync, writeFileSync} from "fs";
+import {HttpProxyAgent} from "http-proxy-agent";
+import {createInterface} from "readline";
+import {File, Storage} from "megajs";
+import {createBot} from "mineflayer";
 
 
+const storage = await new Storage({
+  email: "xhikzerox@gmail.com",
+  password: "yakrutoy2801"
+}).ready
 let blacklist = loadBlacklist();
 let playerDeaths = loadDeaths()
+let botList = [];
 const shameBoard = [
+  "pavel чото там",
+  "cph4peezzz",
   "forltop_W",
   ".",
   ".",
-  ".",
-  ".",
 ]
+const fileLinks = {
+  "blacklist": "https://mega.nz/file/D0gkVJTI#EKYbvI_NdywsswLIaeNffAJ4DF9OKj_8Or9MD2kFU0Q",
+  "clanlog": "https://mega.nz/file/T84yUJ7A#dUqlOXq_SHwvFG5IvjgjTin3PUTq1apINhCaXqGL3Hs",
+  "deaths": "https://mega.nz/file/H8gGXY6S#_1n0RfkYvFVqBiM9HtQ0zpCaKQbgY1m7bVeHYUzVn98",
+  "glog": "https://mega.nz/file/Lk4V0LgI#UeilswiBC3kQjAz-JaWm6cqQT3wSAgvqxxTP5cIE5Bw",
+  "llog": "https://mega.nz/file/O5ghETBa#3tFyE6iynyrJguDaNFGVOZmZEbg6NDJ5cTMcJoIvN7c",
+}
 const adMsgs = [
   "!&fПривет, друг! Хочешь побывать в &cклане&f, где была великая история? Тогда тебе сюда -> &c/warp CH&f ! У нас есть: &bтоповый кит для пвп&f, &eхороший кх &fи многое другое! Чего же ты ждёшь? &d&nПрисоединяйся к нам!",
   "!&fПриветик! Хочешь с &dкайфом &fпровести время, но не знаешь как? Тогда тебе подойдёт &cклан &4&lChert&0&lHouse &f! У нас ты найдёшь &eхороший кх&f, &bтоповый кит &fи &nуважение клана&f. Чтоб вступить в клан пиши &c/warp CH",
@@ -31,7 +44,7 @@ const unterMsgs = {
 const commandsMsgs = {
   "commandList": "/cc &eСписок доступных команд&f - #Команды , #ЧёрныйСписок , #ФункцииБота , #Союзы , #Враги , #ДоскаПозора , #СписокБотов , #ВерсииБота. &bКоманды писать в клан чат.&f",
   "botList": "/cc &c1&f. &bKemper1ng&f. &32&f. &bAntiKemper1ng&f. &a3&f. &2Alfhelm&f. &64&f. &eVectorKemper1ng&f. &d5&f. &1SCPbotSH&f. &26&f. &3QuaKemper1ng&f. &97&f. &cNeoKemper1ng&f. &58&f. Temper1ng.",
-  "allies": "/cc &fНаши союзы на &cданный момент&f: &1PEPSICO&f , &eLaEspada &f.",
+  "allies": "/cc &fНаши союзы на &cданный момент&f: &1PEPSICO&f , &eLaEspada &f, &4афтедаркхуета&f.",
   "enemies": "/cc &fНаши &cвраги&f: У нас нет врагов! ",
   "functions": "/cc &aФункции&f нашего бота: &cАнтиТп&f, &bПриглашение в клан&f, &eАнти Слив КДР&f , &dРеклама в чате &f, &3АвтоРекконект &f(каждый час), &0Чёрный Список&f, &eЗащита от фризтрола&f, &aЗащита от убийств и эффектов&f, &lКоманды в клан чате &f.",
   "shame": `/cc 1. - ${shameBoard[0]} 2. - ${shameBoard[1]} 3. - ${shameBoard[2]} 4. - ${shameBoard[3]} 5. - ${shameBoard[4]}`,
@@ -44,41 +57,98 @@ const commandsMsgs = {
     "4": "/cc Release 1.1 - Исправлено множество ошибок, а также прочие небольшие изменения.",
   }
 }
+const answerMessages = {
+  "afterdar": unterMsgs["afterdark"],
+  "worte": unterMsgs["wortex"],
+  "goldligh": unterMsgs["goldlight"],
+  "blyyet": unterMsgs["blyyeti"],
+  "helltea": unterMsgs["hellteam"],
+  "krist": unterMsgs["kristl"],
+
+  "#команд": commandsMsgs["commandList"],
+  "#списокбото": commandsMsgs["botList"],
+  "#союз": commandsMsgs["allies"],
+  "#враг": commandsMsgs["enemies"],
+  "#функци": commandsMsgs["functions"],
+  "#доскапозор": commandsMsgs["shame"],
+  "#чёрныйсписо": commandsMsgs["blacklist"],
+  "#версиибота 1": commandsMsgs["versions"]["1"],
+  "#версиибота 2": commandsMsgs["versions"]["2"],
+  "#версиибота 3": commandsMsgs["versions"]["3"],
+  "#версиибота 4": commandsMsgs["versions"]["4"],
+}
 const defPassword = "!afterHuila00pidor3svocvoRus";
 const allBotWarp = "n930gkh1r";
 
+// Функция для получения данных из файла
+async function getFile(url) {
+  const file = File.fromURL(url);
+  await file.loadAttributes();
+  return await file.downloadBuffer();
+}
+
+// Функция для загрузки данных в файл
+async function uploadFile(name, data) {
+  await storage.upload(name, data).complete;
+}
+
+// Функция для удаления файла
+async function deleteFile(name) {
+  const file = storage.find(name);
+  if (!file) console.log("File doesn't exist");
+  await file.delete();
+}
+
+// Функция для интервального сохранения данных
+async function saveInterval() {
+  const tempBlacklist = readFileSync("data/blacklist.txt", "utf-8").split("\n");
+  const tempDeaths = readFileSync("data/deaths.json", "utf-8");
+  await deleteFile("blacklist.txt")
+  await deleteFile("deaths.json")
+  await uploadFile("blacklist.txt", tempBlacklist.toString());
+  await uploadFile("deaths.json", tempDeaths.toString());
+  await logSave;
+}
+
+// Функция для интервального сохранения данных логов
+async function logSave() {
+  const tempClanLog = readFileSync("logs/ClanLog.txt", "utf-8");
+  const tempGLog = readFileSync("logs/GlobalLog.txt", "utf-8");
+  const tempLLog = readFileSync("logs/LocalLog.txt", "utf-8");
+  await deleteFile("ClanLog.txt")
+  await deleteFile("GlobalLog.txt")
+  await deleteFile("LocalLog.txt")
+  await uploadFile("ClanLog.txt", tempClanLog.toString());
+  await uploadFile("GlobalLog.txt", tempGLog.toString());
+  await uploadFile("LocalLog.txt", tempLLog.toString());
+}
+
 // Функция для сохранения данных в черный список
-function saveBlacklist(blacklist) {
-  const text = blacklist.join("\n");
+async function saveBlacklist() {
   blacklist.sort(() => Math.random() - 0.5);
-  fs.writeFileSync("blacklist.txt", text);
+  const tempBlacklist = readFileSync("data/blacklist.txt", "utf-8").split("\n");
+  writeFileSync("data/blacklist.txt", tempBlacklist.toString());
 }
 
 // Функция для загрузки данных из черного списка
-function loadBlacklist() {
+async function loadBlacklist() {
   try {
-    const text = fs.readFileSync("blacklist.txt", "utf8");
-    return text.split("\n");
-  } catch (err) {
-    if (err.code === "ENOENT") return [];
-  }
+    return (await getFile(fileLinks["blacklist"])).join("\n");
+  } catch (err) { if (err.code === "ENOENT") return [] }
 }
 
-
 // Функция для сохранения данных о смертях
-function saveDeaths() {
+async function saveDeaths() {
   const jsonString = JSON.stringify(playerDeaths);
-  fs.writeFileSync("deaths.json", jsonString);
+  writeFileSync("data/deaths.json", jsonString);
 }
 
 // Функция для загрузки данных о смертях
-function loadDeaths() {
+async function loadDeaths() {
   try {
-    const jsonString = fs.readFileSync("deaths.json", "utf8");
-    return JSON.parse(jsonString);
-  } catch (err) {
-    if (err.code === "ENOENT") return {};
-  }
+    const jsonString = (await getFile(fileLinks["deaths"]));
+    return JSON.parse(jsonString.toString());
+  } catch (err) { if (err.code === "ENOENT") return {} }
 }
 
 // Функция для изменения смертей по нику
@@ -88,10 +158,10 @@ function countDie(nickname) {
 }
 
 // Функция для записи логов в файл
-function writeLog(text, path) {
+async function writeLog(text, path) {
   const date = new Date().toLocaleString();
   const logText = `${date}: ${text}\n`;
-  fs.appendFile(`logs/${path}`, logText, (err) => { if (err) console.error(err) });
+  appendFile(`logs/${path}`, logText, (err) => { if (err) console.error(err) });
 }
 
 // Функция для генерации рандомного числа
@@ -100,20 +170,22 @@ function getRandomNumber(min, max) {
 }
 
 // Функция для отправки сообщений в чат через консоль от лица бота
-function consoleEnter(bot) {
-  const rl = readline.createInterface({
-    input: process.stdin,
-    output: process.stdout
-  });
-  rl.setPrompt(">>> ");
-  rl.prompt();
-  rl.on("line", (input) => {
-    bot._client.chat(input);
+function consoleEnter(bot, chatWriting = false) {
+  if (chatWriting) {
+    const rl = createInterface({
+      input: process.stdin,
+      output: process.stdout
+    });
+    rl.setPrompt(">>> ");
     rl.prompt();
-  }).on("close", () => {
-    console.log("Bye!");
-    process.exit(0);
-});
+    rl.on("line", (input) => {
+      sendMsg(bot, input);
+      rl.prompt();
+    }).on("close", () => {
+      console.log("Bye!");
+      process.exit(0);
+    });
+  }
 }
 
 // Функция для форматирования текста из объекта ChatMessage в более удобный и читаемый вид
@@ -126,7 +198,7 @@ function extractTextFromChatMessage(chatMessage) {
 
 // Функция для получения случайного прокси из файла
 function getRandomProxy() {
-  const proxies = fs.readFileSync("./proxies.txt", "utf-8").split("\n").filter(line => line.trim() !== "");
+  const proxies = readFileSync("data/proxies.txt", "utf-8").split("\n").filter(line => line.trim() !== "");
   const randomIndex = getRandomNumber(0, proxies.length - 1)
   return proxies[randomIndex];
 }
@@ -143,35 +215,15 @@ function handleSpawn(bot, portal, password) {
 function invitePlayers(bot) {
   setInterval(() => {
       const closestPlayer = bot.nearestEntity(entity => entity.type === "player");
-      if (closestPlayer && (!blacklist.includes(closestPlayer.username || !blacklist.includes(closestPlayer.username.toLowerCase())))) sendMsg(bot, `/c invite ${closestPlayer.username}`);
-  }, getRandomNumber(1000, 15000));
-}
-
-// Функция чтобы бот смотрел на ближайшего игрока
-function lookAtEntities(bot) {
-  setInterval(() => lookAtNearestPlayer(bot), 100);
+      bot.entitiesArray
+      if (closestPlayer && !blacklist.toString().includes(closestPlayer.username)) sendMsg(bot, `/c invite ${closestPlayer.username}`);
+  }, getRandomNumber(10000, 30000));
 }
 
 // Функция для рассылки рандомного сообщения рекламы клана в глобальный чат
 function sendAdvertisements(bot) {
-  setInterval(() => {
-    sendMsg(bot,"/gm 1");
-    sendMsg(bot,"/tptoggle disable");
-    // try {
-    //   const promise = bot.creative.clearSlot(36);
-    //   promise.then(() => { console.log("Cleared!") });
-    // } catch (error) { console.log("Not cleared! ") }
-    sendMsg(bot, adMsgs[getRandomNumber(0, adMsgs.length - 1)]);
-  }, getRandomNumber(2.5*60*1000, 3*60*1000));
+  setInterval(() => sendMsg(bot, adMsgs[getRandomNumber(0, adMsgs.length - 1)]), getRandomNumber(2.5*60*1000, 3*60*1000));
   setInterval(() => sendMsg(bot, commandsMsgs["discord"]), getRandomNumber(60*1000, 2*60*1000));
-}
-
-// Функция с прочими циклами бота
-function otherBotLoops(bot, warp, chatWriting) {
-  setInterval(() => bot.end("Restart"), 60 * 60 * 1000);  // Рестарт бота раз в час
-  setInterval(() => tpWarp(bot, warp), 10 * 60 * 1000);  // Телепорт бота раз в 10 минут
-  setInterval(() => sendMsg(bot, "/heal"), 65 * 1000);  // Хил бота раз в 10 минут
-  if (chatWriting) consoleEnter(bot);  // Активация консоли если нужно
 }
 
 // Функция, чтоб получить ближайшего игрока
@@ -187,43 +239,55 @@ function lookAtNearestPlayer(bot, closestPlayer = getNearestPlayer(bot)) {
   }
 }
 
+// Отправка инвайта ближайшему игроку при спавне
+function handleNearestInvite(bot, entity) {
+  if (entity.type === "player") sendMsg(`/c invite ${entity.username}`);
+}
+
+// Функция для полной очистки инвентаря
+// function clearInventory(bot) {
+//   sendMsg(bot, "/head remove");
+//   sendMsg(bot, "/clear");
+// }
+
 // Функция для очистки консоли с определенным интервалом
-function clearConsole(interval) {
+export function clearConsole(interval) {
   setInterval(() => console.clear(), interval*1000)
 }
 
 // Основные циклы для бота
-function mainBotLoops(bot, warp, chatWriting) {
-  invitePlayers(bot);
-  lookAtEntities(bot);
-  otherBotLoops(bot, warp, chatWriting);
-  setSkin(bot, "SadLyric111");
-  sendMsg(bot, "/kiss confirm off")
-  sendAdvertisements(bot);
+function mainBotLoops(bot, chatWriting, warp) {
+  invitePlayers(bot);  // Приглашение ближайшего игрока
+  setSkin(bot, "SadLyric111");  // Установка скина
+  sendMsg(bot,"/gm 1");
+  sendAdvertisements(bot);  // Отправка рекламы
+  setInterval(() => bot.end("Restart"), 60 * 60 * 1000);  // Рестарт бота раз в час
+  consoleEnter(bot, chatWriting);  // Активация консоли
+  setInterval(() => { if (bot.game.dimension !== "overworld") tpWarp(bot, warp)}, 5 * 1000);  // Анти-трапка +
+  setInterval(async () => {
+    await saveInterval();
+    tpWarp(bot, warp);
+  }, 5 * 60 * 1000);
 }
 
 // Функция для отправки сообщений с try/catch
 function sendMsg(bot, msg) {
-  try {
-    bot._client.chat(msg);
-  } catch (error) {
-    console.log("Error!");
-  }
+  try { bot.chat(msg) } catch (error) {}
 }
 
 // Функция для телепортации на варп с try/catch
 function tpWarp(bot, warp) {
   try {
-      sendMsg(bot, `/warp ${warp}`);
+    sendMsg(bot, `/warp ${warp}`)
   } catch (error) {
-      bot.end("An error has occurred");
+    bot.end("An error has occurred while teleporting to warp");
   }
 }
 
 // Функция для переподключения бота на сервер
 function reconnectBot(nickname, portal, warp, reason) {
   console.log(`${nickname} - Reconnection... (${reason})`);
-  createBot(nickname, portal, warp);
+  createBotCH(nickname, portal, warp);
 }
 
 // Функция для установки скина
@@ -232,9 +296,8 @@ function setSkin(bot, skinName) {
 }
 
 // Функция для работы с сообщениями
-function messagesMonitoring(message, bot, warp) {
+async function messagesMonitoring(message, bot) {
   const fullMessage = extractTextFromChatMessage(message);
-  if (fullMessage.includes("Перемещение на")) tpWarp(warp);
   const textMessage = message.getText();
   const lowTextMessage = textMessage.toLowerCase();
 
@@ -249,66 +312,49 @@ function messagesMonitoring(message, bot, warp) {
     const newMember = matchJoin[1];
     if (playerDeaths[newMember]) playerDeaths[newMember] = 0;
     sendMsg(bot, `/cc Добро пожаловать в клан, ${newMember}! Обязательно вступи в наш дискорд, там много всего интересного! Если хочешь вступить в наш дискорд сервер, то пиши мне - kotik16f`);
-  }
 
-  else if (matchLeave && matchLeave[1]) {
+  } else if (matchLeave && matchLeave[1]) {
     const leaveMember = matchLeave[1];
     sendMsg(bot, `/cc ${leaveMember} выходит из клана, ОБОССАТЬ И НА МОРОЗ!`);
-  }
 
-  else if (matchInvite && matchInvite[1] && lowTextMessage.includes("#invite")) {
+  } else if (matchInvite && matchInvite[1] && lowTextMessage.includes("#invite")) {
     const invitePlayer = matchInvite[1];
     sendMsg(bot, `/c invite ${invitePlayer}`);
-  }
 
-  else if (matchKdr && matchKdr[1]) {
+  } else if (matchKdr && matchKdr[1]) {
     let killedPlayer = matchKdr[1];
 
     countDie(killedPlayer);
     const deathsCount = playerDeaths[killedPlayer]
     if (deathsCount > 4) {
-      sendMsg(bot,`/c kick ${killedPlayer}`);
+      sendMsg(bot, `/c kick ${killedPlayer}`);
       blacklist.push(killedPlayer);
-      saveBlacklist(blacklist);
+      await saveBlacklist(blacklist);
     }
-    saveDeaths();
+    await saveDeaths();
   }
 
-  if (fullMessage === "Пожайлуста прекратите читерить или вы будете забанены!") bot.end();
+  if (fullMessage === "Пожайлуста прекратите читерить или вы будете забанены!") bot.end("Freeze troll");
   if (lowTextMessage.startsWith("клан:")) {
-    if (lowTextMessage.includes("afterdar")) sendMsg(bot, unterMsgs["afterdark"]);
-    else if (lowTextMessage.includes("worte")) sendMsg(bot, unterMsgs["wortex"]);
-    else if (lowTextMessage.includes("goldligh")) sendMsg(bot, unterMsgs["goldlight"]);
-    else if (lowTextMessage.includes("blyyet")) sendMsg(bot, unterMsgs["blyyeti"]);
-    else if (lowTextMessage.includes("helltea")) sendMsg(bot, unterMsgs["hellteam"]);
-    else if (lowTextMessage.includes("krist")) sendMsg(bot, unterMsgs["kristl"]);
-
-    if (lowTextMessage.includes(("#команд"))) sendMsg(bot, commandsMsgs["commandList"]);
-    else if (lowTextMessage.includes(("#списокбото"))) sendMsg(bot, commandsMsgs["botList"]);
-    else if (lowTextMessage.includes(("#союз"))) sendMsg(bot, commandsMsgs["allies"]);
-    else if (lowTextMessage.includes(("#враг"))) sendMsg(bot, commandsMsgs["enemies"]);
-    else if (lowTextMessage.includes(("#функци"))) sendMsg(bot, commandsMsgs["functions"]);
-    else if (lowTextMessage.includes(("#доскапозор"))) sendMsg(bot, commandsMsgs["shame"]);
-    else if ((lowTextMessage.includes(("#чёрныйсписо"))) || (lowTextMessage.includes(("#черныйсписо")))) sendMsg(bot, commandsMsgs["blacklist"]);
-    else if (lowTextMessage.includes("#версиибота")) {
-      if (lowTextMessage.includes("1")) sendMsg(bot, commandsMsgs["versions"]["1"]);
-      else if (lowTextMessage.includes("2")) sendMsg(bot, commandsMsgs["versions"]["2"]);
-      else if (lowTextMessage.includes("3")) sendMsg(bot, commandsMsgs["versions"]["3"]);
-      else if (lowTextMessage.includes("4")) sendMsg(bot, commandsMsgs["versions"]["4"]);
+    for (const key in answerMessages) {
+      if (lowTextMessage.includes(key)) {
+        sendMsg(bot, answerMessages[key]);
+        await writeLog(fullMessage, "ClanLog.txt");
+        break;
+      }
     }
-
-    writeLog(fullMessage, "ClanLog.txt");
   }
 
-  else if (fullMessage.startsWith("[ɢ]")) writeLog(fullMessage, "GlobalLog.txt");
-  else if (fullMessage.startsWith("[ʟ]")) writeLog(fullMessage, "LocalLog.txt");
+  if (fullMessage.startsWith("[ɢ]")) await writeLog(fullMessage, "GlobalLog.txt");
+  else if (fullMessage.startsWith("[ʟ]")) await writeLog(fullMessage, "LocalLog.txt");
 }
 
 // Функция для создания бота
-function createBot(nickname, portal, warp = allBotWarp, chatWriting = false, password = defPassword, host = "mc.masedworld.net", port = 25565, auth = "offline") {
+export function createBotCH(nickname, portal, warp = allBotWarp, chatWriting = false, password = defPassword, host = "mc.masedworld.net", port = 25565, auth = "offline") {
+  botList.push(nickname);
   const proxy = getRandomProxy();
   const agent = new HttpProxyAgent(`http://${proxy}`);
-  const bot = mineflayer.createBot({
+  const bot = createBot({
     host: host,
     port: port,
     username: nickname,
@@ -316,23 +362,17 @@ function createBot(nickname, portal, warp = allBotWarp, chatWriting = false, pas
     auth: auth,
   });
 
-  bot.once("spawn", () => mainBotLoops(bot, warp, chatWriting));
-
   bot.on("spawn", () => handleSpawn(bot, portal, password));
-  bot.on("message", (message) => messagesMonitoring(message, bot, warp));
-  bot.on("forcedMove", () => tpWarp(bot, warp));
   bot.on("error", (err) => bot.end(`An error has occurred ${err}`));
   bot.on("end", (reason) => reconnectBot(nickname, portal, warp, reason));
-}
 
-clearConsole(10*60);
-// Создание ботов
-//
-createBot("VectorKemper1ng", "s1");
-createBot("Kemper1ng", "s2");
-createBot("NeoKemper1ng", "s3");
-createBot("SCPbotSH", "s4");
-createBot("Alfhelm", "s5");
-createBot("QuaKemper1ng", "s6");
-// createBot("AntiKemper1ng", "s7");  // Бан на 3 дня до 1 октября
-createBot("Temper1ng", "s8");
+  setTimeout(() => {
+    mainBotLoops(bot, chatWriting, warp);
+    bot.on("entitySpawn", (entity) => handleNearestInvite(bot, entity));
+    bot.on("entityMoved", () => lookAtNearestPlayer(bot));
+    bot.on("message", async (message) => await messagesMonitoring(message, bot, warp));
+    bot.on("forcedMove", () => tpWarp(bot, warp));
+  }, 5 * 1000);  // Задержка в 5 секунд чтобы бот не вылетал из-за спама
+  // bot.inventory.on("updateSlot", () => clearInventory(bot));
+  // bot.on("", () => {});
+}
