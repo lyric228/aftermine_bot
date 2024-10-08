@@ -42,7 +42,7 @@ import { createBotCheat } from "./cheat.js";
 // createBotCheat("0E2T7s282__");
 // createBotCheat("6F2j5__Q6_");
 // createBotCheat("z_xY____4");
-createBotCheat("p_3_7W_");
+// createBotCheat("p_3_7W_");
 // createBotCheat("_4e8_46__");
 // 40
 // NEW

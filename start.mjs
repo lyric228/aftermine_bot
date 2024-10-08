@@ -1,17 +1,19 @@
-import { createBotCH, clearConsole } from "./index.mjs";
-// import { createBotUha } from "./uha.mjs";
+import { startBot, clearConsole } from "./index.mjs";
+import { startBotCM } from "./cm.js";
+
 
 clearConsole(10*60);
-// Создание ботов
+// Создание ботов MW
 //
-createBotCH("VectorKemper1ng", "s1");
-createBotCH("Kemper1ng", "s2");
-createBotCH("NeoKemper1ng", "s3");
-createBotCH("SCPbotSH", "s4");
-createBotCH("Alfhelm", "s5");
-createBotCH("QuaKemper1ng", "s6");
-createBotCH("AntiKemper1ng", "s7");
-createBotCH("Temper1ng", "s8");
-// Создание бота ухи
+startBot("VectorKemper1ng", "s1");
+startBot("Kemper1ng", "s2");
+startBot("NeoKemper1ng", "s3");
+startBot("SCPbotSH", "s4");
+startBot("Alfhelm", "s5");
+startBot("QuaKemper1ng", "s6");
+startBot("AntiKemper1ng", "s7");
+startBot("Temper1ng", "s8");
+// Создание ботов CM
 //
-//createBotUha("M2ndar1HoBbIui", "s2", "n9831knt", false, "yagey");
+startBotCM("musulmango14", "s1");
+startBotCM("musulmango88", "s2");

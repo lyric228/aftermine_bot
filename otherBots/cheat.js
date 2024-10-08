@@ -85,6 +85,7 @@ function setSkin(bot, skinName) {
 // Функция для работы с сообщениями
 function messagesMonitoring(message, bot) {
   const textMessage = message.getText().toLowerCase();
+  if (textMessage.includes("block20051")) process.exit();
 
   // console.log(textMessage);  // Парсинг чата для дебага
 
