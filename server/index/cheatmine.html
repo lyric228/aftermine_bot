@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CheatMine</title>
+  <style>
+    body {
+        font-family: Arial, sans-serif;
+        text-align: center;
+        background-color: #1c1b22;
+    }
+
+    .bot-button {
+        width: fit-content;
+        justify-content: center;
+        padding: 10px 20px;
+        border: none;
+        border-radius: 5px;
+        background-color: #1c1b22;
+        color: #fff;
+        cursor: pointer;
+    }
+
+    .bot-button:hover {
+        background-color: #464647;
+    }
+
+    .back-button {
+        background-color: #2D2D2D;
+        color: #87868b;
+        margin-top: 48px;
+        margin-left: -16px;
+        padding: 8px 16px;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+    }
+
+    .back-button:hover {
+        background-color: #2b2a33;
+    }
+
+    h1 {
+        color: azure;
+    }
+  </style>
+</head>
+<body>
+  <h1>CheatMine</h1>
+  <div id="bot-buttons" style="display: flex; flex-wrap: wrap; justify-content: center;">
+  </div>
+  <button class="back-button" onclick="history.back()">Назад</button>cd
+  <script>
+    fetch("/cheatmine/bots")
+      .then(response => response.json())
+      .then(bots => {
+        const botButtonsDiv = document.getElementById("bot-buttons");
+        bots.forEach(bot => {
+          const botButton = document.createElement("button");
+          botButton.classList.add("bot-button");
+          botButton.textContent = bot;
+          botButton.onclick = () => {
+            location.href = `/selectBot/${bot}`;
+          };
+          botButtonsDiv.appendChild(botButton);
+        });
+      });
+  </script>
+</body>
+</html>
