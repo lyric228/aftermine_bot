@@ -1,33 +1,65 @@
-import {appendFile, readFileSync, writeFileSync} from "fs";
+import {appendFile, existsSync, mkdirSync, readFileSync, writeFileSync} from "fs";
+import {BotPanelServer} from "./server/server.mjs";
 import {createInterface} from "readline";
 import {freemem, totalmem} from "os";
 import {createBot} from "mineflayer";
-import gc from "garbage-collector";
-import {Storage} from "megajs";
+import cache from "memory-cache";
 
 
-let botList = [];
-let blacklist = [];
 let playerDeaths = {};
+let blacklist = [];
+let botList = [];
 let botCount = 0;
-const storage = await new Storage({
-  email: "xhikzerox@gmail.com",
-  password: "yakrutoy2801"
-}).ready
+export const server = new BotPanelServer();
+export const botsObjData = {
+  "masedworld": {
+    "s1": () => { return startBot({nickname: "VectorKemper1ng", portal: "s1"}) },
+    "s2": () => { return startBot({nickname: "Kemper1ng", portal: "s2"}) },
+    "s3": () => { return startBot({nickname: "NeoKemper1ng", portal: "s3"}) },
+    "s4": () => { return startBot({nickname: "SCPbotSH", portal: "s4"}) },
+    "s5": () => { return startBot({nickname: "Alfhelm", portal: "s5"}) },
+    "s6": () => { return startBot({nickname: "QuaKemper1ng", portal: "s6"}) },
+    "s7": () => { return startBot({nickname: "AntiKemper1ng", portal: "s7"}) },
+    "s8": () => { return startBot({nickname: "Temper1ng", portal: "s8"}) },
+  },
+  "cheatmine": {
+    "s1": () => { return startBot({nickname: "musulmango14", portal: "s1", host: "ru.cheatmine.net"}) },
+    "s2": () => { return startBot({nickname: "musulmango88", portal: "s2", host: "ru.cheatmine.net"}) },
+  }
+};
+export let botsObj = {
+  "masedworld": {
+    "s1": {bot: null, timer: "00д 00ч 00м 00с", startTime: null, interval: null},
+    "s2": {bot: null, timer: "00д 00ч 00м 00с", startTime: null, interval: null},
+    "s3": {bot: null, timer: "00д 00ч 00м 00с", startTime: null, interval: null},
+    "s4": {bot: null, timer: "00д 00ч 00м 00с", startTime: null, interval: null},
+    "s5": {bot: null, timer: "00д 00ч 00м 00с", startTime: null, interval: null},
+    "s6": {bot: null, timer: "00д 00ч 00м 00с", startTime: null, interval: null},
+    "s7": {bot: null, timer: "00д 00ч 00м 00с", startTime: null, interval: null},
+    "s8": {bot: null, timer: "00д 00ч 00м 00с", startTime: null, interval: null},
+  },
+  "cheatmine": {
+    "s1": {bot: null, timer: "00д 00ч 00м 00с", startTime: null, interval: null},
+    "s2": {bot: null, timer: "00д 00ч 00м 00с", startTime: null, interval: null},
+  },
+};
 
-// Функция для очистки консоли с определенным интервалом
-export function clearConsole(interval) {
-  setInterval(() => console.clear(), interval*1000);
-}
 
-
-export function startBot(nickname, portal, host = "ru.masedworld.net", port = 25565, warp = "n930gkh1r", chatWriting = false, hideErrors = false, password = "!afterHuila00pidor3svocvoRus") {
-  return new Bot(nickname, portal, warp, chatWriting, hideErrors, password, host, port);
+export function startBot(options) {
+  const nickname = options.nickname || "Kemper1ng";
+  const portal = options.portal || "s2";
+  const host = options.host || "ru.masedworld.net";
+  const warp = options.warp || "n930gkh1r";
+  const chatWriting = options.chatWriting || false;
+  const hideErrors = options.hideErrors || false;
+  const password = options.password || "!afterHuila00pidor3svocvoRus";
+  return new Bot(nickname, portal, warp, chatWriting, hideErrors, password, host);
 }
 
 
 class Bot {
-  constructor(nickname, portal, warp, chatWriting, hideErrors, password, host, port) {
+  constructor(nickname, portal, warp, chatWriting, hideErrors, password, host) {
+    setTimeout(() => {}, 1000);
     botCount++;
     blacklist = this.loadBlacklist();
     playerDeaths = this.loadDeaths();
@@ -42,9 +74,10 @@ class Bot {
     this.adMsgs = [
       "!&fПривет, друг! Хочешь побывать в &cклане&f, где была великая история? Тогда тебе сюда -> &c/warp CH&f ! У нас есть: &bтоповый кит для пвп&f, &eхороший кх &fи многое другое! Чего же ты ждёшь? &d&nПрисоединяйся к нам!",
       "!&fПриветик! Хочешь с &dкайфом &fпровести время, но не знаешь как? Тогда тебе подойдёт &cклан &4&lChert&0&lHouse &f! У нас ты найдёшь &eхороший кх&f, &bтоповый кит &fи &nуважение клана&f. Чтоб вступить в клан пиши &c/warp CH",
-      "!&fХочешь в &dкрутой клан &fс многими &eплюшками? Тогда тебе нужен клан &4&lChert&0&lHouse&fl ! У нас ты не только найдёшь &bтоповый кит для пвп&f и&e хороший кх&f, но и дс сервер! А так же у нас открыт набор на модераторов! &c/warp CH",
+      "!&fХочешь в &dкрутой клан &fс многими &eплюшками? Тогда тебе нужен клан &4&lChert&0&lHouse&f ! У нас ты не только найдёшь &bтоповый кит для пвп&f и&e хороший кх&f, но и дс сервер! А так же у нас открыт набор на модераторов! &c/warp CH",
       "!&fИщешь &aотличный клан &fс &eкрутыми возможностями&f? Тогда тебе подходит клан &4&lChert&0&lHouse &f! &bТоповый кит&f, &6функциональный бот&f, всё это ты найдёшь на &c/warp ch&f . Заинтересовало? Ждём именно тебя!",
       "!&eТоповый кх&f, &bахеренный кит&f, &6функциональный бот&f, всё это есть в клане &4&lChetrt&0&lHouse&f! Ощути весь кайф в &cнашем клане&f, побывай в нашем &aдс сервере &fи не только! Просто напиши в лс боту #invite ! &7(/warp ch)",
+      "!&aПривет! Не хочешь-ли попасть к действительно &4&lПИЗДАТЫМ ПАРНЯМ&r&a? Тогда - тебе к нам! У нас ведётся набор на &2&lПВПшеров!&r&a Ждём тебя на /warp ch!",
     ];
     this.unterMsgs = {
       "afterdark": "/cc А вы знали, что афтердарк - хуйня? Глава у них школьник, который сосет хуй, а также персонал у них полная хуйня. Если вы не хотите быть хуеглотом, то смело оставайтесь у нас и получайте нашу поддержку.",
@@ -76,7 +109,6 @@ class Bot {
       "BogSupnogoDnya",
       "makleia",
       "ryfed_pc",
-      "Kemper1ng",
     ]
     this.answerMessages = {
       "afterdar": this.unterMsgs["afterdark"],
@@ -96,81 +128,114 @@ class Bot {
       "#версиибота": this.commandsMsgs["versions"]()[this.currentArg],
     }
     this.adminAnswerMessages = {
-      "#логи": async () => {
-        this.sendMsg(`/m ${this.lastUser} Отправляю логи на сервер...`);
-        await this.uploadDataToDisk();
-        this.sendMsg(`/m ${this.lastUser} Логи отправлены на сервер!`);
+      "#логи": () => {
+        this.sendLocalMsg(`Отправляю логи на сервер...`);
+        // await this.uploadDataToDisk();
+        this.sendLocalMsg(`Логи отправлены на сервер!`);
       },
-      "#clearchat": async () => {
+      "#clearchat": () => {
         setTimeout(() => this.sendMsg("/clearchat"), 1000);
-        this.sendMsg(`/m ${this.lastUser} Чат очищен!`);
+        this.sendLocalMsg(`Чат очищен!`);
       },
-      "#чс": async () => {
-        const curUser = this.currentArg;
-        if (!blacklist.includes(curUser)) {
-          blacklist.push(curUser);
+      "#чс": () => {
+        if (!blacklist.includes(this.currentArg)) {
+          blacklist.push(this.currentArg);
           this.saveBlacklist();
-          this.sendMsg(`/m ${this.lastUser} Игрок ${curUser} добавлен в ЧС!`);
+          this.sendLocalMsg(`Игрок ${this.currentArg} добавлен в ЧС!`);
           blacklist = this.loadBlacklist();
-        } else this.sendMsg(`/m ${this.lastUser} Игрок ${curUser} уже в ЧС!`);
+        } else this.sendLocalMsg(`Игрок ${this.currentArg} уже в ЧС!`);
       },
-      "#анчс": async () => {
+      "#анчс": () => {
         const curUser = this.currentArg;
         if (blacklist.includes(curUser)) {
           blacklist = blacklist.filter(item => item !== curUser);
           this.saveBlacklist();
-          this.sendMsg(`/m ${this.lastUser} Игрок ${curUser} удален из ЧС!`);
-        } else this.sendMsg(`/m ${this.lastUser} Игрока ${curUser} нету в ЧС!`);
+          this.sendLocalMsg(`Игрок ${curUser} удален из ЧС!`);
+        } else this.sendLocalMsg(`Игрока ${curUser} нету в ЧС!`);
       },
-      "#дп": async () => {
+      "#дп": () => {
         const index = this.allArgs[1]-1;
         this.shameBoard[index] = this.currentArg;
-        this.sendMsg(`/m ${this.lastUser} Игрок ${this.currentArg} теперь на ${this.allArgs[1]} месте на доске позора!`);
+        this.sendLocalMsg(`Игрок ${this.currentArg} теперь на ${this.allArgs[1]} месте на доске позора!`);
       },
-      "#чат": async () => {
+      "#чат": () => {
         this.sendMsg(this.allArgs.join(" "));
       },
+      "#админ": () => {
+        if (this.admins.includes(this.currentArg)) {
+          this.admins.push(this.currentArg);
+          this.sendLocalMsg(`Теперь ${this.currentArg} админ!`);
+        } else this.sendLocalMsg(`${this.currentArg} уже админ!`);
+      },
+      "#ОЗУ": () => {
+        this.sendLocalMsg(`Очищаю ОЗУ...`);
+        this.clearRam(false);
+      },
+      "#рекконект": () => {
+        this.sendLocalMsg(`Рестарт!`);
+        this.bot.end("Reconnect by admin.");
+      },
+      "#инвайт": () => {
+        if (this.inviteEnabled) {
+          this.sendLocalMsg(`Инвайты выключены!`);
+          this.inviteEnabled = false;
+          clearInterval(this.invitePlayersInterval);
+        } else {
+          this.sendLocalMsg(`Инвайты включены!`);
+          this.invitePlayers();
+        }
+      },
     }
+    this.rgInfo = {
+      name: "",
+      owners: [],
+      members: [],
+    };
     this.chatWriting = chatWriting;
     this.hideErrors = hideErrors;
     this.password = password;
     this.nickname = nickname;
     this.portal = portal;
     this.warp = warp;
-    this.skin = "zxclyric";
+    this.skin = "Kemper1ng";
     this.name = "Lyric";
     this.host = host;
-    this.port = port;
     this.auth = "offline";
+    this.inviteEnabled = false;
     this.currentArg = "";
     this.allArgs = [];
     this.lastUser = "";
-    this.storage = storage;
+    this.checkChat = false;
+    this.checkSwingArm = false;
     this.bot = createBot({
       host: this.host,
-      port: this.port,
       username: this.nickname,
       auth: this.auth,
       hideErrors: this.hideErrors,
     });
-    this.bot.on("spawn", () => this.handleSpawn());
     this.bot.on("end", (reason) => this.reconnectBot(reason));
     this.bot.on("error", (error) => this.bot.end(`Error!\n\n${error}`));
+    this.bot.on("spawn", () => this.handleSpawn());
 
     setTimeout(() => {
-      this.tpWarp();
-      this.consoleEnter();
-      this.setSkin();
-      this.setName();
-      this.botLoops();
+      setTimeout(() => {
+        this.tpWarp();
+        this.consoleEnter();
+        this.setSkin();
+        this.setName();
+        this.setDistance();
+        this.botLoops();
+      }, 1000);
       this.bot.on("entitySpawn", (entity) => this.handleNearestInvite(entity));
       this.bot.on("entityMoved", () => this.lookAtNearestPlayer());
-      this.bot.on("message", async (message) => await this.messagesMonitoring(message));
+      this.bot.on("message", (message) => this.messagesMonitoring(message));
       this.bot.on("forcedMove", () => this.tpWarp());
       this.bot.on("kicked", (reason) => this.bot.end(reason));
       this.bot.on("entityEffect", () => this.handleEffect());
-      this.bot.on("respawn", () => this.handleRespawn());
-    }, 5 * 1000);  // Задержка в 5 секунд чтобы бот не вылетал из-за спама
+      this.bot.on("respawn", () => this.antiTrap());
+      this.bot.on("blockUpdate", (oldState, newState) => this.handleBlockChange(oldState, newState));
+      this.bot.on("entitySwingArm", (entity) => this.swingArmTrigger(entity));
+    }, 1000);
   }
 
   // Функция для логина бота
@@ -183,6 +248,7 @@ class Bot {
 
   // Функция для переподключения бота
   reconnectBot(reason) {
+    if ((reason.includes("AggregateError")) || (reason.includes("ECONNRESET"))) return;
     console.log(`${this.nickname} - Reconnection... (${reason})`);
     botCount--;
     this.saveBlacklist();
@@ -198,10 +264,16 @@ class Bot {
     } catch (error) {}
   }
 
+  // Функция для отправки личных сообщений с try/catch
+  sendLocalMsg(msg, user = this.lastUser) {
+    try {
+      this.bot.chat(`/m ${user} ${msg}`);
+    } catch (error) {}
+  }
+
   // Функция для телепортации на варп с try/catch
   tpWarp(warp = this.warp) {
     try {
-      if (typeof warp === "function") warp = warp();
       this.sendMsg(`/warp ${warp}`);
     } catch (error) {}
   }
@@ -217,58 +289,30 @@ class Bot {
     this.invitePlayers();  // Приглашение ближайшего игрока
     this.sendAdvertisements();  // Отправка рекламы
     this.autoRestart();  // Рестарт бота раз в час
-    this.dimensionChecker();  // Анти-трапка +
     this.ramClearInterval();  // Очистка оперативной памяти
     this.antiPumpkin();  // Анти-тыква
   }
 
   // Функция для очистки оперативной памяти
-  clearRam() {
-    const freeMemory = freemem();
-    const totalMemory = totalmem();
-    if (freeMemory / totalMemory < 0.2) gc();
-  }
-
-  // Функция для загрузки данных в файл
-  async uploadFile(name, data) {
-    try {
-      const file = this.storage.find(name);
-      await file.delete(true);
-    } catch (error) { console.log("File can't be deleted!"); }
-    try {
-      await this.storage.upload(name, data).complete;
-    } catch (error) { console.log("File can't be uploaded!"); }
-  }
-
-  // Функция для сохранения данных на мегу
-  async uploadDataToDisk() {
-    const tempBlacklist = readFileSync("data/blacklist.txt", "utf-8");
-    const tempDeaths = readFileSync("data/deaths.json", "utf-8");
-    await this.uploadFile("blacklist.txt", tempBlacklist.toString());
-    await this.uploadFile("deaths.json", tempDeaths.toString());
-    await this.logSave();
-  }
-
-  // Функция для сохранения данных логов
-  async logSave() {
-    const tempClanLog = readFileSync("logs/ClanLog.txt", "utf-8");
-    const tempGLog = readFileSync("logs/GlobalLog.txt", "utf-8");
-    const tempLLog = readFileSync("logs/LocalLog.txt", "utf-8");
-    await this.uploadFile("ClanLog.txt", tempClanLog.toString());
-    await this.uploadFile("GlobalLog.txt", tempGLog.toString());
-    await this.uploadFile("LocalLog.txt", tempLLog.toString());
+  clearRam(check = true) {
+    if (check) {
+      const freeMemory = freemem();
+      const totalMemory = totalmem();
+      if (!(freeMemory / totalMemory < 0.2)) return;
+    }
+    cache.clear();
   }
 
   // Функция для сохранения данных в черный список
   saveBlacklist() {
     blacklist.sort(() => Math.random() - 0.5);
-    writeFileSync("data/blacklist.txt", blacklist.join("\n"));
+    writeFileSync("server/data/blacklist.txt", blacklist.join("\n"));
   }
 
   // Функция для загрузки данных из черного списка
   loadBlacklist() {
     try {
-      const data = readFileSync("data/blacklist.txt").toString();
+      const data = readFileSync("server/data/blacklist.txt").toString();
       return data.split("\n");
     } catch (error) {
       if (error.code === "ENOENT") return []
@@ -278,17 +322,15 @@ class Bot {
   // Функция для сохранения данных о смертях
   saveDeaths() {
     const jsonDeaths = JSON.stringify(playerDeaths);
-    writeFileSync("data/deaths.json", jsonDeaths);
+    writeFileSync("server/data/deaths.json", jsonDeaths);
   }
 
   // Функция для загрузки данных о смертях
   loadDeaths() {
     try {
-      const jsonString = readFileSync("data/deaths.json");
+      const jsonString = readFileSync("server/data/deaths.json");
       return JSON.parse(jsonString.toString());
-    } catch (error) {
-      if (error.code === "ENOENT") return {};
-    }
+    } catch (error) { if (error.code === "ENOENT") return {}; }
   }
 
   // Функция для изменения смертей по нику
@@ -300,8 +342,21 @@ class Bot {
   // Функция для записи логов в файл
   writeLog(text, path) {
     const date = new Date().toLocaleString();
-    const logText = `${this.bot.entity.position} [${this.portal}] - ${date}: ${text}\n`;
-    appendFile(`logs/${path}`, logText, (err) => { if (err) console.error(err) });
+    const logText = `[${date}]: ${text}\n`;
+    const curServer = this.host.split(".")[1];
+    const fullPath = `server/logs/${curServer}/${this.portal}/${path}.txt`;
+    appendFile(fullPath, logText, (error) => {
+      if (!error) return;
+      if (error.code === "ENOENT") {
+        const pathParts = fullPath.split("/");
+        let currentPath = "";
+        for (let i = 0; i < pathParts.length - 1; i++) {
+          currentPath += pathParts[i] + "/";
+          if (!existsSync(currentPath)) mkdirSync(currentPath);
+        }
+        writeFileSync(fullPath, logText);
+      }
+    });
   }
 
   // Функция для генерации рандомного числа
@@ -330,15 +385,23 @@ class Bot {
 
   // Функция для приглашения ближайшего игрока в клан
   invitePlayers() {
-    setInterval(() => {
-        const closestPlayer = this.bot.nearestEntity(entity => entity.type === "player");
-        if (closestPlayer && !blacklist.includes(closestPlayer.username)) this.sendMsg(`/c invite ${closestPlayer.username}`);
+    this.inviteEnabled = true;
+    this.invitePlayersInterval = setInterval(() => {
+      if (typeof this.bot.nearestEntity !== "function") return;
+      const closestPlayer = this.bot.nearestEntity(entity => entity.type === "player");
+      if (closestPlayer && !blacklist.includes(closestPlayer.username)) this.sendMsg(`/c invite ${closestPlayer.username}`);
     }, this.getRandomNumber(10000, 30000));
   }
 
   // Функция для авто рестарта бота раз в час
   autoRestart() {
     setInterval(() => this.bot.end("Restart"), 60 * 60 * 1000);  // Рестарт бота раз в час
+  }
+
+  // Функция для полной остановки и удаления экземпляра бота
+  deleteBot() {
+    this.bot.end("Disabled by admin.");
+    delete this;
   }
 
   // Функция для очистки оперативной памяти с интервалом и телепортом на варп
@@ -354,11 +417,12 @@ class Bot {
     setInterval(() => this.clearInventory(), 60 * 1000);
   }
 
-  // Функция для проверки что бот находится в этом мире, иначе тп на варп
-  dimensionChecker() {
-    setInterval(() => {
-      if (this.bot.game.dimension !== "overworld") this.tpWarp()
-    }, 5 * 1000);  // Анти-трапка +
+  // Функция для обхода всех трапок / антитрапка +
+  antiTrap() {
+    if (this.bot.game.dimension !== "overworld") {
+      this.reconnectBot("Trapped!");
+      this.bot.respawn();
+    } else this.tpWarp();
   }
 
   // Функция для рассылки рандомного сообщения рекламы клана в глобальный чат
@@ -380,16 +444,27 @@ class Bot {
     }
   }
 
-  // Функция для контроля урона для бота
-  handleRespawn() {
-    this.tpWarp();
-    setTimeout(() => this.sendMsg("/gm 1"), 1000);
-  }
-
   // Функция для контроля эффектов у бота
   handleEffect() {
     this.sendMsg("/heal");
     this.tpWarp();
+  }
+
+  // Функция для просмотра
+  handleBlockChange(oldState, newState) {
+    if (oldState.name !== "air" && newState.name === "air") {
+      this.checkChat = true;
+      this.sendMsg("/rg i");
+    }
+  }
+
+  setDistance(distance = null) {
+    if (distance !== null) {
+      this.sendMsg("/vd 4");
+      this.sendMsg("/vd 6");
+      this.sendMsg("/vd 8");
+      this.sendMsg("/vd 10");
+    } else this.sendMsg(`/vd ${distance}`);
   }
 
   // Отправка инвайта ближайшему игроку при спавне
@@ -398,27 +473,83 @@ class Bot {
   }
 
   // Функция для установки скина
-  setSkin() {
-    this.sendMsg(`/skin ${this.skin}`);
+  setSkin(skin = this.skin) {
+    this.sendMsg(`/skin ${skin}`);
   }
 
   // Функция для установки ника
-  setName() {
-    this.sendMsg(`/nickname ${this.name}`);
+  setName(name = this.name) {
+    this.sendMsg(`/nickname ${name}`);
+  }
+
+  // Функция для парсинга информации о регионе
+  parseRegionInfo(rgMessage) {
+    const result = {
+      name: "",
+      owners: [],
+      members: [],
+    };
+    for (const line of rgMessage.split("\n")) {
+      if (line.includes("Владельцы: ")) {
+        result.owners = line.replace("Владельцы: ", "").split(", ");
+      } else if (line.includes("Участники: ")) {
+        result.members = line.replace("Участники: ", "").split(", ");
+      } else if (line.includes("Регион: ")) {
+        result.name = line.replace("Регион: ", "").split(" ")[0];
+      }
+    }
+    return result;
+  }
+
+  // Функция для удаления игрока из региона если он ломает блоки
+  swingArmTrigger(entity) {
+    if (this.checkSwingArm && (!this.admins.includes(entity.username))) {
+      if (this.rgInfo.name === "__global__") return;
+      if (this.rgInfo.members.includes(entity.username)) {
+        this.sendMsg(`/rg removemember ${this.rgInfo.name} ${entity.username}`);
+      } else if (this.rgInfo.owners.includes(entity.username)) {
+        this.sendMsg(`/rg removeowner ${this.rgInfo.name} ${entity.username}`);
+      }
+      this.checkSwingArm = false;
+    }
   }
 
   // Функция для работы с сообщениями
-  async messagesMonitoring(message) {
-    const textMessage = message.getText();
-    const lowTextMessage = textMessage.toLowerCase();
-    const cmdMessages = textMessage.split(" ");
+  messagesMonitoring(message) {
+    let textMessage = message.getText();
+    let username = "";
+    let cmdMessages = textMessage.split(" ");
+    let lowTextMessage = textMessage.toLowerCase();
+    if (textMessage === " ") return;
 
-    // console.log(textMessage);
+    if (this.checkChat) {
+      this.rgInfo = this.parseRegionInfo(textMessage);
+      this.checkChat = false;
+      this.checkSwingArm = true;
+    }
+
+    if (textMessage.startsWith("[ʟ]") || textMessage.startsWith("[ɢ]")) {
+      try {
+        username = message.json.extra[0].clickEvent.value.split(" ")[1];
+      } catch (error) {
+        return error;
+      }
+      const index = cmdMessages.indexOf("⇨");
+      if (index !== -1) {
+        cmdMessages[index-1] = username;
+        textMessage = cmdMessages.join(" ");
+      }
+    }
+
+    if (this.portal === server.currentBot && this.host.includes(server.currentBotPanel)) {
+      const date = new Date().toLocaleString();
+      const msgLog = `[${date}] ${textMessage}\n`;
+      server.io.emit("updateChat", msgLog);
+    }
 
     const matchLeave = textMessage.match(/› (.*?) покинул клан\./);
     const matchJoin = textMessage.match(/› (.*?) присоеденился к клану\./);
     const matchCmd = textMessage.match(/^›\[(.*?) -> я] (.*)$/);
-    const matchKdr = textMessage.match(/игрока\s*(.*)/);
     const matchInvite = textMessage.match(/›\[(.*?) ->/);
 
     if (matchJoin && matchJoin[1]) {
@@ -434,8 +565,10 @@ class Bot {
       const invitePlayer = matchInvite[1];
       this.sendMsg(`/c invite ${invitePlayer}`);
 
-    } else if (matchKdr && matchKdr[1]) {
-      let killedPlayer = matchKdr[1];
+    }
+    if (cmdMessages[1] === "убил" && cmdMessages[2] === "игрока" && cmdMessages.length === 4) {
+      let killedPlayer = cmdMessages[3];
+      if (botList.includes(killedPlayer) || this.admins.includes(killedPlayer) || killedPlayer === this.nickname) return;
       this.countDie(killedPlayer);
       const deathsCount = playerDeaths[killedPlayer]
       if (deathsCount > 4 && !this.admins.includes(killedPlayer)) {
@@ -453,7 +586,11 @@ class Bot {
       this.allArgs = messages.slice(1);
       this.currentArg = this.allArgs[0];
       this.lastUser = username;
-      if ((this.admins.includes(username)) && (command in this.adminAnswerMessages)) await this.adminAnswerMessages[command]();
+      if ((this.admins.includes(username))) {
+        const keys = Object.keys(this.adminAnswerMessages);
+        const containsKey = keys.some(key => key.includes(command));
+        if (containsKey) this.adminAnswerMessages[command]();
+      }
     }
 
     if (lowTextMessage.startsWith("клан:")) {
@@ -466,10 +603,10 @@ class Bot {
           break;
         }
       }
-      this.writeLog(textMessage, "ClanLog.txt");
+      this.writeLog(textMessage, "ClanLog");
     }
-    else if (textMessage.startsWith("[ɢ]")) this.writeLog(textMessage, "GlobalLog.txt");
-    else if (textMessage.startsWith("[ʟ]")) this.writeLog(textMessage, "LocalLog.txt");
+    else if (textMessage.startsWith("[ɢ]")) this.writeLog(textMessage, "GlobalLog");
+    else if (textMessage.startsWith("[ʟ]")) this.writeLog(textMessage, "LocalLog");
     else if (textMessage === "Пожайлуста прекратите читерить или вы будете забанены!") this.bot.end("Freeze troll");
   }
 }
