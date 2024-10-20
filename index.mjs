@@ -1,9 +1,10 @@
 import {appendFile, existsSync, mkdirSync, readFileSync, writeFileSync} from "fs";
 import {BotPanelServer} from "./server/server.mjs";
+import {HttpProxyAgent} from "http-proxy-agent";
 import {createInterface} from "readline";
 import {freemem, totalmem} from "os";
-import {createBot} from "mineflayer";
 import cache from "memory-cache";
+import * as mf from "mineflayer";
 
 
 let playerDeaths = {};
@@ -29,20 +30,34 @@ export const botsObjData = {
 };
 export let botsObj = {
   "masedworld": {
-    "s1": {bot: null, timer: "00д 00ч 00м 00с", startTime: null, interval: null},
-    "s2": {bot: null, timer: "00д 00ч 00м 00с", startTime: null, interval: null},
-    "s3": {bot: null, timer: "00д 00ч 00м 00с", startTime: null, interval: null},
-    "s4": {bot: null, timer: "00д 00ч 00м 00с", startTime: null, interval: null},
-    "s5": {bot: null, timer: "00д 00ч 00м 00с", startTime: null, interval: null},
-    "s6": {bot: null, timer: "00д 00ч 00м 00с", startTime: null, interval: null},
-    "s7": {bot: null, timer: "00д 00ч 00м 00с", startTime: null, interval: null},
-    "s8": {bot: null, timer: "00д 00ч 00м 00с", startTime: null, interval: null},
+    "s1": { bot: null, timer: "0д 0ч 0м 0с", startTime: null, interval: null },
+    "s2": { bot: null, timer: "0д 0ч 0м 0с", startTime: null, interval: null },
+    "s3": { bot: null, timer: "0д 0ч 0м 0с", startTime: null, interval: null },
+    "s4": { bot: null, timer: "0д 0ч 0м 0с", startTime: null, interval: null },
+    "s5": { bot: null, timer: "0д 0ч 0м 0с", startTime: null, interval: null },
+    "s6": { bot: null, timer: "0д 0ч 0м 0с", startTime: null, interval: null },
+    "s7": { bot: null, timer: "0д 0ч 0м 0с", startTime: null, interval: null },
+    "s8": { bot: null, timer: "0д 0ч 0м 0с", startTime: null, interval: null },
   },
   "cheatmine": {
-    "s1": {bot: null, timer: "00д 00ч 00м 00с", startTime: null, interval: null},
-    "s2": {bot: null, timer: "00д 00ч 00м 00с", startTime: null, interval: null},
+    "s1": { bot: null, timer: "0д 0ч 0м 0с", startTime: null, interval: null },
+    "s2": { bot: null, timer: "0д 0ч 0м 0с", startTime: null, interval: null },
   },
 };
+const shameBoard = [
+  "ziklichniy",
+  "pavel_чото_там",
+  "cph4peezzz",
+  "forltop_W",
+  "BOZZIinSNG",
+];
+const admins = [
+  "zxclyric",
+  "KoTiK_B_KeDaH_",
+  "BogSupnogoDnya",
+  "makleia",
+  "ryfed_pc",
+];
 
 
 export function startBot(options) {
@@ -50,34 +65,45 @@ export function startBot(options) {
   const portal = options.portal || "s2";
   const host = options.host || "ru.masedworld.net";
   const warp = options.warp || "n930gkh1r";
+  const password = options.password || "!afterHuila00pidor3svocvoRus";
   const chatWriting = options.chatWriting || false;
   const hideErrors = options.hideErrors || false;
-  const password = options.password || "!afterHuila00pidor3svocvoRus";
-  return new Bot(nickname, portal, warp, chatWriting, hideErrors, password, host);
+  const auth = options.auth || false;
+  const closeTimeout = options.closeTimeout || 5*60*1000;
+  const proxy = options.proxy || getRandomProxy();
+  const visname = options.name || "Lyric";
+  const skinname = options.skin || "zxclyric";
+  const inviteEnabled = options.inviteEnabled || false;
+  return new Bot(nickname, portal, warp, chatWriting, hideErrors, password, host, proxy, closeTimeout, visname, skinname, auth, inviteEnabled);
+}
+
+
+export function getRandomNumber(min, max) {
+  return Math.floor(Math.random() * (max - min + 1)) + min;
+}
+
+
+export function getRandomProxy() {
+  const proxies = readFileSync("server/data/proxy.txt", "utf-8").split("\n").filter(line => line.trim() !== "");
+  return proxies[getRandomNumber(0, proxies.length)];
 }
 
 
 class Bot {
-  constructor(nickname, portal, warp, chatWriting, hideErrors, password, host) {
-    setTimeout(() => {}, 1000);
+  constructor(nickname, portal, warp, chatWriting, hideErrors, password, host, proxy, closeTimeout, visname, skinname, auth, inviteEnabled) {
     botCount++;
-    blacklist = this.loadBlacklist();
-    playerDeaths = this.loadDeaths();
+    if (botCount === 1) {
+      blacklist = this.loadBlacklist();
+      playerDeaths = this.loadDeaths();
+    }
     if (botList.length <= botCount) botList.push(this.nickname);
-    this.shameBoard = [
-      "ziklichniy",
-      "pavel_чото_там",
-      "cph4peezzz",
-      "forltop_W",
-      "BOZZIinSNG",
-    ];
     this.adMsgs = [
       "!&fПривет, друг! Хочешь побывать в &cклане&f, где была великая история? Тогда тебе сюда -> &c/warp CH&f ! У нас есть: &bтоповый кит для пвп&f, &eхороший кх &fи многое другое! Чего же ты ждёшь? &d&nПрисоединяйся к нам!",
       "!&fПриветик! Хочешь с &dкайфом &fпровести время, но не знаешь как? Тогда тебе подойдёт &cклан &4&lChert&0&lHouse &f! У нас ты найдёшь &eхороший кх&f, &bтоповый кит &fи &nуважение клана&f. Чтоб вступить в клан пиши &c/warp CH",
       "!&fХочешь в &dкрутой клан &fс многими &eплюшками? Тогда тебе нужен клан &4&lChert&0&lHouse&f ! У нас ты не только найдёшь &bтоповый кит для пвп&f и&e хороший кх&f, но и дс сервер! А так же у нас открыт набор на модераторов! &c/warp CH",
       "!&fИщешь &aотличный клан &fс &eкрутыми возможностями&f? Тогда тебе подходит клан &4&lChert&0&lHouse &f! &bТоповый кит&f, &6функциональный бот&f, всё это ты найдёшь на &c/warp ch&f . Заинтересовало? Ждём именно тебя!",
       "!&eТоповый кх&f, &bахеренный кит&f, &6функциональный бот&f, всё это есть в клане &4&lChetrt&0&lHouse&f! Ощути весь кайф в &cнашем клане&f, побывай в нашем &aдс сервере &fи не только! Просто напиши в лс боту #invite ! &7(/warp ch)",
-      "!&aПривет! Не хочешь-ли попасть к действительно &4&lПИЗДАТЫМ ПАРНЯМ&r&a? Тогда - тебе к нам! У нас ведётся набор на &2&lПВПшеров!&r&a Ждём тебя на /warp ch!",
+      "!&fКу! Хочешь попасть в стафф &cклана&f, но тебя &c&nникто не берёт&f? Спешу тебя обрадовать, у нас открыт набор на &bмодеров&f, &c&lПВПШЕРОВ&f и других должностей! Берём даже с &eмалым опытом&f. Не упусти шанс стать частью нашей &aкоманды&f. &c/warp ch",
     ];
     this.unterMsgs = {
       "afterdark": "/cc А вы знали, что афтердарк - хуйня? Глава у них школьник, который сосет хуй, а также персонал у них полная хуйня. Если вы не хотите быть хуеглотом, то смело оставайтесь у нас и получайте нашу поддержку.",
@@ -93,7 +119,7 @@ class Bot {
       "allies": () => `/cc &fНаши союзы на &cданный момент&f: &1PEPSICO&f , &eLaEspada &f, &4афтедаркхуета&f.`,
       "enemies": () => `/cc &fНаши &cвраги&f: У нас нет врагов! `,
       "functions": () => `/cc &aФункции&f нашего бота: &cАнтиТп&f, &bПриглашение в клан&f, &eАнти Слив КДР&f , &dРеклама в чате &f, &3АвтоРекконект &f(каждый час), &0Чёрный Список&f, &eЗащита от фризтрола&f, &aЗащита от убийств и эффектов&f, &lКоманды в клан чате &f.`,
-      "shame": () => `/cc 1. - ${this.shameBoard[0]} 2. - ${this.shameBoard[1]} 3. - ${this.shameBoard[2]} 4. - ${this.shameBoard[3]} 5. - ${this.shameBoard[4]}`,
+      "shame": () => `/cc 1. - ${shameBoard[0]} 2. - ${shameBoard[1]} 3. - ${shameBoard[2]} 4. - ${shameBoard[3]} 5. - ${shameBoard[4]}`,
       "blacklist": () => `/cc &fЧёрный список: 1. ${blacklist[blacklist.length-1]} 2. ${blacklist[blacklist.length-2]} 3. ${blacklist[blacklist.length-3]} 4. ${blacklist[blacklist.length-4]} 5. ${blacklist[blacklist.length-5]} 6. ${blacklist[blacklist.length-6]} 7. ${blacklist[blacklist.length-7]} 8. ${blacklist[blacklist.length-8]}`,
       "discord": () => `/cc &fХочешь быть всегда в курсе что и где происходит в клане? Тогда тебе нужен наш &cклановый дискорд сервер&f! У нас есть новости, наборы, ивенты и тд! Заинтересовало? Пиши мне - kotik16f`,
       "versions": () => [
@@ -101,15 +127,8 @@ class Bot {
         `/cc Beta 0.1 - Добавлен третий бот Alfhelm. Beta 0.2 - Добавлен прокси, Добавлен черный список. Beta 0.5 - Добавлена оптимизация на АнтиТп, добавлены все боты.`,
         `/cc Beta 0.6 - Ответ на плевок. Beta 0.7 - Небольшие изменения. Beta 0.8 - обновлен черный список, ClanLog, смерти. Beta 0.9 - небольшие изменения. Release 1.0 - Добавлена анти-трапка.`,
         `/cc Release 1.1 - Исправлено множество ошибок, а также прочие небольшие изменения.`,
-      ]
+      ],
     };
-    this.admins = [
-      "zxclyric",
-      "KoTiK_B_KeDaH_",
-      "BogSupnogoDnya",
-      "makleia",
-      "ryfed_pc",
-    ]
     this.answerMessages = {
       "afterdar": this.unterMsgs["afterdark"],
       "worte": this.unterMsgs["wortex"],
@@ -128,15 +147,6 @@ class Bot {
       "#версиибота": this.commandsMsgs["versions"]()[this.currentArg],
     }
     this.adminAnswerMessages = {
-      "#логи": () => {
-        this.sendLocalMsg(`Отправляю логи на сервер...`);
-        // await this.uploadDataToDisk();
-        this.sendLocalMsg(`Логи отправлены на сервер!`);
-      },
-      "#clearchat": () => {
-        setTimeout(() => this.sendMsg("/clearchat"), 1000);
-        this.sendLocalMsg(`Чат очищен!`);
-      },
       "#чс": () => {
         if (!blacklist.includes(this.currentArg)) {
           blacklist.push(this.currentArg);
@@ -155,15 +165,15 @@ class Bot {
       },
       "#дп": () => {
         const index = this.allArgs[1]-1;
-        this.shameBoard[index] = this.currentArg;
+        shameBoard[index] = this.currentArg;
         this.sendLocalMsg(`Игрок ${this.currentArg} теперь на ${this.allArgs[1]} месте на доске позора!`);
       },
       "#чат": () => {
         this.sendMsg(this.allArgs.join(" "));
       },
       "#админ": () => {
-        if (this.admins.includes(this.currentArg)) {
-          this.admins.push(this.currentArg);
+        if (admins.includes(this.currentArg)) {
+          admins.push(this.currentArg);
           this.sendLocalMsg(`Теперь ${this.currentArg} админ!`);
         } else this.sendLocalMsg(`${this.currentArg} уже админ!`);
       },
@@ -197,45 +207,48 @@ class Bot {
     this.nickname = nickname;
     this.portal = portal;
     this.warp = warp;
-    this.skin = "Kemper1ng";
-    this.name = "Lyric";
+    this.skin = skinname;
+    this.name = visname;
     this.host = host;
-    this.auth = "offline";
-    this.inviteEnabled = false;
+    this.auth = auth;
+    this.proxy = proxy;
+    this.curServer = host;
+    this.closeTimeout = closeTimeout;
+    this.inviteEnabled = inviteEnabled;
     this.currentArg = "";
     this.allArgs = [];
     this.lastUser = "";
     this.checkChat = false;
     this.checkSwingArm = false;
-    this.bot = createBot({
-      host: this.host,
+    this.agent = new HttpProxyAgent(`http://${getRandomProxy()}`);
+    this.bot = mf.createBot({
       username: this.nickname,
+      host: this.host,
+      agent: this.agent,
       auth: this.auth,
       hideErrors: this.hideErrors,
+      closeTimeout: this.closeTimeout,
     });
     this.bot.on("end", (reason) => this.reconnectBot(reason));
-    this.bot.on("error", (error) => this.bot.end(`Error!\n\n${error}`));
+    this.bot.on("error", (error) => this.bot.end(error.name));
     this.bot.on("spawn", () => this.handleSpawn());
 
     setTimeout(() => {
-      setTimeout(() => {
-        this.tpWarp();
-        this.consoleEnter();
+        this.bot.on("entitySpawn", (entity) => this.handleNearestInvite(entity));
+        this.bot.on("entityMoved", () => this.lookAtNearestPlayer());
+        this.bot.on("message", (message) => this.messagesMonitoring(message));
+        this.bot.on("forcedMove", () => this.tpWarp());
+        this.bot.on("entityEffect", () => this.handleEffect());
+        this.bot.on("respawn", () => this.antiTrap());
+        this.bot.on("blockUpdate", (oldState, newState) => this.handleBlockChange(oldState, newState));
+        this.bot.on("entitySwingArm", (entity) => this.swingArmTrigger(entity));
         this.setSkin();
         this.setName();
-        this.setDistance();
+        this.setGlow();
+        this.tpWarp();
+        this.consoleEnter();
         this.botLoops();
-      }, 1000);
-      this.bot.on("entitySpawn", (entity) => this.handleNearestInvite(entity));
-      this.bot.on("entityMoved", () => this.lookAtNearestPlayer());
-      this.bot.on("message", (message) => this.messagesMonitoring(message));
-      this.bot.on("forcedMove", () => this.tpWarp());
-      this.bot.on("kicked", (reason) => this.bot.end(reason));
-      this.bot.on("entityEffect", () => this.handleEffect());
-      this.bot.on("respawn", () => this.antiTrap());
-      this.bot.on("blockUpdate", (oldState, newState) => this.handleBlockChange(oldState, newState));
-      this.bot.on("entitySwingArm", (entity) => this.swingArmTrigger(entity));
-    }, 1000);
+      }, 3000);
   }
 
   // Функция для логина бота
@@ -248,12 +261,13 @@ class Bot {
 
   // Функция для переподключения бота
   reconnectBot(reason) {
+    reason = reason.toString();
     if ((reason.includes("AggregateError")) || (reason.includes("ECONNRESET"))) return;
     console.log(`${this.nickname} - Reconnection... (${reason})`);
     botCount--;
     this.saveBlacklist();
     this.saveDeaths();
-    new this.constructor(this.nickname, this.portal, this.warp, this.chatWriting, this.hideErrors,this.password);
+    new this.constructor(this.nickname, this.portal, this.warp, this.chatWriting, this.hideErrors,this.password, this.host, this.proxy, this.closeTimeout, this.name, this.skin, this.auth, this.inviteEnabled);
   }
 
   // Функция для отправки сообщений с try/catch
@@ -343,8 +357,7 @@ class Bot {
   writeLog(text, path) {
     const date = new Date().toLocaleString();
     const logText = `[${date}]: ${text}\n`;
-    const curServer = this.host.split(".")[1];
-    const fullPath = `server/logs/${curServer}/${this.portal}/${path}.txt`;
+    const fullPath = `server/logs/${this.curServer}/${this.portal}/${path}.txt`;
     appendFile(fullPath, logText, (error) => {
       if (!error) return;
       if (error.code === "ENOENT") {
@@ -357,11 +370,6 @@ class Bot {
         writeFileSync(fullPath, logText);
       }
     });
-  }
-
-  // Функция для генерации рандомного числа
-  getRandomNumber(min, max) {
-    return Math.floor(Math.random() * (max - min + 1)) + min;
   }
 
   // Функция для отправки сообщений в чат через консоль от лица бота
@@ -390,7 +398,7 @@ class Bot {
       if (typeof this.bot.nearestEntity !== "function") return;
       const closestPlayer = this.bot.nearestEntity(entity => entity.type === "player");
       if (closestPlayer && !blacklist.includes(closestPlayer.username)) this.sendMsg(`/c invite ${closestPlayer.username}`);
-    }, this.getRandomNumber(10000, 30000));
+    }, getRandomNumber(10000, 30000));
   }
 
   // Функция для авто рестарта бота раз в час
@@ -427,8 +435,9 @@ class Bot {
 
   // Функция для рассылки рандомного сообщения рекламы клана в глобальный чат
   sendAdvertisements() {
-    setInterval(() => this.sendMsg(this.adMsgs[this.getRandomNumber(0, this.adMsgs.length - 1)]), this.getRandomNumber(2.5*60*1000, 3*60*1000));
-    setInterval(() => this.sendMsg(this.commandsMsgs["discord"]()), this.getRandomNumber(60*1000, 2*60*1000));
+    if (this.curServer === "cheatmine") setInterval(() => this.sendMsg(this.adMsgs[getRandomNumber(0, this.adMsgs.length - 1)]), getRandomNumber(60*1000, 1.5*60*1000));
+    else setInterval(() => this.sendMsg(this.adMsgs[getRandomNumber(0, this.adMsgs.length - 1)]), getRandomNumber(2.5*60*1000, 3*60*1000));
+    setInterval(() => this.sendMsg(this.commandsMsgs["discord"]()), getRandomNumber(60*1000, 2*60*1000));
   }
 
   // Функция, чтоб получить ближайшего игрока
@@ -458,15 +467,6 @@ class Bot {
     }
   }
 
-  setDistance(distance = null) {
-    if (distance !== null) {
-      this.sendMsg("/vd 4");
-      this.sendMsg("/vd 6");
-      this.sendMsg("/vd 8");
-      this.sendMsg("/vd 10");
-    } else this.sendMsg(`/vd ${distance}`);
-  }
-
   // Отправка инвайта ближайшему игроку при спавне
   handleNearestInvite(entity) {
     if (entity.type === "player") this.sendMsg(`/c invite ${entity.username}`);
@@ -480,6 +480,11 @@ class Bot {
   // Функция для установки ника
   setName(name = this.name) {
     this.sendMsg(`/nickname ${name}`);
+  }
+
+  // Функция для свечения бота
+  setGlow() {
+    this.sendMsg("/glow on");
   }
 
   // Функция для парсинга информации о регионе
@@ -503,24 +508,27 @@ class Bot {
 
   // Функция для удаления игрока из региона если он ломает блоки
   swingArmTrigger(entity) {
-    if (this.checkSwingArm && (!this.admins.includes(entity.username))) {
+    if (this.checkSwingArm && (!admins.includes(entity.username)) && (entity.type === "player")) {
       if (this.rgInfo.name === "__global__") return;
+      this.checkSwingArm = false;
       if (this.rgInfo.members.includes(entity.username)) {
         this.sendMsg(`/rg removemember ${this.rgInfo.name} ${entity.username}`);
       } else if (this.rgInfo.owners.includes(entity.username)) {
         this.sendMsg(`/rg removeowner ${this.rgInfo.name} ${entity.username}`);
       }
-      this.checkSwingArm = false;
+      const msgLog = `Player ${entity.username} has broke the block! Rg info: ${this.rgInfo.name} | ${this.rgInfo.members} | ${this.rgInfo.owners}`;
+      this.writeLog(msgLog, "GriefLog");
     }
   }
 
   // Функция для работы с сообщениями
   messagesMonitoring(message) {
-    let textMessage = message.getText();
+    let textMessage = message.getText(null);
     let username = "";
     let cmdMessages = textMessage.split(" ");
     let lowTextMessage = textMessage.toLowerCase();
     if (textMessage === " ") return;
+    console.log(textMessage);
 
     if (this.checkChat) {
       this.rgInfo = this.parseRegionInfo(textMessage);
@@ -541,7 +549,7 @@ class Bot {
       }
     }
 
-    if (this.portal === server.currentBot && this.host.includes(server.currentBotPanel)) {
+    if (this.portal === server.currentBot && this.curServer === server.currentBotPanel) {
       const date = new Date().toLocaleString();
       const msgLog = `[${date}] ${textMessage}\n`;
       server.io.emit("updateChat", msgLog);
@@ -549,11 +557,18 @@ class Bot {
 
     const matchLeave = textMessage.match(/› (.*?) покинул клан\./);
     const matchJoin = textMessage.match(/› (.*?) присоеденился к клану\./);
-    const matchCmd = textMessage.match(/^›\[(.*?) -> я] (.*)$/);
+    const matchCmd = (this.curServer === "masedworld") ? textMessage.match(/^›\[(.*?) -> я] (.*)$/) : textMessage.match(/^›\[(.*?) -> я] (.*)$/);
+    // [*[[Король] musulmango14 -> я] #command
+    // const matchCmd = textMessage.match(/^›\[(.*?) -> я] (.*)$/);
     const matchInvite = textMessage.match(/›\[(.*?) ->/);
+    // Пример const variable = (условие) ? 'true' : 'false';
 
     if (matchJoin && matchJoin[1]) {
       const newMember = matchJoin[1];
+      if (blacklist.includes(newMember)) {
+        this.sendMsg(`/c kick ${newMember}`);
+        return;
+      }
       if (playerDeaths[newMember]) playerDeaths[newMember] = 0;
       this.sendMsg(`/cc Добро пожаловать в клан, ${newMember}! Обязательно вступи в наш дискорд, там много всего интересного! Если хочешь вступить в наш дискорд сервер, то пиши мне - kotik16f`);
 
@@ -568,10 +583,10 @@ class Bot {
     }
     if (cmdMessages[1] === "убил" && cmdMessages[2] === "игрока" && cmdMessages.length === 4) {
       let killedPlayer = cmdMessages[3];
-      if (botList.includes(killedPlayer) || this.admins.includes(killedPlayer) || killedPlayer === this.nickname) return;
+      if (botList.includes(killedPlayer) || admins.includes(killedPlayer) || killedPlayer === this.nickname) return;
       this.countDie(killedPlayer);
       const deathsCount = playerDeaths[killedPlayer]
-      if (deathsCount > 4 && !this.admins.includes(killedPlayer)) {
+      if (deathsCount > 4 && !admins.includes(killedPlayer)) {
         this.sendMsg(`/c kick ${killedPlayer}`);
         blacklist.push(killedPlayer);
         this.saveBlacklist();
@@ -586,7 +601,7 @@ class Bot {
       this.allArgs = messages.slice(1);
       this.currentArg = this.allArgs[0];
       this.lastUser = username;
-      if ((this.admins.includes(username))) {
+      if ((admins.includes(username))) {
         const keys = Object.keys(this.adminAnswerMessages);
         const containsKey = keys.some(key => key.includes(command));
         if (containsKey) this.adminAnswerMessages[command]();

@@ -1,5 +1,5 @@
 import { botsObjData, botsObj } from "../index.mjs";
-import {readFile, writeFile} from "fs";
+import { readFile, writeFile } from "fs";
 import { createServer } from "http";
 import { Server } from "socket.io";
 import express from "express";
