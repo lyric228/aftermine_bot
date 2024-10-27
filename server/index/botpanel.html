@@ -10,6 +10,7 @@
         padding: 8px 64px;
         background: #1c1b22;
         color: #ffffff;
+        user-select: none;
     }
 
     h1 h2 h3 {
@@ -75,6 +76,7 @@
         border: 1px solid black;
         overflow-y: scroll;
         color: azure;
+        user-select: all;
     }
     input {
         float: right;
@@ -133,6 +135,7 @@
   <div class="category-button" onclick="location.href='/downloadClanLog'">Скачать ClanLog</div>
   <div class="category-button" onclick="location.href='/downloadGlobalLog'">Скачать GlobalLog</div>
   <div class="category-button" onclick="location.href='/downloadLocalLog'">Скачать LocalLog</div>
+<div class="category-button" onclick="location.href='/downloadGriefLog'">Скачать GriefLog</div>
 
   <h2 class="over">------</h2>
   <input class="category-button" style="display: none;" type="file" id="fileInput" accept=".txt">
@@ -143,6 +146,7 @@
   <div class="category-button" id="clog">Загрузить ClanLog</div>
   <div class="category-button" id="glog">Загрузить GlobalLog</div>
   <div class="category-button" id="llog">Загрузить LocalLog</div>
+  <div class="category-button" id="grlog">Загрузить GriefLog</div>
   <button class="back-button" onclick="history.back()">Назад</button>
 
   <script src="/socket.io/socket.io.js"></script>
@@ -155,10 +159,11 @@
     const uploadCLog = document.getElementById('clog');
     const uploadGLog = document.getElementById('glog');
     const uploadLLog = document.getElementById('llog');
+    const uploadGRLog = document.getElementById('grlog');
 
     socket.on("updateChat", (textMessage) => {
       const chat = document.getElementById("chat");
-      chat.value += textMessage;
+      chat.innerHTML += textMessage;
     });
 
     socket.on("con", () => {
@@ -214,6 +219,19 @@
           formData.append('file', file);
 
           fetch('/uploadLocalLog', {
+            method: 'POST',
+            body: formData,
+          })
+          .then((response) => response.text())
+          .then((message) => console.log(message))
+          .catch((error) => console.error(error));
+        });
+
+        uploadGRLog.addEventListener('click', () => {
+          const formData = new FormData();
+          formData.append('file', file);
+
+          fetch('/uploadGriefLog', {
             method: 'POST',
             body: formData,
           })

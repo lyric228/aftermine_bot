@@ -45,6 +45,10 @@ export class BotPanelServer {
       res.download(`server/logs/${this.currentBotPanel}/${this.currentBot}/LocalLog.txt`);
     });
 
+    this.app.get("/downloadGriefLog", (req, res) => {
+      res.download(`server/logs/${this.currentBotPanel}/${this.currentBot}/GriefLog.txt`);
+    });
+
     this.app.post("/uploadClanLog", this.upload.single("file"), (req, res) => {
       const file = req.file;
       const filePath = `server/logs/${this.currentBotPanel}/${this.currentBot}/ClanLog.txt`;
@@ -54,6 +58,12 @@ export class BotPanelServer {
     this.app.post("/uploadGlobalLog", this.upload.single("file"), (req, res) => {
       const file = req.file;
       const filePath = `server/logs/${this.currentBotPanel}/${this.currentBot}/GlobalLog.txt`;
+      this.readUploadedFile(file, filePath, res);
+    });
+
+    this.app.post("/uploadGriefLog", this.upload.single("file"), (req, res) => {
+      const file = req.file;
+      const filePath = `server/logs/${this.currentBotPanel}/${this.currentBot}/GriefLog.txt`;
       this.readUploadedFile(file, filePath, res);
     });
 
@@ -223,6 +233,7 @@ export class BotPanelServer {
   }
 
   connectCurBot(socket) {
+    if (botsObj[this.currentBotPanel][this.currentBot].bot !== null) return;
     botsObj[this.currentBotPanel][this.currentBot].bot = botsObjData[this.currentBotPanel][this.currentBot]();
     console.log(`Connecting bot ${this.currentBot}...`);
     if (botsObj[this.currentBotPanel][this.currentBot].startTime === null) botsObj[this.currentBotPanel][this.currentBot].startTime = new Date();

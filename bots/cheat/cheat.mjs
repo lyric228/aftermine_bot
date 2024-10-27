@@ -3,7 +3,7 @@ import { createBot } from "mineflayer";
 import { readFileSync } from "fs";
 
 
-export function startBot(options) {
+export function startCheatBot(options) {
   const nickname = options.nickname || "ChertHouse0";
   const portal = options.portal || "s2";
   const host = options.host || "ru.cheatmine.net";
@@ -33,6 +33,7 @@ class Bot {
       username: this.nickname,
       host: this.host,
       agent: this.agent,
+      version: "1.20.4",
       closeTimeout: 5 * 60 * 1000,
     });
     let spawnTrigger = this.bot.on("spawn", () => this.handleSpawn());
