@@ -34,4 +34,7 @@ export let admins = [
   "BogSupnogoDnya",
   "makleia",
   "ryfed_pc",
+  "Misata88Killua0",
+  "KoTiK_B_KeDaX",
+  "mujaja88",
 ];

@@ -24,8 +24,8 @@ export const botsObjData = {
     "s8": () => { return startBot({nickname: "Temper1ng", portal: "s8"}) },
   },
   "cheatmine": {
-    "s1": () => { return startBot({nickname: "musulmango14", portal: "s1", host: "ru.cheatmine.net"}) },
-    "s2": () => { return startBot({nickname: "musulmango88", portal: "s2", host: "ru.cheatmine.net"}) },
+    "s1": () => { return startBot({nickname: "makleia14", portal: "s1", host: "ru.cheatmine.net"}) },
+    "s2": () => { return startBot({nickname: "mujaja88", portal: "s2", host: "ru.cheatmine.net"}) },
   }
 };
 export let botsObj = {
@@ -194,7 +194,7 @@ class Bot {
         this.bot.on("entitySpawn", (entity) => this.handleNearestInvite(entity));
         this.bot.on("entityMoved", () => this.lookAtNearestPlayer());
         this.bot.on("message", (message) => this.messagesMonitoring(message));
-        this.bot.on("forcedMove", () => this.tpWarp());
+        this.bot.on("forcedMove", () => this.antiTrap());
         this.bot.on("entityEffect", () => this.handleEffect());
         this.bot.on("respawn", () => this.antiTrap());
         this.bot.on("blockUpdate", (oldState) => this.handleBlockChange(oldState));
@@ -215,6 +215,7 @@ class Bot {
     this.sendMsg(`/login ${this.password}`);
     this.sendMsg(`/${this.portal}`);
     console.log(`${this.nickname} has spawned`)
+    this.antiTrap();
   }
 
   // Функция для переподключения бота
@@ -231,7 +232,6 @@ class Bot {
   // Функция для отправки сообщений с try/catch
   sendMsg(msg) {
     try {
-      if (typeof msg === "function") msg = msg();
       this.bot.chat(msg);
     } catch (error) {}
   }
@@ -350,7 +350,8 @@ class Bot {
 
   // Функция для обхода всех трапок / антитрапка +
   antiTrap() {
-    if (this.bot.game.dimension !== "overworld") this.bot.respawn();
+    this.bot.respawn();
+    setTimeout(() => this.tpWarp(), 500);
   }
 
   // Функция для рассылки рандомного сообщения рекламы клана в глобальный чат
@@ -478,6 +479,7 @@ class Bot {
         textMessage = cmdMessages.join(" ");
       }
     }
+
     if (this.portal === server.currentBot && this.curServer === server.currentBotPanel) {
       const date = new Date().toLocaleString();
       const msgLog = `[${date}] ${textMessage}\n`;
@@ -486,7 +488,7 @@ class Bot {
 
     const matchLeave = textMessage.match(/› (.*?) покинул клан\./);
     const matchJoin = textMessage.match(/› (.*?) присоеденился к клану\./);
-    const matchCmd = (this.curServer === "masedworld") ? textMessage.match(/^›\[(.*?) -> я] (.*)$/) : textMessage.match(/^›\[(.*?) -> я] (.*)$/);
+    const matchCmd = textMessage.match(/^›\[(.*?) -> я] (.*)$/);
     const matchKdr = textMessage.match(/(.*?) убил игрока (.*)/);
 
     if (matchJoin && matchJoin[1]) {
@@ -516,13 +518,23 @@ class Bot {
       this.saveDeaths();
     }
 
-    if (matchCmd && matchCmd[1]) {
-      const username = matchCmd[1];
-      const messages = matchCmd[2].split(" ");
-      const command = messages[0];
+    if ((matchCmd && matchCmd[1]) || (cmdMessages[2] === "->" && cmdMessages[3] === "я]")) {
+      let messages = [];
+      let username = "";
+      let command = "";
+      if (matchCmd && matchCmd[1]) {
+        username = matchCmd[1];
+        messages = matchCmd[2].split(" ");
+        command = messages[0];
+      } else if (cmdMessages[2] === "->" && cmdMessages[3] === "я]") {
+        username = cmdMessages[1];
+        messages = cmdMessages.slice(4);
+        command = messages[0];
+      }
       this.allArgs = messages.slice(1);
       this.currentArg = this.allArgs[0];
       this.lastUser = username;
+
       if ((admins.includes(username))) {
         const keys = Object.keys(this.adminAnswerMessages);
         const containsKey = keys.some(key => key.includes(command));
