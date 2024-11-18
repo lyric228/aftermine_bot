@@ -21,6 +21,7 @@ export const commandsMsgs = {
   "enemies": `/cc &fНаши &cвраги&f: У нас нет врагов! `,
   "functions":` /cc &aФункции&f нашего бота: &cАнтиТп&f, &bПриглашение в клан&f, &eАнти Слив КДР&f , &dРеклама в чате &f, &3АвтоРекконект &f, &0Чёрный Список&f, &eЗащита от фризтрола&f, &aЗащита от убийств и эффектов&f, &lКоманды в клан чате &f.`,
   "discord": `/cc &fХочешь быть всегда в курсе что и где происходит в клане? Тогда тебе нужен наш &cклановый дискорд сервер&f! У нас есть новости, наборы, ивенты и тд! Заинтересовало? Пиши мне - kotik16f`,
+  "discordlink": `/cc &fХочешь быть всегда в курсе что и где происходит в клане? Тогда тебе нужен наш &cклановый дискорд сервер&f! У нас есть новости, наборы, ивенты и тд! Заинтересовало? Заходи прямо сейчас! https://discord.gg/yPK8WHC4m7`,
   "versions": [
     `/cc Alpha 0.01 - Добавлены функции Инвайта в клан, Пиар, Заход на сервер и прочие базовые функции. Alpha 0.02 - Добавлена функция AntiTp. Alpha 0.03 - Добавлен второй бот.`,
     `/cc Beta 0.1 - Добавлен третий бот Alfhelm. Beta 0.2 - Добавлен прокси, Добавлен черный список. Beta 0.5 - Добавлена оптимизация на АнтиТп, добавлены все боты.`,
@@ -31,10 +32,20 @@ export const commandsMsgs = {
 export let admins = [
   "zxclyric",
   "KoTiK_B_KeDaH_",
-  "BogSupnogoDnya",
-  "makleia",
-  "ryfed_pc",
-  "Misata88Killua0",
   "KoTiK_B_KeDaX",
-  "mujaja88",
+  "SOLOGOL",
+  "karmani22",
+  "Shumi_Tourumi",
+  "Shumi_Tourume",
 ];
+export const DeathsPath = "server/data/deaths.json";
+export const BlacklistPath = "server/data/blacklist.txt";
+export const ProxyPath = "server/data/proxy.txt";
+export const LogRootPath = "server/logs";
+export const PublicWarp = "n930gkh1r";
+export const PublicSkin = "SadLyric111";
+export const PublicName = "Lyric";
+export const PublicVersion = "1.20.4";
+export const PublicPassword = "!afterHuila00pidor3svocvoRus";
+export const PublicTimeOut = 5*60*1000;
+export const PublicLaunchDelay = 3*1000;

@@ -11,6 +11,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "better-sqlite3": "^11.5.0",
     "express": "^4.21.1",
     "formidable": "^3.5.1",
     "fs": "^0.0.1-security",
@@ -18,7 +19,7 @@
     "http-proxy-middleware": "^3.0.2",
     "jsdom": "^25.0.1",
     "memory-cache": "^0.2.0",
-    "mineflayer": "^4.22.0",
+    "mineflayer": "^4.23.0",
     "mineflayer-pathfinder": "^2.4.5",
     "multer": "^1.4.5-lts.1",
     "node-telegram-bot-api": "^0.66.0",
