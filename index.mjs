@@ -26,16 +26,16 @@ export const botsObjData = {
     "s2": () => { return startBotCM({nickname: "Ryfkin228", portal: "s2"}) },
   },
   "mineblaze": {
-    "s1": () => { return startBotMB({nickname: "lohkgwg1", portal: "s1"}) },
+    "s1": () => { return startBotMB({}) }, // lohkgwg1 s1
     "s2": () => { return startBotMB({nickname: "TARAKAN2149", portal: "s2"}) },
     "s3": () => { return startBotMB({nickname: "Vkabababa", portal: "s3"}) },
     "s4": () => { return startBotMB({nickname: "__IRISHKA__", portal: "s4"}) },
-    "s5": () => { return startBotMB({nickname: "", portal: "s5"}) },
-    "s6": () => { return startBotMB({nickname: "", portal: "s6"}) },
+    "s5": () => { return startBotMB({}) }, // s5
+    "s6": () => { return startBotMB({}) }, // s6
     "s7": () => { return startBotMB({nickname: "KoTiK_B_KeDaX", portal: "s7"}) },
-    "s8": () => { return startBotMB({nickname: "", portal: "s8"}) },
-    "s9": () => { return startBotMB({nickname: "", portal: "s9"}) },
-    "s10": () => { return startBotMB({nickname: "", portal: "s10"}) },
+    "s8": () => { return startBotMB({}) }, // s8
+    "s9": () => { return startBotMB({}) }, // s9
+    "s10": () => { return startBotMB({}) }, // s10
   },
 };
 export let botsObj = {
@@ -128,8 +128,8 @@ export function startBotCM(options) {
 
 
 export function startBotMB(options) {
-  options.nickname = options.nickname || "lohkgwg1";
-  options.portal = options.portal || "s1";
+  options.nickname = options.nickname || "TARAKAN2149";
+  options.portal = options.portal || "s2";
   options.proxy = options.proxy || getRandomProxy();
   return new MBBot(options);
 }
