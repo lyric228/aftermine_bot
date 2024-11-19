@@ -124,24 +124,25 @@ export class CMBot extends EventEmitter {
     this.setMaxListeners(1000);
     this.bot.on("end", (reason) => this.reconnectBot(reason));
     this.bot.on("spawn", () => this.handleSpawn());
+    this.bot.on("message", (message) => console.log(message.getText(null)));
 
-    setTimeout(() => {
-      this.bot.on("entitySpawn", (entity) => this.handleNearestInvite(entity));
-      this.bot.on("entityMoved", (entity) => this.lookAtNearestPlayer(entity));
-      this.bot.on("message", (message) => this.messagesMonitoring(message));
-      this.bot.on("forcedMove", () => this.antiTrap());
-      this.bot.on("entityEffect", () => this.handleEffect());
-      this.bot.on("respawn", () => this.antiTrap());
-      this.bot.on("blockUpdate", (oldState) => this.handleBlockChange(oldState));
-      this.bot.on("entitySwingArm", (entity) => this.swingArmTrigger(entity));
-      this.bot.inventory.on("updateSlot", () => this.clearInventory());
-      this.setSkin();
-      this.setName();
-      this.setGlow();
-      this.tpWarp();
-      this.botLoops();
-      this.fly();
-    }, PublicLaunchDelay);
+    // setTimeout(() => {
+    //   this.bot.on("entitySpawn", (entity) => this.handleNearestInvite(entity));
+    //   this.bot.on("entityMoved", (entity) => this.lookAtNearestPlayer(entity));
+    //   this.bot.on("message", (message) => this.messagesMonitoring(message));
+    //   this.bot.on("forcedMove", () => this.antiTrap());
+    //   this.bot.on("entityEffect", () => this.handleEffect());
+    //   this.bot.on("respawn", () => this.antiTrap());
+    //   this.bot.on("blockUpdate", (oldState) => this.handleBlockChange(oldState));
+    //   this.bot.on("entitySwingArm", (entity) => this.swingArmTrigger(entity));
+    //   this.bot.inventory.on("updateSlot", () => this.clearInventory());
+    //   this.setSkin();
+    //   this.setName();
+    //   this.setGlow();
+    //   this.tpWarp();
+    //   this.botLoops();
+    //   this.fly();
+    // }, PublicLaunchDelay);
   }
 
   // Функция для логина бота

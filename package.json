@@ -25,6 +25,7 @@
     "node-telegram-bot-api": "^0.66.0",
     "prismarine-viewer": "^1.28.0",
     "protodef": "^1.17.0",
+    "puppeteer": "^23.8.0",
     "socket.io": "^4.8.0",
     "socket.io-client": "^4.8.0",
     "socks": "^2.8.3"

@@ -114,9 +114,10 @@ export function startByServer(server, options) {
 
 
 export function startBotMW(options) {
-  options.nickname = options.nickname || "Kemper1ng";
-  options.portal = options.portal || "s2";
-  return new MWBot(options);
+  return startBotCM(options);
+  // options.nickname = options.nickname || "Kemper1ng";
+  // options.portal = options.portal || "s2";
+  // return new MWBot(options);
 }
 
 
