@@ -107,14 +107,15 @@ export function startByServer(server, options) {
       "mineblaze": () => { return startBotMB(options) },
     }
     return functions[server]();
-  } catch (err) {}
+  } catch (err) {
+    console.log(err);
+  }
 }
 
 
 export function startBotMW(options) {
   options.nickname = options.nickname || "Kemper1ng";
   options.portal = options.portal || "s2";
-  options.proxy = options.proxy || getRandomProxy();
   return new MWBot(options);
 }
 
@@ -122,7 +123,6 @@ export function startBotMW(options) {
 export function startBotCM(options) {
   options.nickname = options.nickname || "Tramp2024";
   options.portal = options.portal || "s1";
-  options.proxy = options.proxy || getRandomProxy();
   return new CMBot(options);
 }
 
@@ -130,7 +130,6 @@ export function startBotCM(options) {
 export function startBotMB(options) {
   options.nickname = options.nickname || "TARAKAN2149";
   options.portal = options.portal || "s2";
-  options.proxy = options.proxy || getRandomProxy();
   return new MBBot(options);
 }
 
