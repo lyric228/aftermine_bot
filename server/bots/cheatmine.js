@@ -117,13 +117,13 @@ export class CMBot extends EventEmitter {
       port: this.port,
       agent: this.agent,
       version: this.version,
-      closeTimeout: this.closeTimeout,
+      //closeTimeout: this.closeTimeout,
     };
     this.bot = mf.createBot(this.botOptions);
     this.bot.setMaxListeners(1000);
     this.setMaxListeners(1000);
     this.bot.on("end", (reason) => this.reconnectBot(reason));
-    this.bot.on("spawn", () => this.handleSpawn());
+    // this.bot.on("spawn", () => this.handleSpawn());
     this.bot.on("message", (message) => console.log(message.getText(null)));
 
     // setTimeout(() => {
