@@ -20,3 +20,8 @@ export function dateDiff(date1, date2 = new Date()) {
     s: seconds,
   };
 }
+
+
+export function getCurrentDate() {
+  return new Date().toLocaleString().replace(/[а-яА-Яa-zA-Z]/g, "");
+}

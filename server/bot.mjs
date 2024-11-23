@@ -61,17 +61,17 @@ export class TBot extends EventEmitter {
           this.id = this.msg.chat.id;
           this.db.id = this.id;
           this.db.createUser();
-          if (options && options.args) {
+          if (options?.args > 0) {
             if (options.args > 0) {
               if (!options.argErrMsg) options.argErrMsg = `Ошибка аргументов!\nНужно ${options.args}, когда передано ${this.args.length}!`;
               this.args = this.msg.text.split(" ").slice(1);
-              if (this.args.length === options.args) callback();
-              else await this.sendMessage(options.argErrMsg);
-              return;
+              if (this.args.length === options.args) return callback();
+              return await this.sendMessage(options.argErrMsg);
             }
           }
-          callback();
-        } else await this.sendMessage("Неуполномоченный!");
+          return callback();
+        }
+        await this.sendMessage("Неуполномоченный!");
       } catch (err) {
         console.log(err);
       }
@@ -96,6 +96,7 @@ export class TBot extends EventEmitter {
       const value = parseInt(this.args[1]) > 0 ? 1 : 0;
       this.db.updateData(field, value);
       const bot = botsObj[this.db.getData("server")][this.db.getData("portal")].bot;
+      if (!bot) return await this.sendMessage("Сначала включите этого бота!");
       value === 1 ? bot.autoEnable(field) : bot.autoDisable(field);
       await this.sendMessage(`Теперь ${field} изменён на ${value}!`);
     }, { args: 2, argErrMsg: "Пользование:\n/set \<\chat/rg> <1/0>\n\nchat/rg/packets - 2 вида логов, чат и рг\n1/0 - включить/выключить\nДля какого бота будут включены логи зависит от последнего выбранного бота." });
@@ -118,8 +119,8 @@ export class TBot extends EventEmitter {
     this.on("log", async (sendMsg, type, portal) => {
       if (this.db.getData("portal") === portal) {
         this.curSenders = this.db.getAllWhere("tgid", type, 1);
-        for (let i = 0; i < this.curSenders.length; i++) {
-          this.id = this.curSenders[i]["tgid"];
+        for (const element of this.curSenders) {
+          this.id = element["tgid"];
           await this.sendMessage(sendMsg);
         }
       }

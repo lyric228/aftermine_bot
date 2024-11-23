@@ -7,8 +7,8 @@ import {readFileSync, writeFileSync} from "fs";
 import cache from "memory-cache";
 
 
-export let playerDeaths = loadDeaths();
-export let blacklist = loadBlacklist();
+export let playerDeaths;
+export let blacklist;
 export let botList = [];
 export const botsObjData = {
   "masedworld": {
@@ -66,6 +66,8 @@ export let botsObj = {
     "s10": { bot: null, time: null, online: false },
   },
 };
+loadBlacklist();
+loadDeaths();
 setInterval(() => cache.clear(), 5 * 60 * 1000);
 
 
@@ -77,10 +79,9 @@ export function saveBlacklist() {
 // Функция для загрузки данных из черного списка
 export function loadBlacklist() {
   try {
-    const data = readFileSync(BlacklistPath).toString();
-    return data.split("\n");
-  } catch (error) {
-    if (error.code === "ENOENT") return []
+    blacklist = readFileSync(BlacklistPath).toString().split("\n");
+  } catch (err) {
+    if (err.code === "ENOENT") blacklist = [];
   }
 }
 
@@ -93,9 +94,10 @@ export function saveDeaths() {
 // Функция для загрузки данных о смертях
 export function loadDeaths() {
   try {
-    const jsonString = readFileSync(DeathsPath);
-    return JSON.parse(jsonString.toString());
-  } catch (error) { if (error.code === "ENOENT") return {}; }
+    playerDeaths = JSON.parse(readFileSync(DeathsPath).toString());
+  } catch (err) {
+    if (err.code === "ENOENT") playerDeaths = {};
+  }
 }
 
 
@@ -114,10 +116,9 @@ export function startByServer(server, options) {
 
 
 export function startBotMW(options) {
-  return startBotCM(options);
-  // options.nickname = options.nickname || "Kemper1ng";
-  // options.portal = options.portal || "s2";
-  // return new MWBot(options);
+  options.nickname = options.nickname || "Kemper1ng";
+  options.portal = options.portal || "s2";
+  return new MWBot(options);
 }
 
 
@@ -133,6 +134,7 @@ export function startBotMB(options) {
   options.portal = options.portal || "s2";
   return new MBBot(options);
 }
+
 
 export function getRandomProxy() {
   const proxies = readFileSync(ProxyPath, "utf-8").split("\n").filter(line => line.trim() !== "");
