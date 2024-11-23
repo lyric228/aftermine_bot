@@ -1,4 +1,3 @@
-uzerchik
-
-KoT_B_CaP0GaX
-kolyan1031201310
+version https://git-lfs.github.com/spec/v1
+oid sha256:663b86cf0187af50df57ca8043a1e34a04392d8b3d426458fc206c5774c26dbd
+size 41

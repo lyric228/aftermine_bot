@@ -1,4 +1,3 @@
-[06.11.2024, 01:55:26]: Player kiler100 has broke the block! Rg info: ch12 | (нет) | CbIPHbIU_YT1,KoTiK_B_KeDaH_,alexmasik
-[09.11.2024, 16:42:29]: Player rustic_poetess has broke the block on s2! Rg info:  |  | 
-[09.11.2024, 16:59:14]: Player crytou_chyvak has broke the block on s2! Rg info:  |  | 
-[09.11.2024, 16:59:31]: Player crytou_chyvak has broke the block on s2! Rg info:  |  | 
+version https://git-lfs.github.com/spec/v1
+oid sha256:a0ec093fe5e5254dfa56d61a0fc5315df1f06967a3d2a069c33499c85d517a47
+size 391
