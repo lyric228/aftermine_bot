@@ -25,3 +25,23 @@ export function dateDiff(date1, date2 = new Date()) {
 export function getCurrentDate() {
   return new Date().toLocaleString().replace(/[а-яА-Яa-zA-Z]/g, "");
 }
+
+export function splitStringIntoList(string, maxLength = 250) {
+    const list = [];
+    const words = string.split(' ');
+    let currentString = '';
+
+    for (const word of words) {
+        if (currentString.length + word.length + 1 > maxLength) {
+            list.push(currentString);
+            currentString = word;
+        } else {
+            if (currentString.length > 0) currentString += " ";
+            currentString += word;
+        }
+    }
+
+    if (currentString.length > 0) list.push(currentString);
+
+    return list;
+}
