@@ -96,6 +96,7 @@ export class MainBot extends EventEmitter {
       owners: [],
       members: [],
     };
+    this.endCount = 0;
     this.spawnCount = 0;
     this.curClass = obj;
     this.nickname = options.nickname;
@@ -289,11 +290,15 @@ export class MainBot extends EventEmitter {
 
   // Функция для обхода всех трапок / антитрапка +
   end(reason) {
-    try {
-      this.bot.end(reason);
-      this.tpWarp();
-    } catch (err) {
-      this.end(reason);
+    this.endCount++;
+    if (this.endCount < 10) {
+      try {
+        this.bot.end(reason);
+        this.tpWarp();
+        this.endCount = 0;
+      } catch (err) {
+        this.end(reason);
+      }
     }
   };
 
