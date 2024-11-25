@@ -1,3 +1,88 @@
-version https://git-lfs.github.com/spec/v1
-oid sha256:c5b27f99441e9ed64f3a9ea7133e00a80ceca662bac3112c518c5c8924a9d747
-size 9095
+[29.10.2024, 17:52:23]: Player xxxmanera has broke the block! Rg info:  |  | 
+[29.10.2024, 17:52:26]: Player REKARDO890 has broke the block! Rg info: spawn | (нет) | (нет)
+[29.10.2024, 17:52:27]: Player Maxon_VIP_Games has broke the block! Rg info: spawn | (нет) | (нет)
+[29.10.2024, 17:52:29]: Player xxxmanera has broke the block! Rg info: spawn | (нет) | (нет)
+[29.10.2024, 17:52:32]: Player xxxmanera has broke the block! Rg info: spawn | (нет) | (нет)
+[29.10.2024, 17:52:33]: Player Vikusya_23 has broke the block! Rg info: spawn | (нет) | (нет)
+[29.10.2024, 17:52:37]: Player Maxon_VIP_Games has broke the block! Rg info: spawn | (нет) | (нет)
+[29.10.2024, 17:52:39]: Player Maxon_VIP_Games has broke the block! Rg info: spawn | (нет) | (нет)
+[29.10.2024, 17:52:40]: Player Maxon_VIP_Games has broke the block! Rg info: spawn | (нет) | (нет)
+[29.10.2024, 17:52:41]: Player Maxon_VIP_Games has broke the block! Rg info: spawn | (нет) | (нет)
+[29.10.2024, 17:52:42]: Player Maxon_VIP_Games has broke the block! Rg info: spawn | (нет) | (нет)
+[29.10.2024, 17:52:45]: Player Vikusya_23 has broke the block! Rg info: spawn | (нет) | (нет)
+[29.10.2024, 17:52:45]: Player Vikusya_23 has broke the block! Rg info: spawn | (нет) | (нет)
+[29.10.2024, 17:52:48]: Player рпек66 has broke the block! Rg info: spawn | (нет) | (нет)
+[29.10.2024, 17:52:48]: Player рпек66 has broke the block! Rg info: spawn | (нет) | (нет)
+[29.10.2024, 17:52:49]: Player рпек66 has broke the block! Rg info: spawn | (нет) | (нет)
+[29.10.2024, 17:52:55]: Player рпек66 has broke the block! Rg info: spawn | (нет) | (нет)
+[29.10.2024, 17:52:57]: Player рпек66 has broke the block! Rg info: spawn | (нет) | (нет)
+[29.10.2024, 17:52:58]: Player Vikusya_23 has broke the block! Rg info: spawn | (нет) | (нет)
+[29.10.2024, 17:52:59]: Player Vikusya_23 has broke the block! Rg info: spawn | (нет) | (нет)
+[29.10.2024, 17:53:06]: Player Maxon_VIP_Games has broke the block! Rg info: spawn | (нет) | (нет)
+[29.10.2024, 17:53:06]: Player Maxon_VIP_Games has broke the block! Rg info: spawn | (нет) | (нет)
+[29.10.2024, 17:54:42]: Player llalalalalal has broke the block! Rg info:  |  | 
+[29.10.2024, 17:54:47]: Player Green_Cat333 has broke the block! Rg info: spawn | (нет) | (нет)
+[29.10.2024, 17:54:49]: Player Green_Cat333 has broke the block! Rg info: spawn | (нет) | (нет)
+[29.10.2024, 17:54:51]: Player Maxon_VIP_Games has broke the block! Rg info: spawn | (нет) | (нет)
+[29.10.2024, 17:54:54]: Player 5Foxic0 has broke the block! Rg info: spawn | (нет) | (нет)
+[29.10.2024, 17:54:58]: Player 5Foxic0 has broke the block! Rg info: spawn | (нет) | (нет)
+[29.10.2024, 17:55:11]: Player Maxon_VIP_Games has broke the block! Rg info: spawn | (нет) | (нет)
+[29.10.2024, 17:55:12]: Player 5Foxic0 has broke the block! Rg info: spawn | (нет) | (нет)
+[29.10.2024, 17:55:22]: Player llalalalalal has broke the block! Rg info: spawn | (нет) | (нет)
+[29.10.2024, 17:55:24]: Player 5Foxic0 has broke the block! Rg info: spawn | (нет) | (нет)
+[29.10.2024, 17:55:25]: Player 5Foxic0 has broke the block! Rg info: spawn | (нет) | (нет)
+[29.10.2024, 17:55:31]: Player sedrium has broke the block! Rg info: spawn | (нет) | (нет)
+[29.10.2024, 17:55:33]: Player sedrium has broke the block! Rg info: spawn | (нет) | (нет)
+[29.10.2024, 17:55:37]: Player 45326535 has broke the block! Rg info: spawn | (нет) | (нет)
+[29.10.2024, 17:55:38]: Player sedrium has broke the block! Rg info: spawn | (нет) | (нет)
+[29.10.2024, 18:02:27]: Player StoneFripe has broke the block! Rg info: cherthouse | (нет) | KoTiK_B_KeDaH_
+[29.10.2024, 18:02:29]: Player StoneFripe has broke the block! Rg info: cherthouse | (нет) | KoTiK_B_KeDaH_
+[29.10.2024, 18:02:32]: Player StoneFripe has broke the block! Rg info:  |  | 
+[29.10.2024, 18:02:34]: Player StoneFripe has broke the block! Rg info: cherthouse | (нет) | KoTiK_B_KeDaH_
+[29.10.2024, 18:02:49]: Player StoneFripe has broke the block! Rg info: cherthouse | (нет) | KoTiK_B_KeDaH_
+[29.10.2024, 18:22:54]: Player granddibaylobi has broke the block! Rg info: cherthouse | (нет) | KoTiK_B_KeDaH_
+[29.10.2024, 18:23:13]: Player xxxmanera has broke the block! Rg info: cherthouse | (нет) | KoTiK_B_KeDaH_
+[29.10.2024, 18:23:35]: Player xxxmanera has broke the block! Rg info: cherthouse | (нет) | KoTiK_B_KeDaH_
+[29.10.2024, 18:23:49]: Player xxxmanera has broke the block! Rg info: cherthouse | (нет) | KoTiK_B_KeDaH_
+[29.10.2024, 18:23:55]: Player xxxmanera has broke the block! Rg info: cherthouse | (нет) | KoTiK_B_KeDaH_
+[29.10.2024, 18:23:58]: Player xxxmanera has broke the block! Rg info: cherthouse | (нет) | KoTiK_B_KeDaH_
+[29.10.2024, 18:24:02]: Player xxxmanera has broke the block! Rg info: cherthouse | (нет) | KoTiK_B_KeDaH_
+[29.10.2024, 18:24:46]: Player xxxmanera has broke the block! Rg info: cherthouse | (нет) | KoTiK_B_KeDaH_
+[29.10.2024, 18:24:47]: Player xxxmanera has broke the block! Rg info: cherthouse | (нет) | KoTiK_B_KeDaH_
+[29.10.2024, 18:24:48]: Player xxxmanera has broke the block! Rg info:  |  | 
+[29.10.2024, 18:24:49]: Player xxxmanera has broke the block! Rg info: cherthouse | (нет) | KoTiK_B_KeDaH_
+[29.10.2024, 18:24:56]: Player xxxmanera has broke the block! Rg info: cherthouse | (нет) | KoTiK_B_KeDaH_
+[29.10.2024, 18:25:13]: Player Daqavis696969 has broke the block! Rg info: cherthouse | (нет) | KoTiK_B_KeDaH_
+[29.10.2024, 18:25:44]: Player mujaja88 has broke the block! Rg info: cherthouse | (нет) | KoTiK_B_KeDaH_
+[29.10.2024, 18:26:00]: Player xxxmanera has broke the block! Rg info: cherthouse | (нет) | KoTiK_B_KeDaH_
+[29.10.2024, 18:26:02]: Player xxxmanera has broke the block! Rg info: cherthouse | (нет) | KoTiK_B_KeDaH_
+[29.10.2024, 18:27:23]: Player mujaja88 has broke the block! Rg info: cherthouse | (нет) | KoTiK_B_KeDaH_
+[29.10.2024, 18:27:34]: Player _YWO_ has broke the block! Rg info: cherthouse | (нет) | KoTiK_B_KeDaH_
+[29.10.2024, 18:27:39]: Player mujaja88 has broke the block! Rg info: cherthouse | (нет) | KoTiK_B_KeDaH_
+[29.10.2024, 18:28:35]: Player GFRDDUYVD has broke the block! Rg info: cherthouse | (нет) | KoTiK_B_KeDaH_
+[29.10.2024, 18:28:35]: Player GFRDDUYVD has broke the block! Rg info: cherthouse | (нет) | KoTiK_B_KeDaH_
+[29.10.2024, 18:28:56]: Player GFRDDUYVD has broke the block! Rg info: cherthouse | (нет) | KoTiK_B_KeDaH_
+[29.10.2024, 18:29:05]: Player GFRDDUYVD has broke the block! Rg info: cherthouse | (нет) | KoTiK_B_KeDaH_
+[29.10.2024, 18:29:06]: Player GFRDDUYVD has broke the block! Rg info: cherthouse | (нет) | KoTiK_B_KeDaH_
+[29.10.2024, 18:29:09]: Player GFRDDUYVD has broke the block! Rg info:  |  | 
+[29.10.2024, 18:29:11]: Player GFRDDUYVD has broke the block! Rg info:  |  | 
+[29.10.2024, 18:29:11]: Player GFRDDUYVD has broke the block! Rg info: cherthouse | (нет) | KoTiK_B_KeDaH_
+[29.10.2024, 18:29:15]: Player GFRDDUYVD has broke the block! Rg info:  |  | 
+[29.10.2024, 18:29:17]: Player GFRDDUYVD has broke the block! Rg info: cherthouse | (нет) | KoTiK_B_KeDaH_
+[29.10.2024, 18:29:18]: Player GFRDDUYVD has broke the block! Rg info: cherthouse | (нет) | KoTiK_B_KeDaH_
+[29.10.2024, 18:29:22]: Player GFRDDUYVD has broke the block! Rg info: cherthouse | (нет) | KoTiK_B_KeDaH_
+[29.10.2024, 18:29:23]: Player GFRDDUYVD has broke the block! Rg info: cherthouse | (нет) | KoTiK_B_KeDaH_
+[29.10.2024, 18:29:50]: Player GFRDDUYVD has broke the block! Rg info: cherthouse | (нет) | KoTiK_B_KeDaH_
+[29.10.2024, 18:29:52]: Player GFRDDUYVD has broke the block! Rg info: cherthouse | (нет) | KoTiK_B_KeDaH_
+[29.10.2024, 18:29:52]: Player GFRDDUYVD has broke the block! Rg info: cherthouse | (нет) | KoTiK_B_KeDaH_
+[29.10.2024, 18:29:54]: Player GFRDDUYVD has broke the block! Rg info: cherthouse | (нет) | KoTiK_B_KeDaH_
+[29.10.2024, 18:29:56]: Player GFRDDUYVD has broke the block! Rg info: cherthouse | (нет) | KoTiK_B_KeDaH_
+[29.10.2024, 18:30:11]: Player GFRDDUYVD has broke the block! Rg info: cherthouse | (нет) | KoTiK_B_KeDaH_
+[29.10.2024, 18:30:54]: Player GFRDDUYVD has broke the block! Rg info:  |  | 
+[29.10.2024, 18:31:09]: Player Daqavis696969 has broke the block! Rg info: cherthouse | (нет) | KoTiK_B_KeDaH_
+[29.10.2024, 18:31:11]: Player Daqavis696969 has broke the block! Rg info: cherthouse | (нет) | KoTiK_B_KeDaH_
+[29.10.2024, 18:31:12]: Player Daqavis696969 has broke the block! Rg info: cherthouse | (нет) | KoTiK_B_KeDaH_
+[29.10.2024, 18:31:23]: Player mujaja88 has broke the block! Rg info:  |  | 
+[29.10.2024, 18:31:55]: Player Daqavis696969 has broke the block! Rg info: cherthouse | (нет) | KoTiK_B_KeDaH_
+[29.10.2024, 18:33:03]: Player GFRDDUYVD has broke the block! Rg info: cherthouse | (нет) | KoTiK_B_KeDaH_
+[29.10.2024, 18:33:09]: Player GFRDDUYVD has broke the block! Rg info: cherthouse | (нет) | KoTiK_B_KeDaH_

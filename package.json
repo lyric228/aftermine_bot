@@ -1,3 +1,26 @@
-version https://git-lfs.github.com/spec/v1
-oid sha256:ea3e18c7e70953d32a4fd4c060da173ad0d9b971096e3d3625a05d102b34e4e0
-size 605
+{
+  "name": "minebot",
+  "version": "1.0.0",
+  "type": "module",
+  "description": "",
+  "main": "server/bot.mjs",
+  "scripts": {
+    "start": "node server/bot.mjs"
+  },
+  "keywords": [],
+  "author": "Lyric",
+  "license": "ISC",
+  "dependencies": {
+    "@huggingface/inference": "^2.8.1",
+    "better-sqlite3": "^11.5.0",
+    "formidable": "^3.5.1",
+    "fs": "^0.0.1-security",
+    "http-proxy-agent": "^7.0.2",
+    "http-proxy-middleware": "^3.0.2",
+    "memory-cache": "^0.2.0",
+    "mineflayer": "^4.23.0",
+    "node-telegram-bot-api": "^0.66.0",
+    "protodef": "^1.17.0",
+    "socks": "^2.8.3"
+  }
+}

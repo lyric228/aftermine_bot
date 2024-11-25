@@ -1,3 +1,65 @@
-version https://git-lfs.github.com/spec/v1
-oid sha256:cc0b8436d85fce78a028b32614ea017de9f0afae66c28e2e89022d71e8f8f7eb
-size 1692
+[17.11.2024, 21:13:33]: Player feduki1 has broke the block on s2! Rg info:  |  | 
+[17.11.2024, 21:29:45]: Player feduki1 has broke the block on s2! Rg info:  |  | 
+[23.11.2024, 01:43:17]: Lonzheron сломал блок! Region:
+ |  | 
+
+[23.11.2024, 01:43:17]: Lonzheron сломал блок! Region:
+ |  | 
+
+[23.11.2024, 01:43:18]: Lonzheron сломал блок! Region:
+ |  | 
+
+[23.11.2024, 01:43:40]: Lonzheron сломал блок! Region:
+ |  | 
+
+[23.11.2024, 01:43:40]: Lonzheron сломал блок! Region:
+ |  | 
+
+[23.11.2024, 01:43:41]: Lonzheron сломал блок! Region:
+ |  | 
+
+[23.11.2024, 01:43:41]: Lonzheron сломал блок! Region:
+ |  | 
+
+[23.11.2024, 01:43:42]: Lonzheron сломал блок! Region:
+ |  | 
+
+[23.11.2024, 01:43:42]: Lonzheron сломал блок! Region:
+ |  | 
+
+[23.11.2024, 01:43:43]: Lonzheron сломал блок! Region:
+ |  | 
+
+[23.11.2024, 01:43:43]: Lonzheron сломал блок! Region:
+ |  | 
+
+[23.11.2024, 01:43:43]: Lonzheron сломал блок! Region:
+ |  | 
+
+[23.11.2024, 01:43:43]: Lonzheron сломал блок! Region:
+ |  | 
+
+[23.11.2024, 01:44:13]: Lonzheron сломал блок! Region:
+ |  | 
+
+[23.11.2024, 01:44:14]: Lonzheron сломал блок! Region:
+ |  | 
+
+[23.11.2024, 01:44:14]: Lonzheron сломал блок! Region:
+ |  | 
+
+[23.11.2024, 01:51:09]: lohkgwg1 сломал блок! Region:
+ |  | 
+
+[23.11.2024, 01:51:09]: lohkgwg1 сломал блок! Region:
+ |  | 
+
+[23.11.2024, 01:51:17]: lohkgwg1 сломал блок! Region:
+ |  | 
+
+[23.11.2024, 02:00:51]: lohkgwg1 сломал блок! Region:
+ |  | 
+
+[23.11.2024, 02:00:52]: lohkgwg1 сломал блок! Region:
+ |  | 
+

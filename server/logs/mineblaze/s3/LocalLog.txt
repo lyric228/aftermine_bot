@@ -1,3 +1,1 @@
-version https://git-lfs.github.com/spec/v1
-oid sha256:4560ecdd694354ce2b2ca26f4b3d151433d26de37ac5fe2a3dd25b8c212f257e
-size 75
+[17.11.2024, 21:52:10]: [ʟ] Wagner andri292799 ⇨ → кх не твое
