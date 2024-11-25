@@ -1,7 +1,8 @@
-import {getCurrentDate} from "../functions/functions.mjs";
+import {getCurrentDate, splitStringIntoList} from "../functions/functions.mjs";
 import {AiStartMessage, AiToken} from "../../cfg.mjs";
 import {HfInference} from "@huggingface/inference";
 import {EventEmitter} from "events";
+import {botsObj} from "../../index.mjs";
 
 
 export class Ai extends EventEmitter{
@@ -19,6 +20,7 @@ export class Ai extends EventEmitter{
 			}
 		];
 		setInterval(() => this.resetMessages(), 30 * 60 * 1000);
+		ai.on("aiAnswer", (answer, server, portal) => this.aiAnswer(answer, server, portal));
 	}
 
 	async getAnswer(question, botData) {
@@ -50,7 +52,7 @@ export class Ai extends EventEmitter{
 			this.answerCheck = setInterval(() => {
 				if (typeof this.answer === "string") {
 					clearInterval(this.answerCheck);
-					this.emit("aiAnswer", this.answer);
+					this.emit("aiAnswer", this.answer, botData.server, botData.portal);
 					this.canAnswer = true;
 				}
 			}, 1000);
@@ -68,6 +70,18 @@ export class Ai extends EventEmitter{
 			}
 		];
 	}
+
+	aiAnswer(answer, server, portal) {
+		const strs = splitStringIntoList(answer);
+    setTimeout(() => {
+      for (let i = 0; i < strs.length; i++) {
+        setTimeout(() => {
+					if (botsObj[server][portal].bot === null)
+          botsObj[server][portal].bot.sendMsg(`/cc ${strs[i]}`);
+        }, i * 1000);
+      }
+    }, 1000);
+  }
 }
 
 

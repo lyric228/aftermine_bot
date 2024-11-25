@@ -7,7 +7,7 @@ import {
 } from "../../cfg.mjs";
 import {blacklist, botList, botsObj, getRandomProxy, saveBlacklist, loadBlacklist, saveDeaths} from "../../index.mjs";
 import {appendFile, existsSync, mkdirSync, writeFileSync} from "fs";
-import {randInt, splitStringIntoList} from "../functions/functions.mjs";
+import {randInt} from "../functions/functions.mjs";
 import {HttpProxyAgent} from "http-proxy-agent";
 import {EventEmitter} from "events";
 import * as mf from "mineflayer";
@@ -171,7 +171,6 @@ export class MainBot extends EventEmitter {
         this.bot.on("blockUpdate", (oldState) => this.handleBlockChange(oldState));
         this.bot.on("entitySwingArm", (entity) => this.swingArmTrigger(entity));
         this.bot.inventory.on("updateSlot", () => this.clearInventory());
-        ai.on("aiAnswer", (answer) => this.aiAnswer((answer)));
         this.invitePlayers();  // Приглашение ближайшего игрока
         this.sendAdvertisements();  // Отправка рекламы
         this.autoReconnect();  // Рестарт бота раз в пол часа
@@ -183,17 +182,6 @@ export class MainBot extends EventEmitter {
       }
     });
   };
-
-  // Функция для ответа ИИ
-  aiAnswer(answer) {
-    setTimeout(() => {
-      for (const el of splitStringIntoList(answer)) {
-        setTimeout(() => {
-          this.sendMsg(`/cc ${el}`);
-        }, 1000);
-      }
-    }, 1000);
-  }
 
   // Функция для логина бота
   handleSpawn() {
