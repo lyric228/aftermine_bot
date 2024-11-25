@@ -5,7 +5,8 @@
   "description": "",
   "main": "server/bot.mjs",
   "scripts": {
-    "start": "node server/bot.mjs"
+    "start": "node server/bot.mjs",
+    "sql": "npm uninstall better-sqlite3 && npm install better-sqlite3@10.0.0"
   },
   "keywords": [],
   "author": "Lyric",

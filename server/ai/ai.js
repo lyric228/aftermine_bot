@@ -23,6 +23,7 @@ export class Ai extends EventEmitter{
 
 	async getAnswer(question, botData) {
 		try {
+			if (question.trim() === "") return;
 			this.messages.push({
 				role: "system",
 				content: `Your current nickname: ${botData.nickname}.
@@ -54,6 +55,7 @@ export class Ai extends EventEmitter{
 				}
 			}, 1000);
 		} catch (err) {
+			this.canAnswer = true;
 			console.log(err);
 		}
 	}

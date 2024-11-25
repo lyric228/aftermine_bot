@@ -22,7 +22,8 @@ export class MainBot extends EventEmitter {
   message;
   constructor(options, server, obj) {
     super();
-    if (!botList.includes(this.nickname)) botList.push(this.nickname);
+    if (botList.includes(this.nickname)) return;
+    botList.push(this.nickname);
     this.answerMessages = {
       "afterdar": unterMsgs["afterdark"],
       "worte": unterMsgs["wortex"],
@@ -45,7 +46,7 @@ export class MainBot extends EventEmitter {
           portal: formatedPortals[this.curServer][this.portal],
           server: formatedServers[this.curServer],
           player: this.lastUser,
-        });
+        }).then(() => {});
       },
     };
     this.adminAnswerMessages = {
@@ -184,8 +185,13 @@ export class MainBot extends EventEmitter {
 
   // Функция для ответа ИИ
   aiAnswer(answer) {
-    const strings = splitStringIntoList(answer);
-    for (const el of strings) this.sendMsg(`/cc ${el}`)
+    setTimeout(() => {
+      for (const el of splitStringIntoList(answer)) {
+        setTimeout(() => {
+          this.sendMsg(`/cc ${el}`);
+        }, 1000);
+      }
+    }, 1000);
   }
 
   // Функция для логина бота
@@ -204,8 +210,7 @@ export class MainBot extends EventEmitter {
     saveDeaths();
     delete this.bot;
     botsObj[this.curServer][this.portal].bot = null;
-    if (reason === "Disabled by admin.") return;
-    botsObj[this.curServer][this.portal].bot = new this.curClass(this.options);
+    if (reason !== "Disabled by admin.") botsObj[this.curServer][this.portal].bot = new this.curClass(this.options);
   };
 
   // Функция для отправки сообщений с try/catch
