@@ -13,7 +13,7 @@
   "license": "ISC",
   "dependencies": {
     "@huggingface/inference": "^2.8.1",
-    "better-sqlite3": "^11.5.0",
+    "better-sqlite3": "^10.0.0",
     "formidable": "^3.5.1",
     "fs": "^0.0.1-security",
     "http-proxy-agent": "^7.0.2",
