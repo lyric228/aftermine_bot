@@ -1,6 +1,6 @@
 import {
   admins,
-  commandsMsgs, formatedPortals, formatedServers,
+  commandsMsgs,
   LogRootPath, PublicName, PublicPassword,
   PublicSkin, PublicTimeOut, PublicVersion, PublicWarp,
   unterMsgs,
@@ -43,8 +43,8 @@ export class MainBot extends EventEmitter {
         if (ask.trim() === "") return;
         ai.getAnswer(ask, {
           nickname: this.nickname,
-          portal: formatedPortals[this.curServer][this.portal],
-          server: formatedServers[this.curServer],
+          portal: this.portal,
+          server: this.curServer,
           player: this.lastUser,
         }).then(() => {});
       },

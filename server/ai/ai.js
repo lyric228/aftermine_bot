@@ -1,5 +1,5 @@
 import {getCurrentDate, splitStringIntoList} from "../functions/functions.mjs";
-import {AiStartMessage, AiToken} from "../../cfg.mjs";
+import {AiStartMessage, AiToken, formatedPortals, formatedServers} from "../../cfg.mjs";
 import {HfInference} from "@huggingface/inference";
 import {EventEmitter} from "events";
 import {botsObj} from "../../index.mjs";
@@ -20,7 +20,7 @@ export class Ai extends EventEmitter{
 			}
 		];
 		setInterval(() => this.resetMessages(), 30 * 60 * 1000);
-		ai.on("aiAnswer", (answer, server, portal) => this.aiAnswer(answer, server, portal));
+		this.on("aiAnswer", (answer, server, portal) => this.aiAnswer(answer, server, portal));
 	}
 
 	async getAnswer(question, botData) {
@@ -29,8 +29,8 @@ export class Ai extends EventEmitter{
 			this.messages.push({
 				role: "system",
 				content: `Your current nickname: ${botData.nickname}.
-				Your current portal: ${botData.portal}.
-				Your current server: ${botData.server}.
+				Your current portal: ${formatedPortals[botData.server][botData.portal]}.
+				Your current server: ${formatedServers[botData.server]}.
 				Your current interlocutor: ${botData.player}.
 				Current time: ${getCurrentDate()}.`,
 			},
