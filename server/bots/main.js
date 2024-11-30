@@ -163,7 +163,6 @@ export class MainBot extends EventEmitter {
   // Функция для старта бота
   START() {
     if (botList.includes(this.nickname)) return;
-    console.log(this.nickname);
     botList.push(this.nickname);
     this.agent = new HttpProxyAgent(`http://${getRandomProxy()}`);
     this.bot = mf.createBot(this.botOptions);
