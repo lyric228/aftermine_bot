@@ -28,11 +28,11 @@ export const botsObjData = {
   "mineblaze": {
     "s1": () => { return startBotMB({nickname: "lohkgwg1", portal: "s1"}) }, // lohkgwg1 s1
     "s2": () => { return startBotMB({nickname: "TARAKAN2149", portal: "s2"}) }, // TARAKAN2149 s2
-    "s3": () => { return startBotMB({}) }, // Vkabababa s3
-    "s4": () => { return startBotMB({}) }, // __IRISHKA__ s4
-    "s5": () => { return startBotMB({}) }, // TYTSFS s5
+    "s3": () => { return startBotMB({nickname: "Vkabababa", portal: "s3"}) }, // Vkabababa s3
+    "s4": () => { return startBotMB({nickname: "__IRISHKA__", portal: "s4"}) }, // __IRISHKA__ s4
+    "s5": () => { return startBotMB({nickname: "TYTSFS", portal: "s5"}) }, // TYTSFS s5
     "s6": () => { return startBotMB({}) }, // s6
-    "s7": () => { return startBotMB({}) }, // KoTiK_B_KeDaX s7
+    "s7": () => { return startBotMB({nickname: "KoTiK_B_KeDaX", portal: "s7"}) }, // KoTiK_B_KeDaX s7
     "s8": () => { return startBotMB({}) }, // s8
     "s9": () => { return startBotMB({}) }, // s9
     "s10": () => { return startBotMB({}) }, // s10

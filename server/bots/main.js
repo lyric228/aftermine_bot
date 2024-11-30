@@ -33,10 +33,9 @@ export class MainBot extends EventEmitter {
   cmdMessages;
   username;
   message;
+  agent;
   constructor(options, server) {
     super();
-    if (botList.includes(this.nickname)) return;
-    botList.push(this.nickname);
     this.answerMessages = {
       "afterdar": unterMsgs["afterdark"],
       "worte": unterMsgs["wortex"],
@@ -120,7 +119,6 @@ export class MainBot extends EventEmitter {
     this.lastUser = "";
     this.currentArg = "";
     this.allArgs = [];
-    this.agent = new HttpProxyAgent(`http://${getRandomProxy()}`);
     this.botOptions = {
       username: this.nickname,
       host: this.host,
@@ -164,6 +162,9 @@ export class MainBot extends EventEmitter {
 
   // Функция для старта бота
   START() {
+    if (botList.includes(this.nickname)) return;
+    console.log(this.nickname);
+    botList.push(this.nickname);
     this.agent = new HttpProxyAgent(`http://${getRandomProxy()}`);
     this.bot = mf.createBot(this.botOptions);
     this.bot.setMaxListeners(1000);
