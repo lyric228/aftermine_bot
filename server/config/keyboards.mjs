@@ -163,16 +163,14 @@ export const LogsKeyboard = [
       text: "📃 Скачать GlobalLog 📃️",
       callback_data: "downloadgllog",
     },
+  ],
+  [
     {
       text: "📃 Скачать LocalLog 📃",
       callback_data: "downloadllog",
     },
   ],
   [
-    {
-      text: "📃 Скачать GriefLog 📃️",
-      callback_data: "downloadgrlog",
-    },
     {
       text: "📃 Скачать ClanLog 📃️",
       callback_data: "downloadcllog",
@@ -183,16 +181,14 @@ export const LogsKeyboard = [
       text: "📄 Загрузить GlobalLog 📄️",
       callback_data: "uploadgllog",
     },
+  ],
+  [
     {
       text: "📄 Загрузить LocalLog 📄",
       callback_data: "uploadllog",
     },
   ],
   [
-    {
-      text: "📄 Загрузить GriefLog 📄️",
-      callback_data: "uploadgrlog",
-    },
     {
       text: "📄 Загрузить ClanLog 📄️️",
       callback_data: "uploadcllog",
@@ -221,8 +217,7 @@ export const PortalMenuKeyboardMP = [
   ],
   [
     {
-      text: "⬛ Другое ⬛да" +
-        "️",
+      text: "⬛ Другое ⬛",
       callback_data: "multiother",
     },
   ],

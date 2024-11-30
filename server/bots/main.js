@@ -1,11 +1,19 @@
 import {
   admins,
-  commandsMsgs,
-  LogRootPath, PublicName, PublicPassword,
-  PublicSkin, PublicTimeOut, PublicVersion, PublicWarp,
+  commandsMsgs, FreezeTrollMsg,
+  LogRootPath, PatternOptions, PublicName, PublicPassword,
+  PublicSkin, PublicVersion, PublicWarp,
   unterMsgs,
 } from "../../cfg.mjs";
-import {blacklist, botList, botsObj, getRandomProxy, saveBlacklist, loadBlacklist, saveDeaths} from "../../index.mjs";
+import {
+  blacklist,
+  botList,
+  getRandomProxy,
+  saveBlacklist,
+  loadBlacklist,
+  saveDeaths,
+  playerDeaths
+} from "../../index.mjs";
 import {appendFile, existsSync, mkdirSync, writeFileSync} from "fs";
 import {randInt} from "../functions/functions.mjs";
 import {HttpProxyAgent} from "http-proxy-agent";
@@ -16,11 +24,16 @@ import {ai} from "../ai/ai.js";
 
 
 export class MainBot extends EventEmitter {
+  matchLeavePattern;
+  matchJoinPattern;
+  matchClanPattern;
+  matchCmdPattern;
+  matchKdrPattern;
   textMessage;
   cmdMessages;
   username;
   message;
-  constructor(options, server, obj) {
+  constructor(options, server) {
     super();
     if (botList.includes(this.nickname)) return;
     botList.push(this.nickname);
@@ -38,7 +51,7 @@ export class MainBot extends EventEmitter {
       "#враги": commandsMsgs["enemies"],
       "#функции": commandsMsgs["functions"],
       "#версиибота": commandsMsgs["versions"][parseInt(this.currentArg)],
-      ".бот": () => {
+      "бот": () => {
         const ask = this.allArgs.join(" ");
         if (ask.trim() === "") return;
         ai.getAnswer(ask, {
@@ -91,18 +104,12 @@ export class MainBot extends EventEmitter {
         this.end("Reconnect by admin.");
       },
     }
-    this.rgInfo = {
-      name: "",
-      owners: [],
-      members: [],
-    };
+    this.matchClanPattern = /^КЛАН: .*? (.*?): (.*)$/;
     this.endCount = 0;
     this.spawnCount = 0;
-    this.curClass = obj;
     this.nickname = options.nickname;
     this.portal = options.portal;
     this.options = options;
-    this.closeTimeout = PublicTimeOut;
     this.password = PublicPassword;
     this.version = PublicVersion;
     this.warp = PublicWarp;
@@ -113,15 +120,12 @@ export class MainBot extends EventEmitter {
     this.lastUser = "";
     this.currentArg = "";
     this.allArgs = [];
-    this.checkChat = false;
-    this.checkSwingArm = false;
     this.agent = new HttpProxyAgent(`http://${getRandomProxy()}`);
     this.botOptions = {
       username: this.nickname,
       host: this.host,
       agent: this.agent,
       version: this.version,
-      closeTimeout: this.closeTimeout,
       plugins: {
         anvil: false,
         book: false,
@@ -155,52 +159,59 @@ export class MainBot extends EventEmitter {
         villager: false
       },
     };
+    this.START();
+  };
+
+  // Функция для старта бота
+  START() {
+    this.agent = new HttpProxyAgent(`http://${getRandomProxy()}`);
     this.bot = mf.createBot(this.botOptions);
     this.bot.setMaxListeners(1000);
     this.setMaxListeners(1000);
     this.bot.on("end", (reason) => this.reconnectBot(reason));
+    this.bot.on("error", (err) => console.log(err));
     this.bot.on("spawn", () => {
       this.spawnCount++;
       this.handleSpawn();
       if (this.spawnCount === 2) {
+        this.bot.inventory.on("updateSlot", () => this.clearInventory());
         this.bot.on("entitySpawn", (entity) => this.spawnInvite(entity));
         this.bot.on("message", (message) => this.messagesMonitoring(message));
         this.bot.on("forcedMove", () => this.antiTrap());
         this.bot.on("entityEffect", () => this.handleEffect());
         this.bot.on("respawn", () => this.antiTrap());
-        this.bot.on("blockUpdate", (oldState) => this.handleBlockChange(oldState));
-        this.bot.on("entitySwingArm", (entity) => this.swingArmTrigger(entity));
-        this.bot.inventory.on("updateSlot", () => this.clearInventory());
-        this.invitePlayers();  // Приглашение ближайшего игрока
-        this.sendAdvertisements();  // Отправка рекламы
-        this.autoReconnect();  // Рестарт бота раз в пол часа
         this.lookAtNearestPlayer();  // Наблюдение за ближайшим игроком
+        this.sendAdvertisements();  // Отправка рекламы
+        this.setChatTriggers();  // Установка триггеров для чата
+        this.invitePlayers();  // Приглашение ближайшего игрока
+        this.autoReconnect();  // Рестарт бота раз в пол часа
         this.setSkin();  // Установка скина
         this.setName();  // Установка ника
         this.tpWarp();  // Телепортация на варп
         this.fly();  // Включение полёта
       }
     });
-  };
+  }
 
   // Функция для логина бота
   handleSpawn() {
     this.sendMsg(`/reg ${this.password}`);
     this.sendMsg(`/login ${this.password}`);
     this.sendMsg(`/${this.portal}`);
-    console.log(`${this.nickname} has spawned`)
     this.antiTrap();
+    console.log(`${this.nickname} has spawned`)
   };
 
   // Функция для переподключения бота
-  reconnectBot(reason) {
-    console.log(`${this.nickname} - Reconnection... (${reason})`);
-    saveBlacklist();
-    saveDeaths();
-    delete this.bot;
-    botsObj[this.curServer][this.portal].bot = null;
-    if (reason !== "Disabled by admin.") botsObj[this.curServer][this.portal].bot = new this.curClass(this.options);
-  };
+  reconnectBot(reason = null) {
+    try {
+      if (reason === "Disabled by admin.") return;
+      console.log(`${this.nickname} - Reconnection... (${reason})`);
+      this.START();
+    } catch (err) {
+      console.log(err);
+    }
+  }
 
   // Функция для отправки сообщений с try/catch
   sendMsg(msg) {
@@ -231,8 +242,7 @@ export class MainBot extends EventEmitter {
 
   // Функция для записи логов в файл
   writeLog(text, path) {
-    const date = new Date().toLocaleString();
-    const logText = `[${date}]: ${text}\n`;
+    const logText = `[${new Date().toLocaleString()}]: ${text}\n`;
     const fullPath = `${LogRootPath}/${this.curServer}/${this.portal}/${path}.txt`;
     appendFile(fullPath, logText, (err) => {
       if (!err) return;
@@ -282,11 +292,8 @@ export class MainBot extends EventEmitter {
     if (this.endCount < 10) {
       try {
         this.bot.end(reason);
-        this.tpWarp();
         this.endCount = 0;
-      } catch (err) {
-        this.end(reason);
-      }
+      } catch (err) {}
     }
   };
 
@@ -294,27 +301,12 @@ export class MainBot extends EventEmitter {
   sendAdvertisements() {};
 
   // Функция чтобы бот смотрел на ближайшего игрока
-  lookAtNearestPlayer() {
-    setInterval(() => {
-      try {
-        const entity = this.bot.nearestEntity(entity => entity.type === "player");
-        if (entity) return this.bot.lookAt(entity.position.offset(0, entity.height, 0), false);
-      } catch (err) {}
-    }, 100);
-  };
+  lookAtNearestPlayer() {};
 
   // Функция для контроля эффектов у бота
   handleEffect() {
     this.sendMsg("/heal");
     this.tpWarp();
-  };
-
-  // Функция для просмотра
-  handleBlockChange(oldState) {
-    if (oldState.name !== "air") {
-      this.checkChat = true;
-      this.sendMsg("/rg i");
-    }
   };
 
   // Отправка инвайта ближайшему игроку при спавне
@@ -338,155 +330,120 @@ export class MainBot extends EventEmitter {
     this.bot.creative.startFlying();
   };
 
-  // Функция для парсинга информации о регионе
-  parseRegionInfo() {
-    const result = {
-      name: "",
-      owners: [],
-      members: [],
-    };
-    for (const line of this.textMessage.split("\n")) {
-      if (line.includes("Владельцы: ")) result.owners = line.replace("Владельцы: ", "").split(", ");
-      else if (line.includes("Участники: ")) result.members = line.replace("Участники: ", "").split(", ");
-      else if (line.includes("Регион: ")) result.name = line.replace("Регион: ", "").split(" ")[0];
-    }
-    return result;
-  };
-
-  // Функция для удаления игрока из региона если он ломает блоки
-  swingArmTrigger(entity) {
-    if (this.checkSwingArm && !(admins.includes(entity.username) && !(botList.includes(entity.username)) && (this.isPlayer(entity) && (this.rgInfo.name !== "__global__")))) {
-      if (this.rgInfo.name === "__global__") return this.antiTrap();
-      if (this.rgInfo.members.includes(entity.username)) this.sendMsg(`/rg removemember ${this.rgInfo.name} ${entity.username}`);
-      else if (this.rgInfo.owners.includes(entity.username)) this.sendMsg(`/rg removeowner ${this.rgInfo.name} ${entity.username}`);
-      const msgLog = `${entity.username} сломал блок! Region:\n${this.rgInfo.name} | ${this.rgInfo.owners} | ${this.rgInfo.members}\n`;
-      this.emit("grieflog", msgLog);
-      this.writeLog(msgLog, "GriefLog");
-    }
-  };
-
-  // Функция для проверки игрок ли entity
-  isPlayer(entity) {
-    try {
-      return entity.type === "player";
-    } catch (err) {
-      return false;
-    }
-  };
-
   // Функция для работы с сообщениями
   messagesMonitoring(message) {
     this.message = message;
     this.textMessage = this.message.getText(null);
     this.cmdMessages = this.textMessage.split(" ");
 
-    if (this.isIgnorableMessage()) return;
-
-    this.processRegionInfo();
     this.processChatMessage();
-    this.processClanMessage();
-    this.processKickMessage();
-    this.processJoinMessage();
-    this.processLeaveMessage();
-    this.processKdrMessage();
-    this.processCommandMessage();
 
-    this.emit("chatlog", this.textMessage);
+    if (this.textMessage.trim() !== "") this.emit("chatlog", this.textMessage);
   };
 
-  isIgnorableMessage() {};
+  setChatTriggers() {
+    this.bot.addChatPattern("cmd", this.matchCmdPattern, PatternOptions);
+    this.bot.addChatPattern("kdr", this.matchKdrPattern, PatternOptions);
+    this.bot.addChatPattern("join", this.matchJoinPattern, PatternOptions);
+    this.bot.addChatPattern("leave", this.matchLeavePattern, PatternOptions);
+
+    this.bot.addChatPattern("cc", this.matchClanPattern, PatternOptions);
+    this.bot.addChatPattern("ft", FreezeTrollMsg, PatternOptions);
+
+
+    this.bot.on("chat:cmd", match => {
+      match = match[0];
+      let messages = match[1].split(" ");
+      this.allArgs = messages.slice(1);
+      this.currentArg = this.allArgs[0];
+      this.lastUser = match[0];
+      this.processCommandMessage(this.lastUser, messages[0]);
+    });
+
+    this.bot.on("chat:kdr", match => {
+      const killedPlayer = match[0][1];
+      if (botList.includes(killedPlayer) || admins.includes(killedPlayer)) return;
+      if (typeof playerDeaths[killedPlayer] !== "number") playerDeaths[killedPlayer] = 0;
+      playerDeaths[killedPlayer] += 1;
+      const deathsCount = playerDeaths[killedPlayer]
+      if (deathsCount > 4) {
+        this.sendMsg(`/c kick ${killedPlayer}`);
+        blacklist.push(killedPlayer);
+        saveBlacklist();
+      }
+      saveDeaths();
+    });
+
+    this.bot.on("chat:join", match => {
+      const user = match[0][0];
+      if (blacklist.includes(user) || (playerDeaths[user] && playerDeaths[user] > 4)) return this.sendMsg(`/c kick ${user}`);
+      if (typeof playerDeaths[user] !== "number") playerDeaths[user] = 0;
+      this.sendMsg(`/cc Добро пожаловать в клан, ${user}! Обязательно вступи в наш дискорд, там много всего интересного! Если хочешь вступить в наш дискорд сервер, то пиши мне - kotik16f`);
+    });
+
+    this.bot.on("chat:leave", match => {
+      this.sendMsg(`/cc ${match[0][0]} выходит из клана, ОБОССАТЬ И НА МОРОЗ!`);
+    });
+
+    this.bot.on("chat:cc", match => {
+      match = match[0];
+      const msg = match[1].split(" ");
+      this.currentArg = msg[1];
+      this.lastUser = match[0];
+      this.allArgs = msg.slice(1);
+      this.processClanMessage(msg[0].toLowerCase());
+      this.writeLog(this.textMessage, "ClanLog");
+    });
+
+    this.bot.on("chat:ft", () => this.end("Freeze troll"));
+  };
 
   processChatMessage() {};
 
-  processClanMessage() {
-    if (this.textMessage.startsWith("КЛАН:")) {
-      const curCommand = this.cmdMessages[3].toLowerCase();
-      this.currentArg = this.cmdMessages[4];
-      this.lastUser = this.cmdMessages[2];
-      this.allArgs = this.cmdMessages.slice(4);
-      this.writeLog(this.textMessage, "ClanLog");
-      if (curCommand.startsWith("#")) {
-        if (Object.keys(this.answerMessages).includes(curCommand))this.sendMsg(this.answerMessages[curCommand]);
-      } else if (curCommand.startsWith(".бот")) {
-        if (typeof this.answerMessages[curCommand] === "function") {
-          if (ai.canAnswer) {
-            this.sendMsg("/cc Генерирую ответ...");
-            this.answerMessages[curCommand]();
-            ai.canAnswer = false;
-            return;
-          }
-          this.sendMsg("/cc Бот занят, попробуйте через пару секунд.");
+  processClanMessage(cmd) {
+    if (cmd.startsWith("#")) {
+      if (Object.keys(this.answerMessages).includes(cmd))this.sendMsg(this.answerMessages[cmd]);
+    } else if (cmd.includes("бот")) {
+      if (typeof this.answerMessages[cmd] === "function") {
+        if (ai.canAnswer) {
+          this.sendMsg("/cc Генерирую ответ...");
+          this.answerMessages[cmd]();
+          ai.canAnswer = false;
           return;
         }
+        this.sendMsg("/cc Бот занят, попробуйте через пару секунд.");
+        return;
       }
     }
   };
 
-  processKickMessage() {};
-
-  processJoinMessage() {};
-
-  processLeaveMessage() {};
-
-  processKdrMessage() {};
-
-  processCommandMessage() {};
-
-  processRegionInfo() {
-    if (this.checkChat) {
-      this.rgInfo = this.parseRegionInfo();
-      this.checkChat = false;
-      this.checkSwingArm = true;
-    }
-  };
-
-  // Функция для включения гриф-лога
-  enableGLog() {
-    this.on("grieflog", (message) => {
-      try {
-        tbot.emit("log", message, "rg")
-      } catch (err) {}
-    });
-  };
-
-  // Функция для выключения гриф-лога
-  disableGLog() {
-    try {
-      this.removeListener("grieflog", () => {});
-    } catch (err) {}
+  processCommandMessage(username, command) {
+    if (admins.includes(username)) {
+      if (Object.keys(this.adminAnswerMessages).includes(command)) {
+        try {
+          if (typeof this.adminAnswerMessages[command] === "function") {
+            this.sendMsg(this.adminAnswerMessages[command]());
+            return;
+          }
+          this.sendMsg(this.adminAnswerMessages[command]);
+        } catch (err) {}
+      }
+    } else if (command === "#invite") this.sendMsg(`/c invite ${username}`);
   };
 
   // Функция для включения клан-лога
-  enableCLog() {
+  enableLog() {
     this.on("chatlog", (message) => {
       try {
-        tbot.emit("log", `[${this.portal}] [${new Date().toLocaleString()}] ${message}`, "chat", this.portal)
+        tbot.emit("log", `[${this.portal}] [${new Date().toLocaleString()}] ${message}`, this.portal)
       } catch (err) {}
     });
   };
 
   // Функция для выключения клан-лога
-  disableCLog() {
+  disableLog() {
     try {
       this.removeListener("chatlog", () => {});
     } catch (err) {}
-  };
-
-  // Функция для автоматического включения логов
-  autoEnable(field) {
-    const actions = {
-      "chat": this.enableCLog,
-      "rg": this.enableGLog,
-    }
-    actions[field]();
-  };
-
-  // Функция для автоматического выключения логов
-  autoDisable(field) {
-    const actions = {
-      "chat": this.disableCLog,
-      "rg": this.disableGLog,
-    }
-    actions[field]();
   };
 }

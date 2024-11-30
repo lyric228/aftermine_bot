@@ -91,17 +91,22 @@ export class TBot extends EventEmitter {
     });
     this.onCommand("/start", async () => await this.sendMessage(`Привет, ${this.msg.from.first_name}!\nЭто админ панель великого лурика!\nЖми /menu и админь!`));
     this.onCommand("/menu", async () => await this.sendInlineKBMessage(`😭 Выбери сервер 😭`, ServerMenuKeyboard));
-    this.onCommand("/set", async () => {
-      const field = this.args[0].includes("chat") ? "chat" : "rg";
-      const value = parseInt(this.args[1]) > 0 ? 1 : 0;
-      this.db.updateData(field, value);
+    this.onCommand("/enable", async () => {
       const bot = botsObj[this.db.getData("server")][this.db.getData("portal")].bot;
       if (!bot) return await this.sendMessage("Сначала включите этого бота!");
-      value === 1 ? bot.autoEnable(field) : bot.autoDisable(field);
-      await this.sendMessage(`Теперь ${field} изменён на ${value}!`);
-    }, { args: 2, argErrMsg: "Пользование:\n/set \<\chat/rg> <1/0>\n\nchat/rg/packets - 2 вида логов, чат и рг\n1/0 - включить/выключить\nДля какого бота будут включены логи зависит от последнего выбранного бота." });
-  }
+      this.db.updateData("chat", 1);
+      bot.enableLog();
+      await this.sendMessage("Логи включены!");
+    });
 
+    this.onCommand("/disable", async () => {
+      const bot = botsObj[this.db.getData("server")][this.db.getData("portal")].bot;
+      if (!bot) return await this.sendMessage("Сначала включите этого бота!");
+      this.db.updateData("chat", 0);
+      bot.disableLog();
+      await this.sendMessage("Логи выключены!");
+    });
+  }
 
   callbackCommands() {
     this.bot.on("callback_query", async (call) => {
@@ -164,15 +169,13 @@ export class TBot extends EventEmitter {
     this.on("s10", async () => this.setPortal("s10"));
 
     this.on("enable", async () => {
-      if (!this.getBotObj().status) {
-        this.setBotObjField("bot", this.getObjData());
-        this.setBotObjField("time", new Date());
-        this.setBotObjField("status", true);
-      }
+      this.setBotObjField("bot", this.getObjData());
+      this.setBotObjField("time", new Date());
+      this.setBotObjField("status", true);
     });
 
     this.on("disable", async () => {
-      if (this.getBotObj().status) {
+      if (this.getBotObj().bot?.deleteBot) {
         this.getBotObj().bot.deleteBot();
         this.setBotObjField("bot", null);
         this.setBotObjField("time", new Date());
@@ -254,16 +257,12 @@ export class TBot extends EventEmitter {
 
     this.on("downloadllog", async () => this.sendFile(`server/logs/${this.db.getData("server")}/${ this.db.getData("portal")}/LocalLog.txt`));
 
-    this.on("downloadgrlog", async () => this.sendFile(`server/logs/${this.db.getData("server")}/${ this.db.getData("portal")}/GriefLog.txt`));
-
     this.on("downloadcllog", async () => this.sendFile(`server/logs/${this.db.getData("server")}/${ this.db.getData("portal")}/ClanLog.txt`));
 
 
     this.on("uploadgllog", async () => await this.fileUploader("GlobalLog.txt", `server/logs/${this.db.getData("server")}/${ this.db.getData("portal")}`));
 
     this.on("uploadllog", async () => await this.fileUploader("LocalLog.txt", `server/logs/${this.db.getData("server")}/${ this.db.getData("portal")}`));
-
-    this.on("uploadgrlog", async () => await this.fileUploader("GriefLog.txt", `server/logs/${this.db.getData("server")}/${ this.db.getData("portal")}`));
 
     this.on("uploadcllog", async () => await this.fileUploader("ClanLog.txt", `server/logs/${this.db.getData("server")}/${ this.db.getData("portal")}`));
   }

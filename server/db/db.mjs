@@ -15,9 +15,7 @@ export class DB {
         status TEXT DEFAULT 'none',
         server TEXT DEFAULT 'masedworld',
         portal TEXT DEFAULT 's2',
-        chat BOOLEAN DEFAULT 0,
-        rg BOOLEAN DEFAULT 0,
-        packets BOOLEAN DEFAULT 0
+        chat BOOLEAN DEFAULT 0
       );
     `);
   }

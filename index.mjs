@@ -26,13 +26,13 @@ export const botsObjData = {
     "s2": () => { return startBotCM({nickname: "Ryfkin228", portal: "s2"}) },
   },
   "mineblaze": {
-    "s1": () => { return startBotMB({}) }, // lohkgwg1 s1
-    "s2": () => { return startBotMB({nickname: "TARAKAN2149", portal: "s2"}) },
-    "s3": () => { return startBotMB({nickname: "Vkabababa", portal: "s3"}) },
-    "s4": () => { return startBotMB({nickname: "__IRISHKA__", portal: "s4"}) },
+    "s1": () => { return startBotMB({nickname: "lohkgwg1", portal: "s1"}) }, // lohkgwg1 s1
+    "s2": () => { return startBotMB({nickname: "TARAKAN2149", portal: "s2"}) }, // TARAKAN2149 s2
+    "s3": () => { return startBotMB({}) }, // Vkabababa s3
+    "s4": () => { return startBotMB({}) }, // __IRISHKA__ s4
     "s5": () => { return startBotMB({}) }, // s5
     "s6": () => { return startBotMB({}) }, // s6
-    "s7": () => { return startBotMB({nickname: "KoTiK_B_KeDaX", portal: "s7"}) },
+    "s7": () => { return startBotMB({}) }, // KoTiK_B_KeDaX s7
     "s8": () => { return startBotMB({}) }, // s8
     "s9": () => { return startBotMB({}) }, // s9
     "s10": () => { return startBotMB({}) }, // s10
@@ -70,7 +70,7 @@ loadBlacklist();
 loadDeaths();
 setInterval(() => cache.clear(), 5 * 60 * 1000);
 
-
+// Функция для сохранения данных в черный список
 export function saveBlacklist() {
   blacklist.sort(() => Math.random() - 0.5);
   writeFileSync(BlacklistPath, blacklist.join("\n"));
@@ -130,8 +130,8 @@ export function startBotCM(options) {
 
 
 export function startBotMB(options) {
-  options.nickname = options.nickname || "TARAKAN2149";
-  options.portal = options.portal || "s2";
+  options.nickname = options.nickname || "lohkgwg1";
+  options.portal = options.portal || "s1";
   return new MBBot(options);
 }
 
